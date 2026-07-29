@@ -249,6 +249,15 @@ function bannerEnable(layout: CircleLayout): string {
   return `gte(t,${start})*lt(mod(t-${start},${repeat}),${visible})`;
 }
 
+function bannerInput(file: string): string[] {
+  if (/\.(png|jpe?g|webp)$/i.test(file)) {
+    return ["-loop", "1", "-framerate", "30", "-i", file];
+  }
+  // Repeat any animated banner at its original speed. The filter below trims the
+  // last loop exactly to the duration of the selected Telegram circle.
+  return ["-stream_loop", "-1", "-i", file];
+}
+
 function circleMask(size: number, duration: number): string {
   const expression = "if(lte((X-W/2)*(X-W/2)+(Y-H/2)*(Y-H/2),(W/2)*(W/2)),255,0)";
   return `color=c=white:s=${size}x${size}:r=30:d=${seconds(duration)},format=gray,geq=lum='${expression}'[circlemask]`;
@@ -283,11 +292,7 @@ export async function renderCircleVideo(input: CircleVideoRenderInput): Promise<
     "-loop", "1", "-framerate", "30", "-i", puzzleFile,
   ];
   if (banner) {
-    if (/\.(png|jpe?g|webp)$/i.test(banner.file)) {
-      args.push("-loop", "1", "-framerate", "30", "-i", banner.file);
-    } else {
-      args.push("-stream_loop", "-1", "-i", banner.file);
-    }
+    args.push(...bannerInput(banner.file));
   }
 
   const size = input.layout.circle.size;

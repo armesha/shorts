@@ -14,6 +14,8 @@
     "worker:status": "node --experimental-sqlite scripts/gen-worker-status.mjs",
     "server:dev": "node --import tsx --experimental-sqlite --watch server/index.ts",
     "server:restart": "node --experimental-sqlite scripts/restart-server.mjs",
+    "circle:banner:install": "node --import tsx scripts/install-circle-banner.mjs",
+    "circle:banner:fit": "node scripts/fit-circle-banner-duration.mjs",
     "creator:restart": "node --experimental-sqlite scripts/restart-creator.mjs",
     "creator:smoke": "node --experimental-sqlite scripts/smoke-creator.mjs",
     "audio:lipsync:setup": "node scripts/setup-russian-lipsync.mjs",

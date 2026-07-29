@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import test from "node:test";
 import ffmpegPath from "ffmpeg-static";
 import { renderCircleVideo } from "./circle-video-renderer.ts";
 
-test("built-in circle renderer produces a vertical MP4 with circle audio", { timeout: 60_000 }, async () => {
+test("circle renderer produces a vertical MP4 with audio and a duration-fitted animated banner", { timeout: 60_000 }, async () => {
   const root = mkdtempSync(resolve(tmpdir(), "shorts-circle-render-"));
   const previous = process.env.TG_CIRCLES_DIR;
   process.env.TG_CIRCLES_DIR = root;
@@ -15,6 +15,7 @@ test("built-in circle renderer produces a vertical MP4 with circle audio", { tim
     assert.ok(ffmpegPath);
     const source = resolve(root, "source.mp4");
     const gameplay = resolve(root, "gameplay.mp4");
+    const banner = resolve(root, "banner", "custom", "animated.mov");
     const output = resolve(root, "output", "render.mp4");
 
     const sourceResult = spawnSync(ffmpegPath, [
@@ -33,6 +34,45 @@ test("built-in circle renderer produces a vertical MP4 with circle audio", { tim
       gameplay,
     ], { encoding: "utf8" });
     assert.equal(gameplayResult.status, 0, gameplayResult.stderr);
+
+    mkdirSync(dirname(banner), { recursive: true });
+    const bannerResult = spawnSync(ffmpegPath, [
+      "-hide_banner", "-loglevel", "error", "-y",
+      "-f", "lavfi", "-i", "testsrc2=s=900x260:r=30:d=0.12",
+      "-c:v", "prores_ks", "-profile:v", "4", "-pix_fmt", "yuva444p10le",
+      banner,
+    ], { encoding: "utf8" });
+    assert.equal(bannerResult.status, 0, bannerResult.stderr);
+    writeFileSync(resolve(root, "banner", "advertisers.json"), `${JSON.stringify({
+      version: 1,
+      items: [{
+        id: "animated",
+        name: "Анимированный",
+        brand: "Test",
+        headline: "Test",
+        subline: "Test",
+        cta: "Test",
+        accentColor: "#ffffff",
+        backgroundColor: "#000000",
+        textColor: "#ffffff",
+        assetFile: "custom/animated.mov",
+        assetType: "video",
+        transparent: true,
+        fullFrame: false,
+      }],
+    })}\n`);
+    writeFileSync(resolve(root, "config.json"), `${JSON.stringify({
+      version: 1,
+      video: {
+        banner: {
+          enabled: true,
+          advertiserId: "animated",
+          file: "./banner/custom/animated.mov",
+          transparent: true,
+          fullFrame: false,
+        },
+      },
+    })}\n`);
 
     const rendered = await renderCircleVideo({
       sourceFile: source,
@@ -55,6 +95,7 @@ test("built-in circle renderer produces a vertical MP4 with circle audio", { tim
       "-map", "0:v:0", "-frames:v", "1", "-f", "null", "-",
     ], { encoding: "utf8" });
     assert.equal(inspected.status, 0, inspected.stderr);
+    assert.match(inspected.stderr, /Duration:\s*00:00:00\.4/);
     assert.match(inspected.stderr, /1080x1920/);
     assert.match(inspected.stderr, /\bAudio:\s/);
   } finally {
