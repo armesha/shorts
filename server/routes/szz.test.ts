@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import test from "node:test";
 import Fastify from "fastify";
+import { openDb } from "../db.ts";
 import { registerSzzRoutes } from "./szz.ts";
 
 test("szz routes serve the latest source HTML without restarting", async () => {
@@ -113,4 +114,97 @@ test("szz PDF routes return 404 for a missing source file", async () => {
   assert.deepEqual(response.json(), { error: "file not found" });
 
   await app.close();
+});
+
+test("szz study state is stored per authenticated user and rejects stale writes", async () => {
+  const db = openDb(":memory:");
+  const firstUser = db.createUser({ username: "szz-first", passHash: "x" });
+  const secondUser = db.createUser({ username: "szz-second", passHash: "x" });
+  const app = Fastify();
+  app.addHook("onRequest", async (req) => {
+    const header = req.headers["x-test-user-id"];
+    if (header) (req as typeof req & { userId?: number }).userId = Number(header);
+  });
+  registerSzzRoutes(app, { db });
+
+  const anonymous = await app.inject({ method: "GET", url: "/api/szz/state" });
+  assert.equal(anonymous.statusCode, 401);
+
+  const initial = await app.inject({
+    method: "GET",
+    url: "/api/szz/state",
+    headers: { "x-test-user-id": String(firstUser.id) },
+  });
+  assert.deepEqual(initial.json(), {
+    userId: firstUser.id,
+    state: null,
+    updatedAt: null,
+  });
+
+  const firstState = {
+    version: 1,
+    tickets: { "ticket-1-6": { status: "mastered" } },
+    reviews: { "2026-07-30": { "ticket-1-6": 2 } },
+    activityDates: { "2026-07-30": true },
+    ticketOrder: ["ticket-1-6", "ticket-1-9"],
+    updatedAt: 200,
+  };
+  const saved = await app.inject({
+    method: "PUT",
+    url: "/api/szz/state",
+    headers: { "x-test-user-id": String(firstUser.id) },
+    payload: { state: firstState },
+  });
+  assert.equal(saved.statusCode, 200);
+  assert.equal(saved.json().saved, true);
+  assert.deepEqual(saved.json().state, firstState);
+
+  const stale = await app.inject({
+    method: "PUT",
+    url: "/api/szz/state",
+    headers: { "x-test-user-id": String(firstUser.id) },
+    payload: { state: { ...firstState, ticketOrder: ["ticket-1-9"], updatedAt: 100 } },
+  });
+  assert.equal(stale.statusCode, 200);
+  assert.equal(stale.json().saved, false);
+  assert.deepEqual(stale.json().state, firstState);
+
+  const secondState = {
+    version: 1,
+    tickets: {},
+    reviews: {},
+    activityDates: {},
+    ticketOrder: ["ticket-1-23"],
+    updatedAt: 300,
+  };
+  await app.inject({
+    method: "PUT",
+    url: "/api/szz/state",
+    headers: { "x-test-user-id": String(secondUser.id) },
+    payload: { state: secondState },
+  });
+
+  const firstRead = await app.inject({
+    method: "GET",
+    url: "/api/szz/state",
+    headers: { "x-test-user-id": String(firstUser.id) },
+  });
+  const secondRead = await app.inject({
+    method: "GET",
+    url: "/api/szz/state",
+    headers: { "x-test-user-id": String(secondUser.id) },
+  });
+  assert.deepEqual(firstRead.json().state, firstState);
+  assert.deepEqual(secondRead.json().state, secondState);
+
+  const invalid = await app.inject({
+    method: "PUT",
+    url: "/api/szz/state",
+    headers: { "x-test-user-id": String(firstUser.id) },
+    payload: { state: { ticketOrder: [], updatedAt: 400 } },
+  });
+  assert.equal(invalid.statusCode, 400);
+
+  await app.close();
+  db.db.close();
 });

@@ -377,7 +377,7 @@ registerCarSeatBookingRoutes(app, db);
 registerMemesRoutes(app, deps);
 registerGameRoutes(app);
 registerIdeasRoutes(app, db, deps);
-registerSzzRoutes(app);
+registerSzzRoutes(app, { db });
 registerCircleEditorRoutes(app, db);
 
 app
