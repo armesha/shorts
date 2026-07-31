@@ -7,11 +7,14 @@ const DEFAULT_SZZ_HTML_PATH = "/home/davtian/Documents/db/SZZ_DB_ticket_1_1.html
 const DEFAULT_SZZ_ANSWERS_PDF_PATH = "/home/davtian/Documents/db/SZZ_DB.pdf";
 const DEFAULT_SZZ_TOPICS_PDF_PATH =
   "/home/davtian/Documents/db/final-verzetoszzbcitb0688a140009113064_DB.pdf";
+const DEFAULT_SZZ_TICKET_PDFS_PATH = "/home/davtian/Documents/db/SZZ_DB_ticket_pdfs";
+const SZZ_TICKET_PDF_FILE = /^SZZ_DB_ticket_1_(?:[1-9]|1[0-9]|2[0-3])\.pdf$/;
 
 type SzzRouteOptions = {
   htmlPath?: string;
   answersPdfPath?: string;
   topicsPdfPath?: string;
+  ticketPdfsPath?: string;
   db?: Db;
 };
 
@@ -76,6 +79,11 @@ export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions
   const topicsPdfPath = resolve(
     options.topicsPdfPath ?? process.env.SZZ_TOPICS_PDF_PATH ?? DEFAULT_SZZ_TOPICS_PDF_PATH,
   );
+  const ticketPdfsPath = resolve(
+    options.ticketPdfsPath ??
+      process.env.SZZ_TICKET_PDFS_PATH ??
+      DEFAULT_SZZ_TICKET_PDFS_PATH,
+  );
 
   app.get("/szz", async (_req, reply) => sendSzzPage(reply, htmlPath));
   app.get("/szz/", async (_req, reply) => sendSzzPage(reply, htmlPath));
@@ -88,6 +96,13 @@ export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions
   app.get("/szz/SZZ_DB_topics.pdf", async (_req, reply) =>
     sendSzzPdf(reply, topicsPdfPath, "SZZ_DB_topics.pdf"),
   );
+  app.get<{ Params: { fileName: string } }>("/szz/tickets/:fileName", async (req, reply) => {
+    const { fileName } = req.params;
+    if (!SZZ_TICKET_PDF_FILE.test(fileName)) {
+      return reply.code(404).send({ error: "file not found" });
+    }
+    return sendSzzPdf(reply, resolve(ticketPdfsPath, fileName), fileName);
+  });
 
   if (options.db) {
     app.get("/api/szz/state", async (req, reply) => {

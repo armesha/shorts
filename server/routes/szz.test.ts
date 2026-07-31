@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import test from "node:test";
@@ -114,6 +114,47 @@ test("szz PDF routes return 404 for a missing source file", async () => {
   assert.deepEqual(response.json(), { error: "file not found" });
 
   await app.close();
+});
+
+test("szz ticket PDF route serves only the 23 generated ticket files", async () => {
+  const dir = mkdtempSync(resolve(tmpdir(), "szz-ticket-pdf-route-"));
+  const ticketPdfsPath = resolve(dir, "tickets");
+  const ticketPdf = Buffer.from("%PDF-1.7\nticket 1.23\n");
+  mkdirSync(ticketPdfsPath);
+  writeFileSync(resolve(ticketPdfsPath, "SZZ_DB_ticket_1_23.pdf"), ticketPdf);
+
+  const app = Fastify();
+  registerSzzRoutes(app, { ticketPdfsPath });
+
+  const response = await app.inject({
+    method: "GET",
+    url: "/szz/tickets/SZZ_DB_ticket_1_23.pdf",
+  });
+  assert.equal(response.statusCode, 200);
+  assert.match(response.headers["content-type"] ?? "", /^application\/pdf/);
+  assert.equal(
+    response.headers["content-disposition"],
+    'inline; filename="SZZ_DB_ticket_1_23.pdf"',
+  );
+  assert.equal(response.headers["cache-control"], "no-store, max-age=0");
+  assert.deepEqual(response.rawPayload, ticketPdf);
+
+  const outsideRange = await app.inject({
+    method: "GET",
+    url: "/szz/tickets/SZZ_DB_ticket_1_24.pdf",
+  });
+  assert.equal(outsideRange.statusCode, 404);
+  assert.deepEqual(outsideRange.json(), { error: "file not found" });
+
+  const unexpectedName = await app.inject({
+    method: "GET",
+    url: "/szz/tickets/SZZ_DB.pdf",
+  });
+  assert.equal(unexpectedName.statusCode, 404);
+  assert.deepEqual(unexpectedName.json(), { error: "file not found" });
+
+  await app.close();
+  rmSync(dir, { recursive: true, force: true });
 });
 
 test("szz study state is stored per authenticated user and rejects stale writes", async () => {
