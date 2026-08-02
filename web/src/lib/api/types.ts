@@ -444,6 +444,84 @@ export interface AuthUser {
   impersonator?: { id: number; username: string; role: string; isSuperAdmin?: boolean } | null;
 }
 
+/** Safe read-only snapshot for the admin signals dashboard. */
+export interface SignalsSummary {
+  signalCount: number;
+  paperPositionCount: number;
+  totalNotionalUsd: number;
+  totalPnlUsd: number;
+  portfolioValueUsd?: number | null;
+  todayAiSpendUsd: number;
+  monthAiSpendUsd: number;
+  dailyAiLimitUsd: number;
+  monthlyAiLimitUsd: number;
+}
+
+export interface SignalsSettings {
+  initialBankrollUsd: number;
+  lowConfidencePercent: number;
+  defaultPositionPercent: number;
+  maxPositionPercent: number;
+  maxTotalExposurePercent: number;
+  maxOpenPositions: number;
+  dailyAiLimitUsd: number;
+  monthlyAiLimitUsd: number;
+}
+
+export type SignalsHealthState = "running" | "starting" | "stopped" | "failed" | "unknown";
+export type SignalsControlStatus = "idle" | "applied" | "invalid" | "unavailable";
+
+export interface SignalsHealth {
+  state: SignalsHealthState;
+  restartCount: number;
+  lastExitCode?: number | null;
+}
+
+export interface SignalPaperPosition {
+  contract: string;
+  chain: string | null;
+  status: string;
+  openedAt: string | null;
+  detectedAt: string | null;
+  notionalUsd: number;
+  riskPercent?: number | null;
+  entryPriceUsd?: number | null;
+  currentPriceUsd?: number | null;
+  multiple: number | null;
+  pnlUsd: number | null;
+  updatedAt: string | null;
+}
+
+export interface RecentSignal {
+  detectedAt: string | null;
+  status: string;
+  chain: string | null;
+  contracts: string[];
+  classification?: string | null;
+  confidence?: number | null;
+}
+
+/** Deliberately contains no raw Telegram messages, senders, or source metadata. */
+export interface SignalsSnapshot {
+  version: 1;
+  generatedAt: string | null;
+  lastMessageAt?: string | null;
+  settings: SignalsSettings;
+  health: SignalsHealth;
+  controlStatus: SignalsControlStatus;
+  summary: SignalsSummary;
+  positions: SignalPaperPosition[];
+  recentSignals: RecentSignal[];
+}
+
+export type SignalsResponse =
+  | { available: false; reason: "stale" | "unavailable" }
+  | { available: true; snapshot: SignalsSnapshot };
+
+export interface SignalsSettingsUpdateResult {
+  accepted: boolean;
+}
+
 /** A channel's totals at one moment (used for latest/prev on a stats row). */
 export interface StatSnapshot {
   subscribers: number;

@@ -24,6 +24,7 @@ const routeLoaders = {
   register: () => import("../pages/Register"),
   telegramMiniApp: () => import("../pages/TelegramMiniApp"),
   ideas: () => import("../pages/Ideas"),
+  signals: () => import("../pages/Signals"),
 };
 
 export const pageLoaders = routeLoaders;
@@ -101,6 +102,8 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
       return "register";
     case "/ideas":
       return "ideas";
+    case "/signals":
+      return "signals";
     default:
       return null;
   }

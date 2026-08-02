@@ -1,0 +1,29 @@
+[Unit]
+Description=Export sanitized AsatiBot snapshot for Shareboard
+After=asatibot.service
+
+[Service]
+Type=oneshot
+User=asatibot
+Group=asatibot
+WorkingDirectory=/opt/asatibot
+ExecStart=/usr/bin/python3 /opt/asatibot/export-asatibot-shareboard.py
+TimeoutStartSec=20
+UMask=0077
+StandardOutput=null
+StandardError=journal
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+ProtectSystem=full
+ReadOnlyPaths=/opt/asatibot
+ReadWritePaths=/var/lib/asatibot /opt/asatibot/userdata
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX
+SystemCallArchitectures=native
+CapabilityBoundingSet=

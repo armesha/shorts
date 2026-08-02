@@ -53,6 +53,7 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
       { to: "/statistics", labelKey: "nav.statistics", icon: "analytics", end: false },
       { to: "/notifications", labelKey: "nav.notifications", icon: "notifications", end: false, adminOnly: true, adminBadge: true },
       { to: "/errors", labelKey: "nav.errors", icon: "errors", end: false, adminOnly: true, adminBadge: true },
+      { to: "/signals", labelKey: "nav.signals", icon: "analytics", end: false, adminOnly: true, adminBadge: true },
       { to: "/system", labelKey: "nav.server", icon: "system", end: false },
     ],
   },

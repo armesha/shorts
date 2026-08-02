@@ -10,6 +10,7 @@ import type {
   PsychSchema, PsychCardList, PackSummary, PackFull, PackMusic, PackMusicUploadFile,
   PackMusicUploadResult, MusicTrack, StatRow, ChannelTotals, PlatformSummary, StatPoint,
   AdminAnalytics, UserAnalytics, ErrorLogItem, NotificationItem, NotificationCounts, SystemStatus, IdeaItem,
+  SignalsResponse, SignalsSettings, SignalsSettingsUpdateResult,
   ContentCatalogResponse, AccountReadiness, QueueOverview, LongVideoCatalog, VideoCountsResponse,
   VideoLibraryKind, VideoLibraryPage, VideoLibrarySort, BulkPostNowResponse,
   ChannelThemeBlockAccount, ChannelThemeBlocksResponse, ChannelThemeBlockGenerateResult,
@@ -73,6 +74,9 @@ export const apiClient = {
   recoverComplete: (username: string, code: string, newPassword: string) =>
     send<{ ok: boolean }>("/auth/recover/complete", "POST", { username, code, newPassword }),
   status: () => get<AppStatus>("/config"),
+  signals: () => get<SignalsResponse>("/signals"),
+  updateSignalsSettings: (settings: SignalsSettings) =>
+    send<SignalsSettingsUpdateResult>("/signals/settings", "PUT", settings),
   ideas: () => get<IdeaItem[]>("/ideas"),
   createIdea: (body: { title: string; description?: string }) => send<IdeaItem>("/ideas", "POST", body),
   deleteIdea: (id: number | string) => send<{ ok: boolean }>(`/ideas/${id}`, "DELETE"),

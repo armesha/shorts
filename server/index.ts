@@ -65,6 +65,7 @@ import { registerGameRoutes } from "./routes/game.ts";
 import { registerIdeasRoutes } from "./routes/ideas.ts";
 import { registerSzzRoutes } from "./routes/szz.ts";
 import { registerCircleEditorRoutes } from "./routes/circle-editor.ts";
+import { registerSignalsRoutes } from "./routes/signals.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -360,6 +361,7 @@ registerSettingsKeysRoutes(app, db, { ...deps, chromePath: base.chromePath });
 registerAdminRoutes(app, db, deps);
 registerAccountsRoutes(app, db, deps);
 registerStatsRoutes(app, db, deps);
+registerSignalsRoutes(app, deps);
 registerNotificationsRoutes(app, db, deps);
 registerYouTubeOAuthRoutes(app, db, deps);
 registerVideosRoutes(app, db, deps);
