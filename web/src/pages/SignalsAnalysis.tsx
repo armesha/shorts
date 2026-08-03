@@ -47,6 +47,12 @@ function lifecycleLabel(t: Translate, state: SignalStrategyAuditItem["lifecycleS
   return t(`signals.audit.lifecycle.${state}`);
 }
 
+function compactRisk(value: string): string {
+  const percentages = [...value.matchAll(/\d+(?:[.,]\d+)?%/g)].map((match) => match[0]);
+  const dollars = [...value.matchAll(/\$\d+(?:[.,]\d+)?/g)].map((match) => match[0]);
+  return [...new Set([...percentages.slice(0, 2), ...dollars.slice(0, 1)])].join(" · ") || "—";
+}
+
 function normalizedStatus(position: SignalPaperPosition): string {
   return position.status.trim().toLowerCase();
 }
@@ -200,6 +206,7 @@ function analysisScore(item: SignalStrategyAuditItem): number {
   if (item.lifecycleState === "closed" || item.lifecycleState === "stopped") return 100;
   if (item.lifecycleState === "body_out") return 90;
   if (item.takeProfits.some((target) => target.status === "hit")) return 80;
+  if (/\b\d+(?:[.,]\d+)?x\b/i.test(item.brief)) return 75;
   if (item.positionStatus === "blocked_risk") return 70;
   if (item.correctionAction === "manual_review") return 50;
   return 0;
@@ -227,6 +234,12 @@ function SelectedAnalysis({ audit }: { audit: SignalStrategyAudit }) {
                 <span className="badge badge-sm badge-ghost whitespace-nowrap">{lifecycleLabel(t, item.lifecycleState)}</span>
               </div>
               <p className="mt-3 text-sm leading-relaxed">{item.brief}</p>
+              <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 rounded-md bg-base-200/55 p-3 text-xs">
+                <div><span className="text-base-content/45">RM</span><div className="mt-0.5 font-medium">{compactRisk(item.riskManagement)}</div></div>
+                <div><span className="text-base-content/45">TP</span><div className="mt-0.5 font-medium">{item.takeProfits.length ? item.takeProfits.map((target) => target.target).join(", ") : t("signals.analysis.notSpecified")}</div></div>
+                <div><span className="text-base-content/45">SL</span><div className="mt-0.5 font-medium">{item.stopLoss || t("signals.analysis.notSpecified")}</div></div>
+                <div><span className="text-base-content/45">{t("signals.analysis.principal")}</span><div className="mt-0.5 font-medium">{item.principalRemoval || t("signals.analysis.notConfirmed")}</div></div>
+              </div>
               {hitTargets.length > 0 && (
                 <p className="mt-2 text-xs font-medium">{t("signals.analysis.hitTargets", { targets: hitTargets.map((target) => target.target).join(", ") })}</p>
               )}
@@ -236,6 +249,37 @@ function SelectedAnalysis({ audit }: { audit: SignalStrategyAudit }) {
             </article>
           );
         })}
+      </div>
+    </section>
+  );
+}
+
+function ParameterCoverage({ audit }: { audit: SignalStrategyAudit }) {
+  const { t } = useT();
+  const trades = audit.items.filter((item) => item.positionStatus !== null);
+  const values = [
+    { label: "RM", count: trades.filter((item) => /\d+(?:[.,]\d+)?%/.test(item.riskManagement)).length },
+    { label: "TP", count: trades.filter((item) => item.takeProfits.length > 0).length },
+    { label: "SL", count: trades.filter((item) => Boolean(item.stopLoss)).length },
+    { label: t("signals.analysis.principal"), count: trades.filter((item) => Boolean(item.principalRemoval) || item.lifecycleState === "body_out").length },
+  ];
+  const total = Math.max(trades.length, 1);
+  return (
+    <section className="rounded-lg border border-base-300 bg-base-100 p-4 sm:p-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="font-semibold">{t("signals.analysis.parametersTitle")}</h2>
+          <p className="mt-0.5 text-xs text-base-content/50">{t("signals.analysis.parametersSubtitle", { count: trades.length })}</p>
+        </div>
+        <div className="text-xs text-base-content/50">{t("signals.analysis.auditOutcome", { corrected: audit.correctedCount, review: audit.needsReviewAfter })}</div>
+      </div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {values.map((value) => (
+          <div key={value.label}>
+            <div className="mb-1.5 flex items-center justify-between text-xs"><span>{value.label}</span><b className="tabular-nums">{value.count}/{trades.length}</b></div>
+            <div className="h-2 overflow-hidden rounded-full bg-base-200"><div className="h-full rounded-full bg-primary/70" style={{ width: `${value.count / total * 100}%` }} /></div>
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -356,6 +400,7 @@ export default function SignalsAnalysis() {
 
           <PnlBreakdown positions={positionStats.active} totalPnl={snapshot.summary.totalPnlUsd} />
           <PortfolioChart history={snapshot.portfolioHistory ?? []} currentValue={snapshot.summary.portfolioValueUsd} />
+          <ParameterCoverage audit={audit} />
           <SelectedAnalysis audit={audit} />
           <BlockedReasons audit={audit} />
         </>
