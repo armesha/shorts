@@ -12,6 +12,7 @@ const MAX_RECENT_SIGNALS = 20;
 const MAX_CONTRACTS_PER_SIGNAL = 5;
 const MAX_AUDIT_ITEMS = 12;
 const MAX_TAKE_PROFITS = 8;
+const MAX_PORTFOLIO_HISTORY_POINTS = 48;
 const MAX_MONEY_USD = 1_000_000_000_000_000;
 const MAX_COUNT = 1_000_000;
 const MAX_INITIAL_BANKROLL_USD = 1_000_000;
@@ -81,6 +82,10 @@ export type AsatibotSnapshot = {
     multiple: number | null;
     pnlUsd: number | null;
     updatedAt: string | null;
+  }>;
+  portfolioHistory?: Array<{
+    at: string;
+    valueUsd: number;
   }>;
   recentSignals: Array<{
     detectedAt: string | null;
@@ -186,9 +191,14 @@ function sanitizeSnapshot(value: unknown): AsatibotSnapshot | null {
 
   const lastMessageAt = optionalTimestamp(value.lastMessageAt);
   const positions = sanitizeList(value.positions, MAX_POSITIONS, sanitizePosition);
+  const portfolioHistory = value.portfolioHistory == null
+    ? undefined
+    : Array.isArray(value.portfolioHistory)
+      ? sanitizeList(value.portfolioHistory, MAX_PORTFOLIO_HISTORY_POINTS, sanitizePortfolioPoint)
+      : null;
   const recentSignals = sanitizeList(value.recentSignals, MAX_RECENT_SIGNALS, sanitizeRecentSignal);
   const recentAudit = value.recentAudit == null ? undefined : sanitizeRecentAudit(value.recentAudit) ?? undefined;
-  if (!positions || !recentSignals) return null;
+  if (!positions || portfolioHistory === null || !recentSignals) return null;
 
   return {
     version: 1,
@@ -199,6 +209,7 @@ function sanitizeSnapshot(value: unknown): AsatibotSnapshot | null {
     controlStatus,
     summary,
     positions,
+    ...(portfolioHistory ? { portfolioHistory } : {}),
     recentSignals,
     ...(recentAudit ? { recentAudit } : {}),
   };
@@ -342,6 +353,13 @@ function sanitizePosition(value: unknown): AsatibotSnapshot["positions"][number]
     pnlUsd,
     updatedAt,
   };
+}
+
+function sanitizePortfolioPoint(value: unknown): NonNullable<AsatibotSnapshot["portfolioHistory"]>[number] | null {
+  if (!isRecord(value)) return null;
+  const at = safeTimestamp(value.at);
+  const valueUsd = safeUsd(value.valueUsd, true);
+  return at && valueUsd != null ? { at, valueUsd } : null;
 }
 
 function sanitizeRecentSignal(value: unknown): AsatibotSnapshot["recentSignals"][number] | null {

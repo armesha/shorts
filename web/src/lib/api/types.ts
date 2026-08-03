@@ -494,6 +494,11 @@ export interface SignalPaperPosition {
   updatedAt: string | null;
 }
 
+export interface SignalPortfolioPoint {
+  at: string;
+  valueUsd: number;
+}
+
 export interface RecentSignal {
   detectedAt: string | null;
   status: string;
@@ -547,6 +552,7 @@ export interface SignalsSnapshot {
   controlStatus: SignalsControlStatus;
   summary: SignalsSummary;
   positions: SignalPaperPosition[];
+  portfolioHistory?: SignalPortfolioPoint[];
   recentSignals: RecentSignal[];
   recentAudit?: SignalStrategyAudit;
 }

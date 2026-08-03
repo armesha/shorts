@@ -301,8 +301,19 @@ function RecentSignalRows({ signals }: { signals: RecentSignal[] }) {
   );
 }
 
-function AuditTeaser({ audit }: { audit: SignalStrategyAudit }) {
+function AuditTeaser({
+  audit,
+  positions,
+  openCount,
+  totalPnl,
+}: {
+  audit: SignalStrategyAudit;
+  positions: SignalPaperPosition[];
+  openCount: number;
+  totalPnl: number;
+}) {
   const { t } = useT();
+  const closedCount = positions.filter((position) => ["closed", "stopped", "stopped_out", "stop_loss", "exited", "sold"].includes(position.status.trim().toLowerCase())).length;
   return (
     <section className="rounded-lg border border-base-300 bg-base-100 p-4 shadow-sm sm:p-5">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -314,10 +325,9 @@ function AuditTeaser({ audit }: { audit: SignalStrategyAudit }) {
               {t("signals.analysisTeaser.summary", {
                 days: audit.periodDays,
                 signals: audit.signalCount,
-                reviewBefore: audit.needsReviewBefore,
-                reviewAfter: audit.needsReviewAfter,
-                blockedBefore: audit.blockedBefore,
-                blockedAfter: audit.blockedAfter,
+                active: openCount,
+                closed: closedCount,
+                pnl: formatUsd(totalPnl),
               })}
             </p>
             <p className="mt-1 text-xs text-base-content/45">{t("signals.audit.generated", { time: formatDateTime(audit.generatedAt) })}</p>
@@ -514,7 +524,12 @@ export default function Signals() {
             </div>
           </section>
 
-          {snapshot.recentAudit && <AuditTeaser audit={snapshot.recentAudit} />}
+          {snapshot.recentAudit && <AuditTeaser
+            audit={snapshot.recentAudit}
+            positions={snapshot.positions}
+            openCount={snapshot.summary.openPositionCount}
+            totalPnl={snapshot.summary.totalPnlUsd}
+          />}
 
           {canManageSettings && settingsDraft && (
             <section className="card border border-base-300 bg-base-100 shadow-sm">
