@@ -24,6 +24,25 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
+function normalizedTopicGenerator(value: unknown): Record<string, unknown> | null {
+  if (!isRecord(value) || !Array.isArray(value.order)) return null;
+  if (value.order.length < 1 || value.order.length > 200) return null;
+  if (!value.order.every((key) => typeof key === "string" && key.length > 0 && key.length <= 200)) {
+    return null;
+  }
+  if (new Set(value.order).size !== value.order.length) return null;
+  const completed = Math.floor(Number(value.completed));
+  const rounds = Math.floor(Number(value.rounds));
+  if (!Number.isSafeInteger(completed) || completed < 0 || completed >= value.order.length) return null;
+  if (!Number.isSafeInteger(rounds) || rounds < 0) return null;
+  return {
+    version: 1,
+    order: value.order,
+    completed,
+    rounds,
+  };
+}
+
 function normalizedStudyState(value: unknown): { state: Record<string, unknown>; json: string; updatedAt: number } | null {
   if (!isRecord(value)) return null;
   if (!isRecord(value.tickets) || !isRecord(value.reviews) || !isRecord(value.activityDates)) return null;
@@ -33,12 +52,17 @@ function normalizedStudyState(value: unknown): { state: Record<string, unknown>;
   }
   const updatedAt = Math.floor(Number(value.updatedAt));
   if (!Number.isSafeInteger(updatedAt) || updatedAt <= 0) return null;
+  const topicGenerator = value.topicGenerator === undefined
+    ? undefined
+    : normalizedTopicGenerator(value.topicGenerator);
+  if (value.topicGenerator !== undefined && !topicGenerator) return null;
   const state = {
     version: 1,
     tickets: value.tickets,
     reviews: value.reviews,
     activityDates: value.activityDates,
     ticketOrder: value.ticketOrder,
+    ...(topicGenerator ? { topicGenerator } : {}),
     updatedAt,
   };
   const json = JSON.stringify(state);
