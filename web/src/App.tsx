@@ -36,6 +36,7 @@ const Register = lazy(pageLoaders.register);
 const TelegramMiniApp = lazy(pageLoaders.telegramMiniApp);
 const Ideas = lazy(pageLoaders.ideas);
 const Signals = lazy(pageLoaders.signals);
+const SignalsAnalysis = lazy(pageLoaders.signalsAnalysis);
 
 function CreatorExternalRedirect() {
   useEffect(() => {
@@ -77,6 +78,7 @@ function Gate() {
             <Route path="/studio" element={<Studio />} />
             <Route path="/ideas" element={realAdmin ? <Ideas /> : <Navigate to="/statistics" replace />} />
             <Route path="/signals" element={realAdmin ? <Signals /> : <Navigate to="/channels" replace />} />
+            <Route path="/signals/analysis" element={realAdmin ? <SignalsAnalysis /> : <Navigate to="/channels" replace />} />
             <Route path="/gallery" element={realAdmin ? <Gallery /> : <Navigate to="/channels" replace />} />
             <Route path="/cards" element={<Cards />} />
             <Route path="/library" element={<Packs />} />
