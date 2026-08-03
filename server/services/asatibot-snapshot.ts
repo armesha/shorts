@@ -10,6 +10,8 @@ export const MAX_ASATIBOT_SNAPSHOT_AGE_MS = 90_000;
 const MAX_POSITIONS = 50;
 const MAX_RECENT_SIGNALS = 20;
 const MAX_CONTRACTS_PER_SIGNAL = 5;
+const MAX_AUDIT_ITEMS = 12;
+const MAX_TAKE_PROFITS = 8;
 const MAX_MONEY_USD = 1_000_000_000_000_000;
 const MAX_COUNT = 1_000_000;
 const MAX_INITIAL_BANKROLL_USD = 1_000_000;
@@ -56,6 +58,8 @@ export type AsatibotSnapshot = {
   summary: {
     signalCount: number;
     paperPositionCount: number;
+    openPositionCount: number;
+    blockedRiskCount: number;
     totalNotionalUsd: number;
     totalPnlUsd: number;
     portfolioValueUsd?: number;
@@ -86,6 +90,37 @@ export type AsatibotSnapshot = {
     classification: string | null;
     confidence: number | null;
   }>;
+  recentAudit?: {
+    generatedAt: string;
+    reviewModel: string;
+    periodStart: string;
+    periodEnd: string;
+    periodDays: number;
+    signalCount: number;
+    threadCount: number;
+    needsReviewBefore: number;
+    needsReviewAfter: number;
+    correctedCount: number;
+    blockedBefore: number;
+    blockedAfter: number;
+    lifecycleUpdates: number;
+    aiCostUsd: number;
+    items: Array<{
+      contract: string;
+      chain: string | null;
+      positionStatus: string | null;
+      riskManagement: string;
+      takeProfits: Array<{ target: string; status: "planned" | "hit" | "unknown" }>;
+      stopLoss: string | null;
+      principalRemoval: string | null;
+      lifecycleState: "no_position" | "open" | "body_out" | "closed" | "stopped" | "unknown";
+      brief: string;
+      correctionAction: string;
+      correctionReason: string;
+      confidence: number | null;
+      lastEventAt: string | null;
+    }>;
+  };
 };
 
 export type AsatibotSnapshotResponse =
@@ -152,6 +187,7 @@ function sanitizeSnapshot(value: unknown): AsatibotSnapshot | null {
   const lastMessageAt = optionalTimestamp(value.lastMessageAt);
   const positions = sanitizeList(value.positions, MAX_POSITIONS, sanitizePosition);
   const recentSignals = sanitizeList(value.recentSignals, MAX_RECENT_SIGNALS, sanitizeRecentSignal);
+  const recentAudit = value.recentAudit == null ? undefined : sanitizeRecentAudit(value.recentAudit) ?? undefined;
   if (!positions || !recentSignals) return null;
 
   return {
@@ -164,6 +200,7 @@ function sanitizeSnapshot(value: unknown): AsatibotSnapshot | null {
     summary,
     positions,
     recentSignals,
+    ...(recentAudit ? { recentAudit } : {}),
   };
 }
 
@@ -236,6 +273,8 @@ function sanitizeSummary(value: unknown): AsatibotSnapshot["summary"] | null {
   if (!isRecord(value)) return null;
   const signalCount = safeCount(value.signalCount);
   const paperPositionCount = safeCount(value.paperPositionCount);
+  const openPositionCount = safeCount(value.openPositionCount);
+  const blockedRiskCount = safeCount(value.blockedRiskCount);
   const totalNotionalUsd = safeUsd(value.totalNotionalUsd, false);
   const totalPnlUsd = safeUsd(value.totalPnlUsd, true);
   const todayAiSpendUsd = safeUsd(value.todayAiSpendUsd, false);
@@ -245,6 +284,8 @@ function sanitizeSummary(value: unknown): AsatibotSnapshot["summary"] | null {
   if (
     signalCount == null ||
     paperPositionCount == null ||
+    openPositionCount == null ||
+    blockedRiskCount == null ||
     totalNotionalUsd == null ||
     totalPnlUsd == null ||
     todayAiSpendUsd == null ||
@@ -258,6 +299,8 @@ function sanitizeSummary(value: unknown): AsatibotSnapshot["summary"] | null {
   return {
     signalCount,
     paperPositionCount,
+    openPositionCount,
+    blockedRiskCount,
     totalNotionalUsd,
     totalPnlUsd,
     ...(portfolioValueUsd != null ? { portfolioValueUsd } : {}),
@@ -324,6 +367,98 @@ function sanitizeRecentSignal(value: unknown): AsatibotSnapshot["recentSignals"]
   };
 }
 
+function sanitizeRecentAudit(value: unknown): NonNullable<AsatibotSnapshot["recentAudit"]> | null {
+  if (!isRecord(value) || !Array.isArray(value.items)) return null;
+  const generatedAt = safeTimestamp(value.generatedAt);
+  const reviewModel = safeCode(value.reviewModel, 80);
+  const periodStart = safeTimestamp(value.periodStart);
+  const periodEnd = safeTimestamp(value.periodEnd);
+  const periodDays = safeInteger(value.periodDays, 1, 14);
+  const signalCount = safeCount(value.signalCount);
+  const threadCount = safeCount(value.threadCount);
+  const needsReviewBefore = safeCount(value.needsReviewBefore);
+  const needsReviewAfter = safeCount(value.needsReviewAfter);
+  const correctedCount = safeCount(value.correctedCount);
+  const blockedBefore = safeCount(value.blockedBefore);
+  const blockedAfter = safeCount(value.blockedAfter);
+  const lifecycleUpdates = safeCount(value.lifecycleUpdates);
+  const aiCostUsd = safeNumber(value.aiCostUsd, 0, 1_000);
+  const items = sanitizeList(value.items, MAX_AUDIT_ITEMS, sanitizeRecentAuditItem);
+  if (
+    !generatedAt || !reviewModel || !periodStart || !periodEnd || periodDays == null ||
+    signalCount == null || threadCount == null || needsReviewBefore == null ||
+    needsReviewAfter == null || correctedCount == null || blockedBefore == null ||
+    blockedAfter == null || lifecycleUpdates == null || aiCostUsd == null || !items
+  ) {
+    return null;
+  }
+  return {
+    generatedAt,
+    reviewModel,
+    periodStart,
+    periodEnd,
+    periodDays,
+    signalCount,
+    threadCount,
+    needsReviewBefore,
+    needsReviewAfter,
+    correctedCount,
+    blockedBefore,
+    blockedAfter,
+    lifecycleUpdates,
+    aiCostUsd,
+    items,
+  };
+}
+
+function sanitizeRecentAuditItem(value: unknown): NonNullable<AsatibotSnapshot["recentAudit"]>["items"][number] | null {
+  if (!isRecord(value) || !Array.isArray(value.takeProfits) || value.takeProfits.length > MAX_TAKE_PROFITS) return null;
+  const contract = safeContract(value.contract);
+  const chain = safeCode(value.chain, 48);
+  const positionStatus = safeCode(value.positionStatus, 48);
+  const riskManagement = safeReportText(value.riskManagement, 280);
+  const stopLoss = optionalReportText(value.stopLoss, 280);
+  const principalRemoval = optionalReportText(value.principalRemoval, 280);
+  const lifecycleState = safeLifecycleState(value.lifecycleState);
+  const brief = safeReportText(value.brief, 280);
+  const correctionAction = safeCode(value.correctionAction, 48);
+  const correctionReason = safeReportText(value.correctionReason, 280);
+  const confidence = value.confidence == null ? null : safeNumber(value.confidence, 0, 1);
+  const lastEventAt = value.lastEventAt == null ? null : safeTimestamp(value.lastEventAt);
+  const takeProfits = value.takeProfits.flatMap((target) => {
+    if (!isRecord(target)) return [];
+    const cleanTarget = safeReportText(target.target, 100);
+    const status = safeTakeProfitStatus(target.status);
+    return cleanTarget && status
+      ? [{ target: cleanTarget, status }]
+      : [];
+  });
+  if (!contract || !riskManagement || !lifecycleState || !brief || !correctionAction || !correctionReason) return null;
+  return {
+    contract,
+    chain,
+    positionStatus,
+    riskManagement,
+    takeProfits,
+    stopLoss,
+    principalRemoval,
+    lifecycleState,
+    brief,
+    correctionAction,
+    correctionReason,
+    confidence,
+    lastEventAt,
+  };
+}
+
+function safeTakeProfitStatus(value: unknown): "planned" | "hit" | "unknown" | null {
+  return value === "planned" || value === "hit" || value === "unknown" ? value : null;
+}
+
+function safeLifecycleState(value: unknown): NonNullable<AsatibotSnapshot["recentAudit"]>["items"][number]["lifecycleState"] | null {
+  return value === "no_position" || value === "open" || value === "body_out" || value === "closed" || value === "stopped" || value === "unknown" ? value : null;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -361,6 +496,18 @@ function safeCode(value: unknown, maxLength: number): string | null {
   if (typeof value !== "string") return null;
   const text = value.trim();
   return text.length > 0 && text.length <= maxLength && /^[A-Za-z0-9][A-Za-z0-9._:@/$+-]*$/.test(text) ? text : null;
+}
+
+function safeReportText(value: unknown, maxLength: number): string | null {
+  if (typeof value !== "string") return null;
+  const text = value.replace(/\s+/g, " ").trim();
+  if (!text || text.length > maxLength || /[\u0000-\u001F\u007F]/.test(text) || /https?:\/\//i.test(text)) return null;
+  return text;
+}
+
+function optionalReportText(value: unknown, maxLength: number): string | null {
+  if (value == null) return null;
+  return safeReportText(value, maxLength);
 }
 
 function safeCount(value: unknown): number | null {

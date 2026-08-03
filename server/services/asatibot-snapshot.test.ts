@@ -31,6 +31,8 @@ function validSnapshot() {
     summary: {
       signalCount: 2,
       paperPositionCount: 1,
+      openPositionCount: 1,
+      blockedRiskCount: 0,
       totalNotionalUsd: 125.5,
       totalPnlUsd: -3.25,
       portfolioValueUsd: 996.75,
@@ -65,6 +67,39 @@ function validSnapshot() {
         confidence: 0.87,
       },
     ],
+    recentAudit: {
+      generatedAt: "2026-08-03T08:00:00Z",
+      reviewModel: "gpt-5.6-sol",
+      periodStart: "2026-07-31T08:00:00Z",
+      periodEnd: "2026-08-03T08:00:00Z",
+      periodDays: 3,
+      signalCount: 38,
+      threadCount: 8,
+      needsReviewBefore: 5,
+      needsReviewAfter: 2,
+      correctedCount: 3,
+      blockedBefore: 3,
+      blockedAfter: 1,
+      lifecycleUpdates: 1,
+      aiCostUsd: 0.004,
+      items: [
+        {
+          contract: "0xA1b2c3D4",
+          chain: "ethereum",
+          positionStatus: "open",
+          riskManagement: "5% виртуального банка",
+          takeProfits: [{ target: "2x", status: "hit" }],
+          stopLoss: "Стоп перенесён в безубыток",
+          principalRemoval: "Тело забрано на 2x",
+          lifecycleState: "body_out",
+          brief: "Тело выведено, остаток позиции сопровождается.",
+          correctionAction: "auto_corrected",
+          correctionReason: "Подтверждено двумя проверками.",
+          confidence: 0.94,
+          lastEventAt: "2026-08-03T07:30:00Z",
+        },
+      ],
+    },
   };
 }
 
@@ -83,6 +118,8 @@ test("AsatiBot snapshot v1 returns only the approved whitelist", async () => {
     raw.keys = { openRouter: "paid-secret" };
     (raw.positions as Array<Record<string, unknown>>)[0]!.telegramSession = "session-secret";
     (raw.recentSignals as Array<Record<string, unknown>>)[0]!.sourceText = "private source text";
+    (raw.recentAudit as { items: Array<Record<string, unknown>> }).items[0]!.rawMessage = "private audit source text";
+    (raw.recentAudit as Record<string, unknown>).apiKey = "private audit key";
 
     writeFileSync(file, JSON.stringify(raw));
     const response = await readAsatibotSnapshotFile(file);
@@ -123,10 +160,22 @@ test("AsatiBot snapshot v1 returns only the approved whitelist", async () => {
           confidence: 0.87,
         },
       ],
+      recentAudit: {
+        ...validSnapshot().recentAudit,
+        generatedAt: "2026-08-03T08:00:00.000Z",
+        periodStart: "2026-07-31T08:00:00.000Z",
+        periodEnd: "2026-08-03T08:00:00.000Z",
+        items: [
+          {
+            ...validSnapshot().recentAudit.items[0],
+            lastEventAt: "2026-08-03T07:30:00.000Z",
+          },
+        ],
+      },
     });
 
     const publicBody = JSON.stringify(response);
-    for (const privateValue of ["private telegram channel", "confidential message", "paid-secret", "session-secret", "private source text"]) {
+    for (const privateValue of ["private telegram channel", "confidential message", "paid-secret", "session-secret", "private source text", "private audit source text", "private audit key"]) {
       assert.equal(publicBody.includes(privateValue), false);
     }
   } finally {

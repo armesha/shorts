@@ -30,6 +30,8 @@ const SNAPSHOT: AsatibotSnapshotResponse = {
     summary: {
       signalCount: 0,
       paperPositionCount: 0,
+      openPositionCount: 0,
+      blockedRiskCount: 0,
       totalNotionalUsd: 0,
       totalPnlUsd: 0,
       todayAiSpendUsd: 0,
@@ -46,15 +48,16 @@ test("signals API is no-store and accessible to database-backed admins, but not 
   const db = openDb(":memory:");
   const user = db.createUser({ username: "user", passHash: "x", role: "user" });
   const admin = db.createUser({ username: "admin", passHash: "x", role: "admin" });
+  const stas = db.createUser({ username: "stas", passHash: "x", role: "admin" });
   const superAdmin = db.createUser({ username: "owner", passHash: "x", role: "admin", isSuperAdmin: true });
   const app = Fastify();
   app.addHook("onRequest", async (req) => {
-    const byHeader = { user, admin, owner: superAdmin } as const;
+    const byHeader = { user, admin, stas, owner: superAdmin } as const;
     const name = String(req.headers["x-test-user"] ?? "user") as keyof typeof byHeader;
     (req as unknown as { userId: number }).userId = byHeader[name]?.id ?? user.id;
   });
   let reads = 0;
-  registerSignalsRoutes(app, { auth: makeAuthSession(db), webOrigin: "https://shareboard.live" } as Pick<RouteDeps, "auth" | "webOrigin">, {
+  registerSignalsRoutes(app, db, { auth: makeAuthSession(db), webOrigin: "https://shareboard.live" } as Pick<RouteDeps, "auth" | "webOrigin">, {
     readSnapshot: async () => {
       reads += 1;
       return SNAPSHOT;
@@ -68,33 +71,37 @@ test("signals API is no-store and accessible to database-backed admins, but not 
     assert.equal(denied.headers.pragma, "no-cache");
     assert.equal(reads, 0);
 
-    for (const name of ["admin", "owner"]) {
+    for (const name of ["admin", "stas", "owner"]) {
       const allowed = await app.inject({ method: "GET", url: "/api/signals", headers: { "x-test-user": name } });
       assert.equal(allowed.statusCode, 200);
       assert.equal(allowed.headers["cache-control"], "no-store, max-age=0");
       assert.equal(allowed.headers.pragma, "no-cache");
-      assert.deepEqual(JSON.parse(allowed.body), SNAPSHOT);
+      assert.deepEqual(JSON.parse(allowed.body), {
+        ...SNAPSHOT,
+        canManageSettings: name === "stas" || name === "owner",
+      });
     }
-    assert.equal(reads, 2);
+    assert.equal(reads, 3);
   } finally {
     await app.close();
     db.db.close();
   }
 });
 
-test("signals settings are super-admin-only and reject unknown or unsafe limits", async () => {
+test("signals settings allow the super-admin and stas while rejecting unknown or unsafe limits", async () => {
   const db = openDb(":memory:");
   const user = db.createUser({ username: "user", passHash: "x", role: "user" });
   const admin = db.createUser({ username: "admin", passHash: "x", role: "admin" });
+  const stas = db.createUser({ username: "stas", passHash: "x", role: "admin" });
   const superAdmin = db.createUser({ username: "owner", passHash: "x", role: "admin", isSuperAdmin: true });
   const app = Fastify();
   app.addHook("onRequest", async (req) => {
-    const byHeader = { user, admin, owner: superAdmin } as const;
+    const byHeader = { user, admin, stas, owner: superAdmin } as const;
     const name = String(req.headers["x-test-user"] ?? "user") as keyof typeof byHeader;
     (req as unknown as { userId: number }).userId = byHeader[name]?.id ?? user.id;
   });
   const writes: AsatibotSettings[] = [];
-  registerSignalsRoutes(app, { auth: makeAuthSession(db), webOrigin: "https://shareboard.live" } as Pick<RouteDeps, "auth" | "webOrigin">, {
+  registerSignalsRoutes(app, db, { auth: makeAuthSession(db), webOrigin: "https://shareboard.live" } as Pick<RouteDeps, "auth" | "webOrigin">, {
     writeSettings: async (settings) => {
       writes.push(settings);
       return true;
@@ -194,6 +201,16 @@ test("signals settings are super-admin-only and reject unknown or unsafe limits"
     assert.equal(accepted.headers.pragma, "no-cache");
     assert.deepEqual(JSON.parse(accepted.body), { accepted: true });
     assert.deepEqual(writes, [SETTINGS]);
+
+    const acceptedForStas = await app.inject({
+      method: "PUT",
+      url: "/api/signals/settings",
+      headers: { "x-test-user": "stas", origin: "https://shareboard.live" },
+      payload: SETTINGS,
+    });
+    assert.equal(acceptedForStas.statusCode, 202);
+    assert.deepEqual(JSON.parse(acceptedForStas.body), { accepted: true });
+    assert.deepEqual(writes, [SETTINGS, SETTINGS]);
   } finally {
     await app.close();
     db.db.close();
@@ -207,7 +224,7 @@ test("signals API hides local read failures instead of returning their error tex
   app.addHook("onRequest", async (req) => {
     (req as unknown as { userId: number }).userId = superAdmin.id;
   });
-  registerSignalsRoutes(app, { auth: makeAuthSession(db), webOrigin: "https://shareboard.live" } as Pick<RouteDeps, "auth" | "webOrigin">, {
+  registerSignalsRoutes(app, db, { auth: makeAuthSession(db), webOrigin: "https://shareboard.live" } as Pick<RouteDeps, "auth" | "webOrigin">, {
     readSnapshot: async () => {
       throw new Error("openrouter-key-or-private-telegram-error");
     },
@@ -218,7 +235,7 @@ test("signals API hides local read failures instead of returning their error tex
     assert.equal(response.statusCode, 200);
     assert.equal(response.headers["cache-control"], "no-store, max-age=0");
     assert.equal(response.headers.pragma, "no-cache");
-    assert.deepEqual(JSON.parse(response.body), { available: false, reason: "unavailable" });
+    assert.deepEqual(JSON.parse(response.body), { available: false, reason: "unavailable", canManageSettings: true });
     assert.equal(response.body.includes("openrouter-key-or-private-telegram-error"), false);
   } finally {
     await app.close();

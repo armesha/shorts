@@ -1,4 +1,6 @@
 import type { FastifyInstance } from "fastify";
+import type { Db } from "../db.ts";
+import { uid } from "../infra/auth-session.ts";
 import { writeAsatibotControlRequest } from "../services/asatibot-control.ts";
 import {
   parseAsatibotSettingsRequest,
@@ -16,28 +18,37 @@ type SignalsRouteOptions = {
 
 export function registerSignalsRoutes(
   app: FastifyInstance,
+  db: Pick<Db, "getUserById">,
   deps: Pick<RouteDeps, "auth" | "webOrigin">,
   options: SignalsRouteOptions = {},
 ) {
   const readSnapshot = options.readSnapshot ?? readAsatibotSnapshot;
   const writeSettings = options.writeSettings ?? writeAsatibotControlRequest;
+  const canManageSettings = (req: unknown) => {
+    if (deps.auth.isSuperAdminReq(req)) return true;
+    const user = db.getUserById(uid(req));
+    return user?.role === "admin" && user.username.trim().toLowerCase() === "stas";
+  };
 
   app.get("/api/signals", async (req, reply) => {
     reply.header("Cache-Control", "no-store, max-age=0");
     reply.header("Pragma", "no-cache");
     if (!deps.auth.requireAdmin(req, reply)) return;
     try {
-      return await readSnapshot();
+      return { ...(await readSnapshot()), canManageSettings: canManageSettings(req) };
     } catch {
       // Never turn a local bot/read error into an error response that could leak details.
-      return unavailableAsatibotSnapshot();
+      return { ...unavailableAsatibotSnapshot(), canManageSettings: canManageSettings(req) };
     }
   });
 
   app.put("/api/signals/settings", async (req, reply) => {
     reply.header("Cache-Control", "no-store, max-age=0");
     reply.header("Pragma", "no-cache");
-    if (!deps.auth.requireSuperAdmin(req, reply)) return;
+    if (!deps.auth.requireAdmin(req, reply)) return;
+    if (!canManageSettings(req)) {
+      return reply.code(403).send({ error: "Только для главного администратора или Стаса" });
+    }
     if (req.headers.origin !== deps.webOrigin) {
       return reply.code(403).send({ error: "Недопустимый источник запроса" });
     }

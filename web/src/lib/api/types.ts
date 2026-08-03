@@ -448,6 +448,8 @@ export interface AuthUser {
 export interface SignalsSummary {
   signalCount: number;
   paperPositionCount: number;
+  openPositionCount: number;
+  blockedRiskCount: number;
   totalNotionalUsd: number;
   totalPnlUsd: number;
   portfolioValueUsd?: number | null;
@@ -501,6 +503,40 @@ export interface RecentSignal {
   confidence?: number | null;
 }
 
+export interface SignalStrategyAuditItem {
+  contract: string;
+  chain: string | null;
+  positionStatus: string | null;
+  riskManagement: string;
+  takeProfits: Array<{ target: string; status: "planned" | "hit" | "unknown" }>;
+  stopLoss: string | null;
+  principalRemoval: string | null;
+  lifecycleState: "no_position" | "open" | "body_out" | "closed" | "stopped" | "unknown";
+  brief: string;
+  correctionAction: string;
+  correctionReason: string;
+  confidence: number | null;
+  lastEventAt: string | null;
+}
+
+export interface SignalStrategyAudit {
+  generatedAt: string;
+  reviewModel: string;
+  periodStart: string;
+  periodEnd: string;
+  periodDays: number;
+  signalCount: number;
+  threadCount: number;
+  needsReviewBefore: number;
+  needsReviewAfter: number;
+  correctedCount: number;
+  blockedBefore: number;
+  blockedAfter: number;
+  lifecycleUpdates: number;
+  aiCostUsd: number;
+  items: SignalStrategyAuditItem[];
+}
+
 /** Deliberately contains no raw Telegram messages, senders, or source metadata. */
 export interface SignalsSnapshot {
   version: 1;
@@ -512,11 +548,12 @@ export interface SignalsSnapshot {
   summary: SignalsSummary;
   positions: SignalPaperPosition[];
   recentSignals: RecentSignal[];
+  recentAudit?: SignalStrategyAudit;
 }
 
 export type SignalsResponse =
-  | { available: false; reason: "stale" | "unavailable" }
-  | { available: true; snapshot: SignalsSnapshot };
+  | { available: false; reason: "stale" | "unavailable"; canManageSettings: boolean }
+  | { available: true; snapshot: SignalsSnapshot; canManageSettings: boolean };
 
 export interface SignalsSettingsUpdateResult {
   accepted: boolean;

@@ -31,9 +31,14 @@ DEFAULT_CONTROL_REQUEST = Path("/var/lib/asatibot-control/request.json")
 MAX_POSITIONS = 50
 MAX_RECENT_SIGNALS = 20
 MAX_CONTRACTS_PER_SIGNAL = 5
+MAX_AUDIT_ITEMS = 12
 MAX_SNAPSHOT_BYTES = 128 * 1024
 MAX_CONTROL_REQUEST_BYTES = 8 * 1024
 SAFE_LABEL = re.compile(r"[A-Za-z0-9._:-]{1,64}\Z")
+REPORT_URL_RE = re.compile(r"https?://\S+", re.IGNORECASE)
+REPORT_MESSAGE_REF_RE = re.compile(
+    r"\b(?:message|сообщение)\s*#?\d+\b", re.IGNORECASE
+)
 
 SETTINGS_DEFAULTS = {
     "initialBankrollUsd": 100.0,
@@ -96,6 +101,17 @@ def safe_contract(value: object) -> str | None:
     if not value or len(value) > 160 or any(ord(char) < 32 for char in value):
         return None
     return value
+
+
+def safe_report_text(value: object, maximum: int = 280) -> str | None:
+    if not isinstance(value, str):
+        return None
+    value = " ".join(value.split())
+    value = REPORT_URL_RE.sub("[ссылка]", value)
+    value = REPORT_MESSAGE_REF_RE.sub("сигнал", value)
+    if not value or any(ord(char) < 32 for char in value):
+        return None
+    return value[:maximum]
 
 
 def load_numeric_limits(path: Path, defaults: dict[str, float]) -> dict[str, float]:
@@ -401,10 +417,11 @@ def recent_signals(connection: sqlite3.Connection) -> list[dict[str, object]]:
             s.status,
             s.chain_hint,
             s.contracts_json,
-            r.classification,
+            COALESCE(mr.final_label, r.classification) AS classification,
             r.confidence
         FROM signals AS s
         LEFT JOIN llm_reviews AS r USING(chat_id, message_id)
+        LEFT JOIN manual_reviews AS mr USING(chat_id, message_id)
         ORDER BY s.message_date DESC, s.detected_at DESC
         LIMIT ?
         """,
@@ -436,6 +453,100 @@ def recent_signals(connection: sqlite3.Connection) -> list[dict[str, object]]:
     return result
 
 
+def latest_strategy_audit(connection: sqlite3.Connection) -> dict[str, object] | None:
+    tables = {
+        str(row[0])
+        for row in connection.execute(
+            "SELECT name FROM sqlite_master WHERE type='table'"
+        ).fetchall()
+    }
+    if not {"strategy_audits", "strategy_audit_items"}.issubset(tables):
+        return None
+    audit = connection.execute(
+        """
+        SELECT * FROM strategy_audits
+        ORDER BY generated_at DESC, audit_id DESC LIMIT 1
+        """
+    ).fetchone()
+    if audit is None:
+        return None
+    rows = connection.execute(
+        """
+        SELECT * FROM strategy_audit_items
+        WHERE audit_id=?
+        ORDER BY last_event_at DESC, contract
+        LIMIT ?
+        """,
+        (audit["audit_id"], MAX_AUDIT_ITEMS),
+    ).fetchall()
+    items: list[dict[str, object]] = []
+    for row in rows:
+        contract = safe_contract(row["contract"])
+        risk_summary = safe_report_text(row["risk_summary"])
+        brief = safe_report_text(row["brief"])
+        correction_reason = safe_report_text(row["correction_reason"])
+        lifecycle_state = safe_label(row["lifecycle_state"])
+        correction_action = safe_label(row["correction_action"])
+        if not all(
+            (
+                contract,
+                risk_summary,
+                brief,
+                correction_reason,
+                lifecycle_state,
+                correction_action,
+            )
+        ):
+            continue
+        try:
+            raw_targets = json.loads(row["take_profits_json"])
+        except (TypeError, ValueError):
+            raw_targets = []
+        take_profits: list[dict[str, str]] = []
+        if isinstance(raw_targets, list):
+            for raw_target in raw_targets[:8]:
+                if not isinstance(raw_target, dict):
+                    continue
+                target = safe_report_text(raw_target.get("target"), 100)
+                status = safe_label(raw_target.get("status"))
+                if target and status in {"planned", "hit", "unknown"}:
+                    take_profits.append({"target": target, "status": status})
+        items.append(
+            {
+                "contract": contract,
+                "chain": safe_label(row["chain"]),
+                "positionStatus": safe_label(row["position_status"]),
+                "riskManagement": risk_summary,
+                "takeProfits": take_profits,
+                "stopLoss": safe_report_text(row["stop_loss"]),
+                "principalRemoval": safe_report_text(row["principal_removal"]),
+                "lifecycleState": lifecycle_state,
+                "brief": brief,
+                "correctionAction": correction_action,
+                "correctionReason": correction_reason,
+                "confidence": finite_number(row["confidence"], maximum=1.0),
+                "lastEventAt": safe_timestamp(row["last_event_at"]),
+            }
+        )
+    return {
+        "generatedAt": safe_timestamp(audit["generated_at"]),
+        "reviewModel": safe_report_text(audit["requested_model"], 80),
+        "periodStart": safe_timestamp(audit["period_start"]),
+        "periodEnd": safe_timestamp(audit["period_end"]),
+        "periodDays": max(1, int(nonnegative_number(audit["days"]))),
+        "signalCount": int(nonnegative_number(audit["signal_count"])),
+        "threadCount": int(nonnegative_number(audit["thread_count"])),
+        "needsReviewBefore": int(nonnegative_number(audit["needs_review_before"])),
+        "needsReviewAfter": int(nonnegative_number(audit["needs_review_after"])),
+        "correctedCount": int(nonnegative_number(audit["corrected_count"])),
+        "blockedBefore": int(nonnegative_number(audit["blocked_before"])),
+        "blockedAfter": int(nonnegative_number(audit["blocked_after"])),
+        "lifecycleUpdates": int(nonnegative_number(audit["lifecycle_updates"])),
+        "aiCostUsd": nonnegative_number(audit["ai_cost_usd"]),
+        "items": items,
+    }
+
+
 def scalar(connection: sqlite3.Connection, statement: str, parameters: tuple[object, ...] = ()) -> object:
     row = connection.execute(statement, parameters).fetchone()
     return row[0] if row else None
@@ -463,7 +574,14 @@ def build_snapshot(
             and position["multiple"] is not None
             and position["pnlUsd"] is not None
         ]
-        total_notional = sum(float(position["notionalUsd"]) for position in priced_positions)
+        active_priced_positions = [
+            position
+            for position in priced_positions
+            if position["status"] in {"open", "unpriced"}
+        ]
+        total_notional = sum(
+            float(position["notionalUsd"]) for position in active_priced_positions
+        )
         total_pnl = sum(float(position["pnlUsd"]) for position in priced_positions)
         bankroll = float(settings["initialBankrollUsd"])
         snapshot = {
@@ -475,6 +593,12 @@ def build_snapshot(
             "summary": {
                 "signalCount": int(scalar(connection, "SELECT COUNT(*) FROM signals") or 0),
                 "paperPositionCount": len(positions),
+                "openPositionCount": sum(
+                    position["status"] in {"open", "unpriced"} for position in positions
+                ),
+                "blockedRiskCount": sum(
+                    position["status"] == "blocked_risk" for position in positions
+                ),
                 "totalNotionalUsd": total_notional,
                 "totalPnlUsd": total_pnl,
                 "portfolioValueUsd": bankroll + total_pnl,
@@ -500,6 +624,7 @@ def build_snapshot(
             "controlStatus": control_status,
             "positions": positions,
             "recentSignals": recent_signals(connection),
+            "recentAudit": latest_strategy_audit(connection),
         }
     finally:
         connection.close()

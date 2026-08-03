@@ -4,13 +4,13 @@ import {
   apiClient,
   type RecentSignal,
   type SignalPaperPosition,
+  type SignalStrategyAudit,
+  type SignalStrategyAuditItem,
   type SignalsControlStatus,
   type SignalsHealthState,
   type SignalsResponse,
   type SignalsSettings,
 } from "../lib/api";
-import { useAuth } from "../lib/auth";
-import { isMainAdmin } from "../lib/authz";
 import { useT } from "../lib/i18n";
 
 const POLL_MS = 15_000;
@@ -49,6 +49,10 @@ const SETTINGS_FIELDS: Array<{
   { key: "dailyAiLimitUsd", labelKey: "signals.settings.dailyAiLimit", min: 0, max: 50, step: "any" },
   { key: "monthlyAiLimitUsd", labelKey: "signals.settings.monthlyAiLimit", min: 0, max: 1_000, step: "any" },
 ];
+
+const VISIBLE_SETTINGS_FIELDS = SETTINGS_FIELDS.filter(
+  (field) => field.key !== "dailyAiLimitUsd" && field.key !== "monthlyAiLimitUsd",
+);
 
 function formatUsd(value: number | null | undefined): string {
   return typeof value === "number" && Number.isFinite(value) ? moneyFormatter.format(value) : "—";
@@ -297,9 +301,85 @@ function RecentSignalRows({ signals }: { signals: RecentSignal[] }) {
   );
 }
 
+function auditLifecycleLabel(t: Translate, state: SignalStrategyAuditItem["lifecycleState"]): string {
+  return t(`signals.audit.lifecycle.${state}`);
+}
+
+function StrategyAudit({ audit }: { audit: SignalStrategyAudit }) {
+  const { t } = useT();
+  return (
+    <section className="card border border-primary/20 bg-base-100 shadow-sm">
+      <div className="card-body gap-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="flex items-start gap-2">
+            <Bot size={20} className="mt-0.5 text-primary" />
+            <div>
+              <h2 className="font-semibold">{t("signals.audit.title", { days: audit.periodDays })}</h2>
+              <p className="mt-1 max-w-3xl text-sm text-base-content/60">{t("signals.audit.subtitle")}</p>
+              <p className="mt-1 text-xs text-base-content/45">{t("signals.audit.generated", { time: formatDateTime(audit.generatedAt) })}</p>
+            </div>
+          </div>
+          <span className="badge badge-outline">{t("signals.audit.paperOnly")}</span>
+        </div>
+
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <StatusMetric label={t("signals.audit.signalCount")} value={formatNumber(audit.signalCount)} />
+          <StatusMetric label={t("signals.audit.threadCount")} value={formatNumber(audit.threadCount)} />
+          <StatusMetric label={t("signals.audit.needsReview")} value={`${formatNumber(audit.needsReviewBefore)} → ${formatNumber(audit.needsReviewAfter)}`} />
+          <StatusMetric label={t("signals.audit.blockedRisk")} value={`${formatNumber(audit.blockedBefore)} → ${formatNumber(audit.blockedAfter)}`} />
+          <StatusMetric label={t("signals.audit.corrected")} value={formatNumber(audit.correctedCount)} />
+          <StatusMetric label={t("signals.audit.model")} value={audit.reviewModel} />
+        </div>
+
+        {audit.items.length ? (
+          <div className="grid gap-3 xl:grid-cols-2">
+            {audit.items.map((item) => (
+              <article key={item.contract} className="rounded-xl border border-base-300 bg-base-200/20 p-4">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="max-w-72 truncate font-mono text-sm font-semibold" title={item.contract}>{item.contract}</div>
+                    <div className="mt-1 flex flex-wrap gap-1.5 text-xs text-base-content/55">
+                      <span>{item.chain || "—"}</span>
+                      {item.lastEventAt && <span>· {formatDateTime(item.lastEventAt)}</span>}
+                    </div>
+                  </div>
+                  <span className={`badge badge-sm ${item.lifecycleState === "closed" || item.lifecycleState === "stopped" ? "badge-neutral" : item.lifecycleState === "body_out" ? "badge-success" : "badge-ghost"}`}>
+                    {auditLifecycleLabel(t, item.lifecycleState)}
+                  </span>
+                </div>
+                <p className="mt-3 text-sm text-base-content/75">{item.brief}</p>
+                <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
+                  <div><dt className="text-xs text-base-content/50">{t("signals.audit.rm")}</dt><dd className="mt-0.5">{item.riskManagement}</dd></div>
+                  <div>
+                    <dt className="text-xs text-base-content/50">{t("signals.audit.takeProfits")}</dt>
+                    <dd className="mt-0.5">
+                      {item.takeProfits.length
+                        ? item.takeProfits.map((target) => `${target.target} — ${t(`signals.audit.tp.${target.status}`)}`).join("; ")
+                        : "—"}
+                    </dd>
+                  </div>
+                  <div><dt className="text-xs text-base-content/50">{t("signals.audit.stopLoss")}</dt><dd className="mt-0.5">{item.stopLoss || "—"}</dd></div>
+                  <div><dt className="text-xs text-base-content/50">{t("signals.audit.principal")}</dt><dd className="mt-0.5">{item.principalRemoval || "—"}</dd></div>
+                </dl>
+                {(item.correctionAction === "auto_corrected" || item.correctionAction === "manual_review") && (
+                  <div className={`mt-3 rounded-lg px-3 py-2 text-xs ${item.correctionAction === "auto_corrected" ? "bg-success/10 text-success" : "bg-warning/10 text-warning"}`}>
+                    <span className="font-semibold">{t(`signals.audit.action.${item.correctionAction}`)}:</span> {item.correctionReason}
+                  </div>
+                )}
+                <div className="mt-2 text-right text-xs text-base-content/45">{t("signals.audit.confidence", { value: formatConfidence(item.confidence) })}</div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-base-content/55">{t("signals.audit.empty")}</p>
+        )}
+      </div>
+    </section>
+  );
+}
+
 export default function Signals() {
   const { t } = useT();
-  const { user } = useAuth();
   const [response, setResponse] = useState<SignalsResponse | null>(null);
   const [initialLoading, setInitialLoading] = useState(true);
   const [manualRefreshing, setManualRefreshing] = useState(false);
@@ -373,7 +453,8 @@ export default function Signals() {
 
   const snapshot = response?.available ? response.snapshot : null;
   const summary = snapshot?.summary;
-  const canManageSettings = isMainAdmin(user);
+  const latestReview = snapshot?.recentAudit;
+  const canManageSettings = response?.canManageSettings === true;
   const currentSettings = snapshot?.settings ?? null;
   const currentSettingsKey = currentSettings ? settingsKey(currentSettings) : "";
 
@@ -442,20 +523,22 @@ export default function Signals() {
           <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             <Metric icon={<Activity size={18} />} label={t("signals.signalCount")} value={formatNumber(summary.signalCount)} />
             <Metric icon={<ShieldCheck size={18} />} label={t("signals.paperPositions")} value={formatNumber(summary.paperPositionCount)} />
+            <Metric icon={<ShieldCheck size={18} />} label={t("signals.openPositions")} value={formatNumber(summary.openPositionCount)} />
+            <Metric icon={<AlertTriangle size={18} />} label={t("signals.blockedRisk")} value={formatNumber(summary.blockedRiskCount)} />
             <Metric icon={<Activity size={18} />} label={t("signals.notional")} value={formatUsd(summary.totalNotionalUsd)} />
             <Metric icon={<Bot size={18} />} label={t("signals.portfolioValue")} value={formatUsd(summary.portfolioValueUsd)} />
             <Metric icon={<Activity size={18} />} label={t("signals.safePnl")} value={<PnlValue value={summary.totalPnlUsd} />} />
             <Metric
               icon={<Bot size={18} />}
-              label={t("signals.aiToday")}
-              value={formatUsd(summary.todayAiSpendUsd)}
-              hint={t("signals.ofLimit", { spent: formatUsd(summary.todayAiSpendUsd), limit: formatUsd(summary.dailyAiLimitUsd) })}
+              label={t("signals.aiProvider")}
+              value={latestReview?.reviewModel === "gpt-5.6-sol" ? t("signals.aiCodexSubscription") : latestReview?.reviewModel || "—"}
+              hint={latestReview?.reviewModel === "gpt-5.6-sol" ? t("signals.aiCodexMode") : undefined}
             />
             <Metric
               icon={<Bot size={18} />}
-              label={t("signals.aiMonth")}
-              value={formatUsd(summary.monthAiSpendUsd)}
-              hint={t("signals.ofLimit", { spent: formatUsd(summary.monthAiSpendUsd), limit: formatUsd(summary.monthlyAiLimitUsd) })}
+              label={t("signals.lastAiReview")}
+              value={formatDateTime(latestReview?.generatedAt)}
+              hint={latestReview ? t("signals.reviewQueueChange", { before: latestReview.needsReviewBefore, after: latestReview.needsReviewAfter }) : undefined}
             />
           </section>
 
@@ -477,6 +560,8 @@ export default function Signals() {
               <div className="text-xs text-base-content/55">{t("signals.lastMessageAt", { time: formatDateTime(snapshot.lastMessageAt) })}</div>
             </div>
           </section>
+
+          {snapshot.recentAudit && <StrategyAudit audit={snapshot.recentAudit} />}
 
           {canManageSettings && settingsDraft && (
             <section className="card border border-base-300 bg-base-100 shadow-sm">
@@ -500,7 +585,7 @@ export default function Signals() {
                   }}
                 >
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                    {SETTINGS_FIELDS.map((field) => {
+                    {VISIBLE_SETTINGS_FIELDS.map((field) => {
                       const errorText = settingsErrorText(settingsValidation?.errors[field.key], field.key, t);
                       return (
                         <label className="form-control" key={field.key}>

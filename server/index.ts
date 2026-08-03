@@ -361,7 +361,7 @@ registerSettingsKeysRoutes(app, db, { ...deps, chromePath: base.chromePath });
 registerAdminRoutes(app, db, deps);
 registerAccountsRoutes(app, db, deps);
 registerStatsRoutes(app, db, deps);
-registerSignalsRoutes(app, deps);
+registerSignalsRoutes(app, db, deps);
 registerNotificationsRoutes(app, db, deps);
 registerYouTubeOAuthRoutes(app, db, deps);
 registerVideosRoutes(app, db, deps);
