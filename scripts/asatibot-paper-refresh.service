@@ -1,0 +1,29 @@
+[Unit]
+Description=Refresh AsatiBot paper prices and enforce paper exits
+After=network-online.target asatibot.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=asatibot
+Group=asatibot
+WorkingDirectory=/opt/asatibot
+ExecStart=/opt/asatibot/.venv/bin/python /opt/asatibot/asatibot-paper-cycle.py
+TimeoutStartSec=90
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+ProtectSystem=full
+ReadOnlyPaths=/opt/asatibot
+ReadWritePaths=/opt/asatibot/userdata
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+

@@ -65,10 +65,6 @@ function isClosed(position: SignalPaperPosition): boolean {
   return ["closed", "stopped", "stopped_out", "stop_loss", "exited", "sold"].includes(normalizedStatus(position));
 }
 
-function isActive(position: SignalPaperPosition): boolean {
-  return !isBlocked(position) && !isClosed(position);
-}
-
 function SummaryMetric({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <div className="rounded-lg border border-base-300 bg-base-100 p-4">
@@ -100,7 +96,13 @@ function PositionFlow({ active, closed, blocked }: { active: number; closed: num
 
 function PnlBreakdown({ positions, totalPnl }: { positions: SignalPaperPosition[]; totalPnl: number }) {
   const { t } = useT();
-  const priced = positions.filter((position) => typeof position.pnlUsd === "number" && Number.isFinite(position.pnlUsd));
+  const freshnessCutoff = Date.now() - 15 * 60 * 1000;
+  const priced = positions.filter((position) => {
+    if (typeof position.pnlUsd !== "number" || !Number.isFinite(position.pnlUsd)) return false;
+    if (isClosed(position)) return true;
+    const updatedAt = position.updatedAt ? new Date(position.updatedAt).getTime() : Number.NaN;
+    return Number.isFinite(updatedAt) && updatedAt >= freshnessCutoff;
+  });
   const winners = priced.filter((position) => (position.pnlUsd ?? 0) > 0);
   const losers = priced.filter((position) => (position.pnlUsd ?? 0) < 0);
   const grossProfit = winners.reduce((sum, position) => sum + (position.pnlUsd ?? 0), 0);
@@ -337,9 +339,7 @@ export default function SignalsAnalysis() {
   const positionStats = useMemo(() => {
     const positions = snapshot?.positions ?? [];
     return {
-      active: positions.filter(isActive),
       closed: positions.filter(isClosed),
-      blocked: positions.filter(isBlocked),
     };
   }, [snapshot]);
 
@@ -396,9 +396,10 @@ export default function SignalsAnalysis() {
             <h2 className="font-semibold">{t("signals.analysis.positionFlow")}</h2>
             <p className="mb-4 mt-0.5 text-xs text-base-content/50">{t("signals.analysis.positionFlowSubtitle")}</p>
             <PositionFlow active={snapshot.summary.openPositionCount} closed={positionStats.closed.length} blocked={snapshot.summary.blockedRiskCount} />
+            <p className="mt-4 rounded-md bg-base-200/60 px-3 py-2 text-xs text-base-content/60">{t("signals.analysis.autoPolicy")}</p>
           </section>
 
-          <PnlBreakdown positions={positionStats.active} totalPnl={snapshot.summary.totalPnlUsd} />
+          <PnlBreakdown positions={snapshot.positions.filter((position) => !isBlocked(position))} totalPnl={snapshot.summary.totalPnlUsd} />
           <PortfolioChart history={snapshot.portfolioHistory ?? []} currentValue={snapshot.summary.portfolioValueUsd} />
           <ParameterCoverage audit={audit} />
           <SelectedAnalysis audit={audit} />

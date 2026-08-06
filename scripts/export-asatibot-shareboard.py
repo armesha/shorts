@@ -18,7 +18,7 @@ import sqlite3
 import stat
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import quote
 
@@ -373,10 +373,18 @@ def latest_positions(connection: sqlite3.Connection) -> list[dict[str, object]]:
             ps.multiple,
             ps.pnl_usd
         FROM paper_positions AS p
+        LEFT JOIN paper_position_lifecycle AS lifecycle
+          ON lifecycle.position_id = p.position_id
         LEFT JOIN paper_snapshots AS ps ON ps.snapshot_id = (
             SELECT snapshot_id
             FROM paper_snapshots
             WHERE position_id = p.position_id
+              AND pnl_usd IS NOT NULL
+              AND (
+                lifecycle.state NOT IN ('closed', 'stopped')
+                OR lifecycle.event_at IS NULL
+                OR datetime(captured_at) <= datetime(lifecycle.event_at)
+              )
             ORDER BY captured_at DESC, snapshot_id DESC
             LIMIT 1
         )
@@ -552,6 +560,47 @@ def scalar(connection: sqlite3.Connection, statement: str, parameters: tuple[obj
     return row[0] if row else None
 
 
+def portfolio_history(connection: sqlite3.Connection, bankroll: float) -> list[dict[str, object]]:
+    """Return a small aggregate-only curve from successful paper snapshots."""
+    rows = connection.execute(
+        """
+        SELECT snapshots.captured_at, snapshots.position_id, snapshots.pnl_usd
+        FROM paper_snapshots AS snapshots
+        LEFT JOIN paper_position_lifecycle AS lifecycle
+          ON lifecycle.position_id = snapshots.position_id
+        WHERE snapshots.pnl_usd IS NOT NULL
+          AND (
+            lifecycle.state NOT IN ('closed', 'stopped')
+            OR lifecycle.event_at IS NULL
+            OR datetime(snapshots.captured_at) <= datetime(lifecycle.event_at)
+          )
+        ORDER BY snapshots.captured_at ASC, snapshots.snapshot_id ASC
+        """
+    ).fetchall()
+    latest_pnl: dict[int, float] = {}
+    points: list[dict[str, object]] = []
+    for row in rows:
+        captured_at = safe_timestamp(row["captured_at"])
+        pnl_usd = finite_number(row["pnl_usd"])
+        position_id = row["position_id"]
+        if captured_at is None or pnl_usd is None or not isinstance(position_id, int):
+            continue
+        latest_pnl[position_id] = pnl_usd
+        points.append({
+            "at": captured_at,
+            "valueUsd": bankroll + sum(latest_pnl.values()),
+        })
+
+    maximum_points = 24
+    if len(points) <= maximum_points:
+        return points
+    indexes = {
+        round(index * (len(points) - 1) / (maximum_points - 1))
+        for index in range(maximum_points)
+    }
+    return [point for index, point in enumerate(points) if index in indexes]
+
+
 def build_snapshot(
     database_path: Path,
     ai_budget_path: Path,
@@ -574,15 +623,27 @@ def build_snapshot(
             and position["multiple"] is not None
             and position["pnlUsd"] is not None
         ]
-        active_priced_positions = [
+        active_positions = [
             position
-            for position in priced_positions
+            for position in positions
             if position["status"] in {"open", "unpriced"}
         ]
+        fresh_cutoff = now - timedelta(minutes=15)
+        accounted_positions = []
+        for position in priced_positions:
+            if position["status"] in {"closed", "stopped"}:
+                accounted_positions.append(position)
+                continue
+            updated_at = position.get("updatedAt")
+            if not isinstance(updated_at, str):
+                continue
+            parsed_at = datetime.fromisoformat(updated_at.replace("Z", "+00:00"))
+            if parsed_at >= fresh_cutoff:
+                accounted_positions.append(position)
         total_notional = sum(
-            float(position["notionalUsd"]) for position in active_priced_positions
+            float(position["notionalUsd"]) for position in active_positions
         )
-        total_pnl = sum(float(position["pnlUsd"]) for position in priced_positions)
+        total_pnl = sum(float(position["pnlUsd"]) for position in accounted_positions)
         bankroll = float(settings["initialBankrollUsd"])
         snapshot = {
             "version": 1,
@@ -623,6 +684,7 @@ def build_snapshot(
             "health": service_health(),
             "controlStatus": control_status,
             "positions": positions,
+            "portfolioHistory": portfolio_history(connection, bankroll),
             "recentSignals": recent_signals(connection),
             "recentAudit": latest_strategy_audit(connection),
         }
