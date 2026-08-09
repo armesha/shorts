@@ -59,9 +59,7 @@ import { registerAccountReadinessRoutes } from "./routes/account-readiness.ts";
 import { registerSuperAdminChannelBlockRoutes } from "./routes/super-admin-channel-blocks.ts";
 import { registerExamplesRoutes } from "./routes/examples.ts";
 import { registerAudioRoutes } from "./routes/audio.ts";
-import { registerCarSeatBookingRoutes } from "./routes/car-seat-bookings.ts";
 import { registerMemesRoutes } from "./routes/memes.ts";
-import { registerGameRoutes } from "./routes/game.ts";
 import { registerIdeasRoutes } from "./routes/ideas.ts";
 import { registerSzzRoutes } from "./routes/szz.ts";
 import { registerCircleEditorRoutes } from "./routes/circle-editor.ts";
@@ -216,6 +214,14 @@ if (existsSync(resolve(WEB_DIST, "index.html"))) {
   await app.register(fastifyStatic, { root: WEB_DIST, prefix: "/", decorateReply: false });
   app.setNotFoundHandler((req, reply) => {
     const path = req.url.split("?")[0] ?? req.url;
+    const isRetiredStandalonePage =
+      path === "/game" ||
+      path.startsWith("/game/") ||
+      path === "/cars1" ||
+      path.startsWith("/cars1/") ||
+      path === "/cars2" ||
+      path.startsWith("/cars2/");
+    if (isRetiredStandalonePage) return reply.code(404).send({ error: "not found" });
     const isAudioLabRoute = path === "/audio" || path.startsWith("/audio/avatar") || path.startsWith("/audio/characters");
     if (
       (req.method === "GET" || req.method === "HEAD") &&
@@ -375,9 +381,7 @@ registerAccountReadinessRoutes(app, db, deps);
 registerSuperAdminChannelBlockRoutes(app, db, deps);
 registerExamplesRoutes(app, db, deps);
 registerAudioRoutes(app, db, deps);
-registerCarSeatBookingRoutes(app, db);
 registerMemesRoutes(app, deps);
-registerGameRoutes(app);
 registerIdeasRoutes(app, db, deps);
 registerSzzRoutes(app, { db });
 registerCircleEditorRoutes(app, db);
