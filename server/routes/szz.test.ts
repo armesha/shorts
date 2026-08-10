@@ -187,6 +187,7 @@ test("szz study state is stored per authenticated user and rejects stale writes"
     tickets: { "ticket-1-6": { status: "mastered" } },
     reviews: { "2026-07-30": { "ticket-1-6": 2 } },
     activityDates: { "2026-07-30": true },
+    ticketCounts: { "ticket-1-6": 3, "ticket-1-9": 1 },
     ticketOrder: ["ticket-1-6", "ticket-1-9"],
     topicGenerator: {
       version: 1,
@@ -270,6 +271,20 @@ test("szz study state is stored per authenticated user and rejects stale writes"
     },
   });
   assert.equal(invalidGenerator.statusCode, 400);
+
+  const invalidTicketCounts = await app.inject({
+    method: "PUT",
+    url: "/api/szz/state",
+    headers: { "x-test-user-id": String(firstUser.id) },
+    payload: {
+      state: {
+        ...firstState,
+        ticketCounts: { "ticket-1-6": -1 },
+        updatedAt: 401,
+      },
+    },
+  });
+  assert.equal(invalidTicketCounts.statusCode, 400);
 
   await app.close();
   db.db.close();

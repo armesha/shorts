@@ -19,6 +19,8 @@ type SzzRouteOptions = {
 };
 
 const MAX_STUDY_STATE_BYTES = 128 * 1024;
+const SZZ_TICKET_ID = /^ticket-1-(?:[1-9]|1[0-9]|2[0-3])$/;
+const MAX_TICKET_COUNT = 1_000_000;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
@@ -43,6 +45,19 @@ function normalizedTopicGenerator(value: unknown): Record<string, unknown> | nul
   };
 }
 
+function normalizedTicketCounts(value: unknown): Record<string, number> | null {
+  if (!isRecord(value)) return null;
+  const result: Record<string, number> = {};
+  for (const [ticketId, rawCount] of Object.entries(value)) {
+    const count = Number(rawCount);
+    if (!SZZ_TICKET_ID.test(ticketId) || !Number.isSafeInteger(count) || count < 0 || count > MAX_TICKET_COUNT) {
+      return null;
+    }
+    if (count > 0) result[ticketId] = count;
+  }
+  return result;
+}
+
 function normalizedStudyState(value: unknown): { state: Record<string, unknown>; json: string; updatedAt: number } | null {
   if (!isRecord(value)) return null;
   if (!isRecord(value.tickets) || !isRecord(value.reviews) || !isRecord(value.activityDates)) return null;
@@ -56,11 +71,16 @@ function normalizedStudyState(value: unknown): { state: Record<string, unknown>;
     ? undefined
     : normalizedTopicGenerator(value.topicGenerator);
   if (value.topicGenerator !== undefined && !topicGenerator) return null;
+  const ticketCounts = value.ticketCounts === undefined
+    ? undefined
+    : normalizedTicketCounts(value.ticketCounts);
+  if (value.ticketCounts !== undefined && !ticketCounts) return null;
   const state = {
     version: 1,
     tickets: value.tickets,
     reviews: value.reviews,
     activityDates: value.activityDates,
+    ...(ticketCounts ? { ticketCounts } : {}),
     ticketOrder: value.ticketOrder,
     ...(topicGenerator ? { topicGenerator } : {}),
     updatedAt,
