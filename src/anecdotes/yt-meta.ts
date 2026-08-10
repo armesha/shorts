@@ -45,6 +45,13 @@ export function ytMeta(
   title: string,
   text: string,
 ): { title: string; description: string; tags: string[] } {
+  if (deck.id === "shortrobot1") {
+    return {
+      title: "@shortrobot — Telegram-бот 😂 #shorts",
+      description: withHashtags(text, deck.hashtags),
+      tags: deck.tags,
+    };
+  }
   if (deck.quote) {
     const cleanAuthor = (title || deck.genericTitles?.[0] || deck.name).trim();
     const cleanQuote = (text || "").replace(/\s+/g, " ").trim();

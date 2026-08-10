@@ -126,6 +126,13 @@ test("ytMeta default deck: title + emoji + #shorts, body = text", () => {
   assert.ok(Array.isArray(m.tags) && m.tags.length > 0);
 });
 
+test("ytMeta shortrobot1 always uses the fixed channel title", () => {
+  const first = ytMeta(getDeck("shortrobot1"), "shortrobot1 — выпуск 001", "Описание 1");
+  const second = ytMeta(getDeck("shortrobot1"), "любое другое название", "Описание 2");
+  assert.equal(first.title, "@shortrobot — Telegram-бот 😂 #shorts");
+  assert.equal(second.title, first.title);
+});
+
 test("ytMeta removes internal pack/source notes from public descriptions", () => {
   const m = ytMeta(
     getDeck("pack:new-memes-ru-superadmin"),
