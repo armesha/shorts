@@ -1381,10 +1381,16 @@ node --input-type=module -e 'import fs from "node:fs"; import path from "node:pa
 
 - входящие MP4 и метаданные: `tmp/channel-103-rofls-inbox/`;
 - финальные MP4: `tmp/channel-103-rofls-with-endcard/`; к каждому исходнику добавляется один из пяти
-  трёхсекундных вариантов `shortrobot-endcard-voices-short`, распределённых случайно и поровну (17×5);
+  трёхсекундных вариантов `shortrobot-endcard-voices-short-v2`, распределённых случайно и поровну
+  (17×5); локальная пересборка: `node scripts/rebuild-shortrobot1-endcards.mjs`, соответствия роликов
+  и концовок сохраняются в `tmp/shortrobot1-endcard-assignments.json`; варианты v2 созданы владельцем
+  и переданы для этого пака 2026-08-10;
 - финальные MP4 с плашкой: `tmp/channel-103-rofls-with-endcard-and-tag/`; плашка `@shortrobot`
   показывается только на основной части ролика и исчезает ровно при начале трёхсекундной концовки;
 - импорт: `node scripts/import-shortrobot1-pack.mjs`;
+- синхронизация уже созданных карточек библиотеки канала 106 после повторного импорта:
+  `node --experimental-sqlite scripts/sync-shortrobot1-library.mjs` (обновляет MP4 и постеры на месте,
+  не создавая дубликаты и не возвращая уже опубликованные ролики в очередь);
 - runtime-манифесты и provenance: `data/shortrobot1/{videos,index,sources}.json`;
 - локальные MP4: `assets/fact-videos/shortrobot1/`;
 - регистрация: `src/anecdotes/decks.ts`, deck id `shortrobot1`, `preFact: true`, `sequential: true`.
