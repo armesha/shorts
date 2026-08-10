@@ -26,7 +26,6 @@ function account(id: number): Account {
     channelName: `Channel ${id}`,
     lang: "en",
     sourceDecks: FOREIGN_EN_SOURCES,
-    longVideoDecks: [],
     channelLang: "en",
     timezone: "Europe/Prague",
     schedule: [],

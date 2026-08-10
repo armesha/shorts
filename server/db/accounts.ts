@@ -70,14 +70,13 @@ export function accountMethods(db: DatabaseSync) {
         : [input.lang ?? "de"];
       const info = db
         .prepare(
-          "INSERT INTO accounts (user_id, channel_name, lang, source_decks, long_video_decks, channel_lang, timezone, schedule, template, status, avatar, avatar_source) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+          "INSERT INTO accounts (user_id, channel_name, lang, source_decks, channel_lang, timezone, schedule, template, status, avatar, avatar_source) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
         )
         .run(
           input.userId ?? null,
           input.channelName ?? DEFAULT_CHANNEL_NAME,
           input.lang ?? "de",
           JSON.stringify(sourceDecks),
-          JSON.stringify(input.longVideoDecks ?? []),
           input.channelLang ?? input.lang ?? "de",
           normalizeTimeZone(input.timezone),
           JSON.stringify(input.schedule ?? ["12:00"]),
@@ -95,12 +94,11 @@ export function accountMethods(db: DatabaseSync) {
       const hasAvatar = Object.prototype.hasOwnProperty.call(input, "avatar");
       const hasTimezone = Object.prototype.hasOwnProperty.call(input, "timezone");
       db.prepare(
-        "UPDATE accounts SET channel_name=?, lang=?, source_decks=?, long_video_decks=?, channel_lang=?, timezone=?, schedule=?, template=?, enabled=?, slot_videos=?, slot_decks=?, avatar=?, avatar_source=? WHERE id=?",
+        "UPDATE accounts SET channel_name=?, lang=?, source_decks=?, channel_lang=?, timezone=?, schedule=?, template=?, enabled=?, slot_videos=?, slot_decks=?, avatar=?, avatar_source=? WHERE id=?",
       ).run(
         input.channelName ?? cur.channelName,
         input.lang ?? cur.lang,
         JSON.stringify(input.sourceDecks ?? cur.sourceDecks),
-        JSON.stringify(input.longVideoDecks ?? cur.longVideoDecks),
         input.channelLang ?? cur.channelLang,
         hasTimezone ? normalizeTimeZone(input.timezone) : cur.timezone,
         JSON.stringify(input.schedule ?? cur.schedule),

@@ -12,7 +12,6 @@ export interface Account {
   channelName: string;
   lang: string; // выбор КОНТЕНТА канала; пусто у нового черновика до выбора пака
   sourceDecks: string[]; // все паки/деки, из которых канал может генерировать и выкладывать
-  longVideoDecks: string[]; // длинные видео-паки: только ручное добавление в библиотеку + ручная выкладка
   channelLang: string; // ЯЗЫК канала; пусто у нового черновика, после выбора стабилен
   timezone: string; // IANA timezone used to interpret schedule HH:MM values
   schedule: string[];

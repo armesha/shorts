@@ -43,7 +43,7 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
       { to: "/circles", labelKey: "nav.circles", icon: "video", end: false },
       { to: "/admin/banners", labelKey: "nav.banners", icon: "ads", end: false },
       { to: "/memes", labelKey: "nav.memoteka", icon: "globe", end: false, armenOnly: true, external: true, adminBadge: true },
-      // Карточки, длинные видео, галерея и редактор шаблонов остаются рабочими внутренними
+      // Карточки, галерея и редактор шаблонов остаются рабочими внутренними
       // экранами, но не занимают отдельные пункты бокового меню: вход к ним теперь из «Библиотеки».
     ],
   },

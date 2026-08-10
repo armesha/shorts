@@ -101,8 +101,6 @@ export const RETIRED_SUPER_ADMIN_RELIGIOUS_DECKS = new Set([
   "prayers-de",
   "christian-quotes-en",
   "christian-facts-en",
-  "long-islamic-ar",
-  "long-christian-en",
 ]);
 
 export const RETIRED_SUPER_ADMIN_PSYCHOLOGY_DECKS = new Set([

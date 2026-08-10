@@ -23,7 +23,6 @@ import {
 } from "../services/pack-gen.ts";
 import { cleanupDrainedAutoExpireDecksForAccount, removeAutoExpiredDeckFromAccount } from "../services/auto-expire-packs.ts";
 import { buildFactLibraryVideo } from "../services/fact-gen.ts";
-import { addLongVideoToLibrary, LongVideoLibraryError } from "../services/long-video-library.ts";
 import { uploadShort, isYtAuthError, ytErrorReason } from "../services/youtube.ts";
 import {
   MANUAL_VIDEO_DECK,
@@ -56,7 +55,6 @@ import { cachedRead } from "../services/read-cache.ts";
 import type { RouteDeps, LimitedReplyish } from "./deps.ts";
 
 const BATCH_VIDEO_LIMIT = { limit: 2, windowMs: 30 * 60 * 1000 };
-const LONG_VIDEO_LIBRARY_LIMIT = { limit: 4, windowMs: 60 * 60 * 1000 };
 const POST_NOW_LIMIT = { limit: 15, windowMs: 10 * 60 * 1000 }; // burst guard on manual «Опубликовать»
 const MANUAL_VIDEO_UPLOAD_WINDOW_MS = 60 * 60 * 1000;
 
@@ -76,8 +74,8 @@ type PostLibraryVideoFailure = {
 
 type PostLibraryVideoResult = PostLibraryVideoSuccess | PostLibraryVideoFailure;
 
-export function canPostVideoDeckForAccount(videoDeck: string, acc: { longVideoDecks?: string[] }, selectedSourceDecks: string[]): boolean {
-  return videoDeck === MANUAL_VIDEO_DECK || selectedSourceDecks.includes(videoDeck) || (acc.longVideoDecks ?? []).includes(videoDeck);
+export function canPostVideoDeckForAccount(videoDeck: string, selectedSourceDecks: string[]): boolean {
+  return videoDeck === MANUAL_VIDEO_DECK || selectedSourceDecks.includes(videoDeck);
 }
 
 export function visibleLibraryDeckIds(db: Db): Set<string> {
@@ -111,7 +109,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     notifier,
   } = deps;
   const { isAdminReq } = deps.auth;
-  const { deckAllowed, resolveAccountSourceDeck, accountSourceDecks, deckContentLang } = deps.deckAccess;
+  const { deckAllowed, resolveAccountSourceDeck, accountSourceDecks } = deps.deckAccess;
   const REDIRECT_URI = redirectUri;
   const rejectIfCannotPrepareLibrary = (req: unknown, reply: LimitedReplyish, acc: Account): boolean => {
     if (canPrepareLibraryForAccount(acc, deps.auth.isSuperAdminReq(req))) return false;
@@ -119,23 +117,6 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
   };
 
   const globalVideoFilter = () => ({ includeDecks: [...visibleLibraryDeckIds(db)] });
-
-  const mergeVideoFilters = (
-    left: { includeDecks?: string[]; excludeDecks?: string[]; postCountGt?: number },
-    right: { includeDecks?: string[]; excludeDecks?: string[]; postCountGt?: number },
-  ) => {
-    const leftInclude = left.includeDecks ? new Set(left.includeDecks) : null;
-    const rightInclude = right.includeDecks ? new Set(right.includeDecks) : null;
-    const includeDecks = leftInclude && rightInclude
-      ? [...leftInclude].filter((deckId) => rightInclude.has(deckId))
-      : [...(leftInclude ?? rightInclude ?? new Set<string>())];
-    const hasInclude = !!leftInclude || !!rightInclude;
-    return {
-      ...(hasInclude ? { includeDecks: includeDecks.length ? includeDecks : ["__none__"] } : {}),
-      excludeDecks: [...new Set([...(left.excludeDecks ?? []), ...(right.excludeDecks ?? [])])],
-      postCountGt: right.postCountGt ?? left.postCountGt,
-    };
-  };
 
   const visibleVideos = (videos: ReturnType<Db["listVideos"]>) => {
     const visibleDecks = visibleLibraryDeckIds(db);
@@ -157,7 +138,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     const creds = accountCreds(acc);
     if (!creds) return { ok: false, status: 400, error: "Google-ключ канала не найден — переподключите канал в Настройках" };
     // HARD source guard: never post a video whose deck is not selected for this channel.
-    if (!canPostVideoDeckForAccount(v.deck, acc, accountSourceDecks(acc)))
+    if (!canPostVideoDeckForAccount(v.deck, accountSourceDecks(acc)))
       return { ok: false, status: 400, error: `Пак ролика (${v.deck}) не выбран у канала — не выложено.` };
     // Burst guard (non-admin): manual posting must not be scriptable into a quota-burning loop.
     if (opts.rateLimit !== false && !isAdminReq(req)) {
@@ -282,20 +263,6 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     }
   };
 
-  const longDeckIdsForAccount = (acc: Account): string[] => [
-    ...new Set([
-      ...DECKS.filter((deck) => deck.longVideo).map((deck) => deck.id),
-      ...(acc.longVideoDecks ?? []),
-    ]),
-  ];
-
-  const videoKindFilter = (acc: Account, kind: string | undefined) => {
-    const longDeckIds = longDeckIdsForAccount(acc);
-    if (kind === "long") return { includeDecks: longDeckIds.length ? longDeckIds : ["__none__"] };
-    if (kind === "all") return {};
-    return longDeckIds.length ? { excludeDecks: longDeckIds } : {};
-  };
-
   const channelLibraryCapacity = (req: unknown, acc: Account) => {
     const owner = db.getUserById(accountOwnerId(req, acc));
     const cap = channelLibraryVideoCap(owner?.role === "admin", isMgsUser(owner));
@@ -385,7 +352,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     if (!acc) return;
     const pageSize = Math.min(100, Math.max(1, Number(q.pageSize) || 6));
     const page = Math.max(1, Number(q.page) || 1);
-    const filter = mergeVideoFilters(videoKindFilter(acc, q.kind), globalVideoFilter());
+    const filter = globalVideoFilter();
     const total = db.countVideosByAccountFiltered(accountId, filter);
     const pageCount = Math.max(1, Math.ceil(total / pageSize));
     const clampedPage = Math.min(page, pageCount);
@@ -396,7 +363,6 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
       sort: q.sort === "title" || q.sort === "posts" ? q.sort : "date",
       filter,
     });
-    const regularFilter = mergeVideoFilters(videoKindFilter(acc, "regular"), globalVideoFilter());
     const byDeck = Object.fromEntries(
       Object.entries(db.videoDeckCountsForAccount(accountId)).filter(([deckId]) => visibleLibraryDeckIds(db).has(deckId)),
     );
@@ -407,7 +373,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
       pageSize,
       pageCount,
       byDeck,
-      postedTwicePlus: db.countVideosByAccountFiltered(accountId, { ...regularFilter, postCountGt: 1 }),
+      postedTwicePlus: db.countVideosByAccountFiltered(accountId, { ...globalVideoFilter(), postCountGt: 1 }),
       totalAll: db.countVideosByAccountFiltered(accountId, globalVideoFilter()),
     };
   });
@@ -498,40 +464,6 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
   );
 
   app.get("/api/videos/manual-limits", async () => getManualVideoLimits(db));
-
-  // Add one ready long-video compilation to a channel library. Long videos are never scheduler sources:
-  // the user selects enabled long-video packs per channel, copies a ready MP4 here, then publishes manually.
-  app.post("/api/videos/long", async (req, reply) => {
-    const body = (req.body as { accountId?: number; deck?: string }) ?? {};
-    if (!body.accountId) return reply.code(400).send({ error: "accountId обязателен" });
-    const accountId = body.accountId;
-    const deckId = String(body.deck || "").trim();
-    if (!deckId) return reply.code(400).send({ error: "deck обязателен" });
-    const acc = accessibleAccount(req, reply, accountId);
-    if (!acc) return;
-    if (rejectIfCannotPrepareLibrary(req, reply as LimitedReplyish, acc)) return;
-    if (!enforceGenerationWindow(req, reply as LimitedReplyish, "videos-long", LONG_VIDEO_LIBRARY_LIMIT)) return;
-    return runHeavyGenerationLimited(req, reply as LimitedReplyish, "videos-long", async () => {
-      const reservation = reserveChannelLibrarySlots(req, reply as LimitedReplyish, acc);
-      if (!reservation.ok) return;
-      try {
-        return await addLongVideoToLibrary({
-          db,
-          account: acc,
-          deckId,
-          ownerId: accountOwnerId(req, acc),
-          deckAllowed: (id) => deckAllowed(req, id),
-          deckContentLang: (id) => deckContentLang(req, id),
-          allowDisconnected: deps.auth.isSuperAdminReq(req),
-        });
-      } catch (e) {
-        if (e instanceof LongVideoLibraryError) return reply.code(e.statusCode).send({ error: e.message });
-        throw e;
-      } finally {
-        releaseChannelLibraryReservation(reservation);
-      }
-    });
-  });
 
   // Batch: generate N random UNUSED anecdotes straight into a channel's library.
   app.post("/api/videos/batch", async (req, reply) => {

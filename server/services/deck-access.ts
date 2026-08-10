@@ -78,7 +78,6 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
     // Админки). Это только ВИДИМОСТЬ (списки/пикеры): право генерить у админа остаётся (deckAllowed),
     // поэтому уже настроенный автопостинг канала не ломается.
     if (user?.role === "admin") return !db.isDeckHiddenFor(userId, deck.id);
-    if (deck.adminOnly && deck.longVideo) return isGrantableBuiltinDeck(deck) && db.isLongVideoDeckGrantedFor(userId, deck.id);
     if (deck.adminOnly) return isGrantableBuiltinDeck(deck) && db.isDeckGrantedFor(userId, deck.id);
     return !db.isDeckHiddenFor(userId, deck.id);
   }
@@ -139,7 +138,7 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
       ...new Set(
         ids
           .map((x) => String(x || "").trim())
-          .filter((deckId) => deckId && !DECKS.find((deck) => deck.id === builtInId(deckId))?.longVideo)
+          .filter(Boolean)
           .filter((deckId) => sourceDeckGloballyVisible(deckId, account.userId, ownerIsSuperAdmin))
           .filter((deckId) => !ownerIsSuperAdmin || !isForbiddenSuperAdminSourceDeck(deckId)),
       ),
@@ -174,8 +173,6 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
   function validateAccountSourceDeck(req: unknown, deckId: string, channelLang: string): string | null {
     if (!deckExists(req, deckId)) return `Неизвестный пак «${deckId}».`;
     if (!deckAllowed(req, deckId)) return "Этот пак вам недоступен — нельзя поставить его источником канала.";
-    if (DECKS.find((deck) => deck.id === builtInId(deckId))?.longVideo)
-      return "Длинные видео не ставятся в расписание — включите их отдельной галочкой и добавляйте в библиотеку вручную.";
     const contentLang = deckContentLang(req, deckId);
     if (channelLang && contentLang && contentLang !== channelLang)
       return `Язык контента (${contentLang.toUpperCase()}) ≠ язык канала (${channelLang.toUpperCase()}) — выровняй их.`;

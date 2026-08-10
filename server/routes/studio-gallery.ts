@@ -63,7 +63,6 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
         ai: false,
         preFact: !!d.preFact, // pre-built video pack (no text render) — Studio shows a random video
         liveVideo: !!d.liveVideo,
-        longVideo: !!d.longVideo, // long compilation built from many short scenes
         gallery: !!d.gallery, // static deck (deterministic per-card render) — browsable in the Gallery page
         total: c.total,
         titled: infinite ? c.total : s.titled,

@@ -22,7 +22,7 @@ const FORCE_HIDDEN_BUILT_IN_DECKS = new Set([
 export function deckIdsUsedByAnyChannel(db: DbWithHandle): Set<string> {
   const used = new Set<string>();
   const rows = db.db
-    .prepare("SELECT lang, source_decks, slot_decks, long_video_decks FROM accounts")
+    .prepare("SELECT lang, source_decks, slot_decks FROM accounts")
     .all() as Row[];
 
   for (const row of rows) {
@@ -32,8 +32,6 @@ export function deckIdsUsedByAnyChannel(db: DbWithHandle): Set<string> {
     } else if (row.lang) {
       used.add(String(row.lang));
     }
-
-    for (const deckId of parseStringArray(row.long_video_decks, [])) used.add(deckId);
 
     const slotDecks = parseStringRecord(row.slot_decks);
     for (const deckId of Object.values(slotDecks)) used.add(deckId);

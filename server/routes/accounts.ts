@@ -3,12 +3,10 @@
 // index.ts. The source-deck validation / language guards run through the injected deckAccess cluster.
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import type { Db, Account } from "../db.ts";
-import { DECKS, MANUAL_VIDEO_DECK } from "../../src/anecdotes/decks.ts";
+import { MANUAL_VIDEO_DECK } from "../../src/anecdotes/decks.ts";
 import { uid } from "../infra/auth-session.ts";
 import type { RouteDeps } from "./deps.ts";
 import { thematicBlockSlotDecksForAccount } from "./super-admin-channel-blocks.ts";
-
-const isLongVideoDeckId = (deckId: string): boolean => !!DECKS.find((deck) => deck.id === deckId)?.longVideo;
 
 export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
   const {
@@ -18,7 +16,7 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
     visibleAccounts,
     visibleAccount,
   } = deps;
-  const { validateAccountSourceDeck, cleanDeckIds, accountSourceDecks, deckContentLang, deckExists, deckAllowed } = deps.deckAccess;
+  const { validateAccountSourceDeck, cleanDeckIds, accountSourceDecks, deckContentLang } = deps.deckAccess;
 
   // ---- Accounts ----
   // Regular users see only their own channels. Admins may pass ?scope=all and may open
@@ -66,42 +64,7 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
     const body = (req.body as Partial<Account>) ?? {};
     delete body.avatar;
     delete body.avatarSource;
-    const validateLongVideoDecks = (deckIds: string[]): boolean => {
-      const channelLang = (body.channelLang ?? acc.channelLang ?? "") as string;
-      for (const deckId of deckIds) {
-        if (!deckExists(req, deckId)) {
-          reply.code(400).send({ error: `Неизвестный long-video пак «${deckId}».` });
-          return false;
-        }
-        if (!deckAllowed(req, deckId)) {
-          reply.code(403).send({ error: "Этот long-video пак вам недоступен." });
-          return false;
-        }
-        if (!isLongVideoDeckId(deckId)) {
-          reply.code(400).send({ error: `Пак «${deckId}» не является длинным видео.` });
-          return false;
-        }
-        const contentLang = deckContentLang(req, deckId);
-        if (channelLang && contentLang && contentLang !== channelLang) {
-          reply
-            .code(400)
-            .send({ error: `Язык long-video пака (${contentLang.toUpperCase()}) ≠ язык канала (${channelLang.toUpperCase()}) — выровняй их.` });
-          return false;
-        }
-      }
-      return true;
-    };
-    const requestedLongVideoDecks = cleanDeckIds((body as { longVideoDecks?: unknown }).longVideoDecks);
-    if (Array.isArray((body as { longVideoDecks?: unknown }).longVideoDecks)) {
-      body.longVideoDecks = requestedLongVideoDecks;
-    }
-    const rawRequestedSources = cleanDeckIds((body as { sourceDecks?: unknown }).sourceDecks);
-    const migratedLongVideoSources = rawRequestedSources.filter(isLongVideoDeckId);
-    const requestedSources = rawRequestedSources.filter((deckId) => !isLongVideoDeckId(deckId));
-    if (migratedLongVideoSources.length && !Array.isArray((body as { longVideoDecks?: unknown }).longVideoDecks)) {
-      body.longVideoDecks = [...new Set([...(acc.longVideoDecks ?? []), ...migratedLongVideoSources])];
-    }
-    if (body.longVideoDecks && !validateLongVideoDecks(body.longVideoDecks)) return;
+    const requestedSources = cleanDeckIds((body as { sourceDecks?: unknown }).sourceDecks);
     const hasExplicitSourceDecks = Array.isArray((body as { sourceDecks?: unknown }).sourceDecks);
     if (requestedSources.length) {
       const channelLang = (body.channelLang ?? acc.channelLang ?? "") as string;
@@ -121,14 +84,9 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
         Object.entries(currentSlotDecks ?? {}).filter(([, deckId]) => deckId === MANUAL_VIDEO_DECK),
       );
     } else if (body.lang) {
-      if (isLongVideoDeckId(body.lang)) {
-        body.longVideoDecks = [...new Set([...(body.longVideoDecks ?? acc.longVideoDecks ?? []), body.lang])];
-        delete body.lang;
-      } else {
-        const err = validateAccountSourceDeck(req, body.lang, (body.channelLang ?? acc.channelLang ?? "") as string);
-        if (err) return reply.code(err.startsWith("Неизвестный") ? 400 : 403).send({ error: err });
-        body.sourceDecks = [body.lang];
-      }
+      const err = validateAccountSourceDeck(req, body.lang, (body.channelLang ?? acc.channelLang ?? "") as string);
+      if (err) return reply.code(err.startsWith("Неизвестный") ? 400 : 403).send({ error: err });
+      body.sourceDecks = [body.lang];
     }
     // Бэкстоп языка: язык выбранного контента (деки/пака) обязан совпадать с языком канала.
     {

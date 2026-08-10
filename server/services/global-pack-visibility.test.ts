@@ -44,14 +44,12 @@ test("global pack visibility keeps custom packs used by any channel", () => {
   }
 });
 
-test("global pack visibility counts slot-only, long-video and lang-fallback channel usage", () => {
+test("global pack visibility counts slot-only and lang-fallback channel usage", () => {
   const db = openDb(":memory:");
   try {
     const slotDeck = DECKS.find((deck) => deck.id === "fact-en");
-    const longDeck = DECKS.find((deck) => deck.id === "long-christian-en");
     const fallbackDeck = DECKS.find((deck) => deck.id === "fact-de");
     assert.ok(slotDeck);
-    assert.ok(longDeck);
     assert.ok(fallbackDeck);
 
     const slotAccount = db.createAccount({
@@ -62,14 +60,6 @@ test("global pack visibility counts slot-only, long-video and lang-fallback chan
       schedule: ["12:00"],
     });
     db.updateAccount(slotAccount.id, { slotDecks: { "12:00": "fact-en" } });
-    db.createAccount({
-      userId: 1,
-      lang: "en",
-      channelLang: "en",
-      sourceDecks: ["en"],
-      longVideoDecks: ["long-christian-en"],
-      schedule: ["13:00"],
-    });
     const fallbackAccount = db.createAccount({
       userId: 1,
       lang: "fact-de",
@@ -80,7 +70,6 @@ test("global pack visibility counts slot-only, long-video and lang-fallback chan
     db.db.prepare("UPDATE accounts SET source_decks = ? WHERE id = ?").run("[]", fallbackAccount.id);
 
     assert.equal(isBuiltInDeckGloballyVisible(db, slotDeck), true);
-    assert.equal(isBuiltInDeckGloballyVisible(db, longDeck), true);
     assert.equal(isBuiltInDeckGloballyVisible(db, fallbackDeck), true);
   } finally {
     db.db.close();

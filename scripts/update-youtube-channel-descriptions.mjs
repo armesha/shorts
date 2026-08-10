@@ -152,7 +152,7 @@ const topicWords = {
 };
 
 function sourceSummary(account, lang, topic) {
-  const joined = `${account.name} ${account.sourceDecks.join(" ")} ${account.longVideoDecks.join(" ")}`.toLowerCase();
+  const joined = `${account.name} ${account.sourceDecks.join(" ")}`.toLowerCase();
   const words = topicWords[lang] || topicWords.en;
   const items = [];
   if (/islam|quran|hadith|dua|islamic|أذكار|آيات/.test(joined)) items.push(words.islamic);
@@ -303,7 +303,7 @@ const copy = {
 
 function descriptionFor(db, account) {
   const lang = normalizeLang(account.channelLang || account.lang);
-  const topic = topicFrom(account, account.sourceDecks, account.longVideoDecks);
+  const topic = topicFrom(account, account.sourceDecks);
   const template = copy[lang]?.[topic] || copy.en[topic] || copy.en.humor;
   const sources = sourceSummary(account, lang, topic) || account.name;
   return template.replaceAll("{name}", String(account.name || account.ytTitle || "Channel").trim()).replaceAll("{sources}", sources);
@@ -313,7 +313,7 @@ const db = openDb(DB_PATH);
 const rows = db.db
   .prepare(
     `SELECT id, user_id, channel_name, yt_channel_title, yt_channel_id, channel_lang, lang,
-            source_decks, long_video_decks, yt_refresh_token, oauth_client_id, auth_error
+            source_decks, yt_refresh_token, oauth_client_id, auth_error
        FROM accounts
       WHERE yt_channel_id IS NOT NULL AND TRIM(yt_channel_id) != ''
       ORDER BY id`,
@@ -330,7 +330,6 @@ const accounts = rows
     channelLang: normalizeLang(row.channel_lang || row.lang),
     lang: String(row.lang || ""),
     sourceDecks: cleanArray(row.source_decks, []),
-    longVideoDecks: cleanArray(row.long_video_decks, []),
     refreshToken: row.yt_refresh_token ? String(row.yt_refresh_token) : "",
     oauthClientId: row.oauth_client_id == null ? null : Number(row.oauth_client_id),
     authError: row.auth_error ? String(row.auth_error) : null,
@@ -346,7 +345,6 @@ for (const account of accounts) {
     channelName: account.name,
     channelLang: account.channelLang,
     sourceDecks: account.sourceDecks,
-    longVideoDecks: account.longVideoDecks,
     description,
     descriptionLength: description.length,
   };

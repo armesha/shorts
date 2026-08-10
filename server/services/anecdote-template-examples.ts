@@ -69,7 +69,7 @@ export function collectAnecdoteTemplateExamples(db: Db, outputDir: string, usern
   const activeBuiltIn = sourceDecks
     .map((deckId) => DECKS.find((deck) => deck.id === deckId))
     .filter((deck): deck is (typeof DECKS)[number] => !!deck && isPlainAnecdoteDeck(deck));
-  const activePlainDecks = activeBuiltIn.filter((deck) => !deck.longVideo);
+  const activePlainDecks = activeBuiltIn;
   const activeJokePackDeckIds = sourceDecks
     .filter(isPackDeckId)
     .filter((deckId) => {

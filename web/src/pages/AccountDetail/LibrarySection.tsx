@@ -59,7 +59,6 @@ type LibrarySectionProps = {
   removeVid: (videoId: number) => void | Promise<void>;
   posting: number | null;
   postNow: (videoId: number) => void | Promise<void>;
-  isLongVideoDeck: (deckId: string) => boolean;
   librarySourceName: (deckId: string) => string;
   pageCount: number;
   clampedPage: number;
@@ -114,7 +113,6 @@ export default function LibrarySection({
   removeVid,
   posting,
   postNow,
-  isLongVideoDeck,
   librarySourceName,
   pageCount,
   clampedPage,
@@ -346,12 +344,9 @@ export default function LibrarySection({
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-3 gap-y-4 mt-3">
             {pageVideos.map((v) => {
-              const longVideo = isLongVideoDeck(v.deck);
-              const previewClass = longVideo ? "aspect-video max-w-[360px]" : "aspect-[9/16] max-w-[280px]";
-              const textClass = longVideo ? "max-w-[360px]" : "max-w-[280px]";
               return (
               <div key={v.id} className="group min-w-0">
-                <div className={`relative mx-auto ${previewClass} w-full rounded-lg overflow-hidden border border-base-300 bg-base-200`}>
+                <div className="relative mx-auto aspect-[9/16] w-full max-w-[280px] rounded-lg overflow-hidden border border-base-300 bg-base-200">
                   <div
                     role="button"
                     tabIndex={0}
@@ -405,10 +400,10 @@ export default function LibrarySection({
                     {t("account.post")}
                   </button>
                 </div>
-                <div className={`mx-auto mt-1.5 ${textClass} text-sm font-medium leading-tight line-clamp-2`} title={cleanDisplayText(v.title)}>
+                <div className="mx-auto mt-1.5 max-w-[280px] text-sm font-medium leading-tight line-clamp-2" title={cleanDisplayText(v.title)}>
                   {cleanDisplayText(v.title)}
                 </div>
-                <div className={`mx-auto mt-1 ${textClass} text-[11px] text-base-content/50 truncate`}>{librarySourceName(v.deck)}</div>
+                <div className="mx-auto mt-1 max-w-[280px] text-[11px] text-base-content/50 truncate">{librarySourceName(v.deck)}</div>
               </div>
               );
             })}

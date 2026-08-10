@@ -22,17 +22,15 @@ test("post-now source guard rejects removed/retired decks for armen even if stor
     lang: "en",
     channelLang: "en",
     sourceDecks: ["en", "illusions-en", "pack:motivation-en-superadmin"],
-    longVideoDecks: ["long-christian-en"],
   });
 
   const selectedSources = access.accountSourceDecks(account);
 
   assert.deepEqual(selectedSources, ["en"]);
-  assert.equal(canPostVideoDeckForAccount("en", account, selectedSources), true);
-  assert.equal(canPostVideoDeckForAccount(MANUAL_VIDEO_DECK, account, selectedSources), true);
-  assert.equal(canPostVideoDeckForAccount("long-christian-en", account, selectedSources), true);
-  assert.equal(canPostVideoDeckForAccount("illusions-en", account, selectedSources), false);
-  assert.equal(canPostVideoDeckForAccount("pack:motivation-en-superadmin", account, selectedSources), false);
+  assert.equal(canPostVideoDeckForAccount("en", selectedSources), true);
+  assert.equal(canPostVideoDeckForAccount(MANUAL_VIDEO_DECK, selectedSources), true);
+  assert.equal(canPostVideoDeckForAccount("illusions-en", selectedSources), false);
+  assert.equal(canPostVideoDeckForAccount("pack:motivation-en-superadmin", selectedSources), false);
 });
 
 test("video library visibility excludes globally hidden unused pack rows", () => {

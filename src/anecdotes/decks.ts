@@ -43,7 +43,6 @@ export interface Deck {
   /** Deck-specific audio bed without changing render/data dispatch. */
   audioProfile?: "islamic" | "christian" | "memes" | "jokes";
   /** Pre-built long compilation assembled from many short readable scenes into one 5-15 minute video. */
-  longVideo?: boolean;
   /** When true, generation picks the first unused item by videos.json order instead of random. */
   sequential?: boolean;
   /** Video is assembled on demand by an external source instead of being read from the anecdote library. */
@@ -855,66 +854,6 @@ export const DECKS: Deck[] = [
     sequential: true,
   },
   {
-    id: "long-anecdotes-ru",
-    name: "Русские анекдоты",
-    dir: "data/long-anecdotes-ru", // videos.json = one long MP4 assembled from many RU joke scenes
-    source: "data/anecdotes/titled.json",
-    emoji: "😂",
-    hashtags: "#анекдоты #юмор #русскиеанекдоты #сборниканекдотов #длинноевидео",
-    tags: ["анекдоты", "юмор", "русские анекдоты", "сборник анекдотов", "длинное видео", "смешное"],
-    genericTitles: ["Русские анекдоты", "Большой сборник русских анекдотов", "Сборник анекдотов"],
-    adminOnly: true,
-    grantable: true,
-    preFact: true,
-    longVideo: true,
-    sequential: true,
-  },
-  {
-    id: "long-anecdotes-soul-ru",
-    name: "Русские анекдоты",
-    dir: "data/long-anecdotes-soul-ru", // videos.json = long MP4s assembled from the channel custom joke pack
-    source: "data/packs/анекдоты-ру-впн-mqe5ovw1.json",
-    emoji: "😂",
-    hashtags: "#анекдоты #юмор #русскиеанекдоты #сборниканекдотов #длинноевидео",
-    tags: ["анекдоты", "юмор", "русские анекдоты", "сборник анекдотов", "длинное видео", "смешное"],
-    genericTitles: ["Русские анекдоты", "Большой выпуск анекдотов", "Смешные анекдоты для отдыха"],
-    adminOnly: true,
-    grantable: true,
-    preFact: true,
-    longVideo: true,
-    sequential: true,
-  },
-  {
-    id: "long-islamic-ar",
-    name: "القرآن والحديث والدعاء",
-    dir: "data/long-islamic-ar", // videos.json = long MP4s assembled from exact Islamic Arabic cards
-    source: "data/islamic/cards.json",
-    emoji: "🕌",
-    hashtags: "#قرآن #حديث #دعاء #ذكر #اسلام #ديني",
-    tags: ["قرآن", "حديث", "دعاء", "ذكر", "اسلام", "ديني", "quran", "hadith", "dua"],
-    genericTitles: ["القرآن والحديث والدعاء", "آيات وأحاديث وأدعية", "ذكر ودعاء"],
-    adminOnly: true,
-    grantable: true,
-    preFact: true,
-    longVideo: true,
-    sequential: true,
-  },
-  {
-    id: "long-christian-en",
-    name: "The Faithful Journey",
-    dir: "data/long-christian-en", // videos.json = long MP4s assembled from exact KJV Bible passages
-    source: "data/christian/cards.json",
-    emoji: "✝️",
-    hashtags: "#bible #kjv #scripture #faith #prayer #christian",
-    tags: ["bible", "kjv", "scripture", "faith", "prayer", "christian", "bible verses", "quiet time"],
-    genericTitles: ["The Faithful Journey", "Peaceful KJV Scripture", "Bible Verses for Quiet Time"],
-    adminOnly: true,
-    grantable: true,
-    preFact: true,
-    longVideo: true,
-    sequential: true,
-  },
-  {
     id: "visual-riddles-de",
     name: "Sieh die Antwort",
     dir: "data/visual-riddles-de", // videos.json = [{file,title,text}]; German localization of visual-riddles
@@ -1213,7 +1152,7 @@ export function isPackDeckId(id?: string | null): boolean {
 }
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
-  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ro: "ro", cs: "cs", ar: "ar", hi: "hi", id: "id", ja: "ja", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-ru": "ru", "fact-es": "es", "fact-de": "de", "fact-it": "it", "fact-fr": "fr", "fact-pt": "pt", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "voiced-memes-ru": "ru", shortrobot1: "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
+  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ro: "ro", cs: "cs", ar: "ar", hi: "hi", id: "id", ja: "ja", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-ru": "ru", "fact-es": "es", "fact-de": "de", "fact-it": "it", "fact-fr": "fr", "fact-pt": "pt", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "voiced-memes-ru": "ru", shortrobot1: "ru", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar", "telegram-circles": "ru",
 };
 export function deckLang(id: string): string {
@@ -1327,8 +1266,7 @@ export function isPlainAnecdoteDeck(deck: Deck): boolean {
     !deck.memeBoard &&
     !deck.preFact &&
     !deck.quote &&
-    !deck.quoteVideo &&
-    !deck.longVideo
+    !deck.quoteVideo
   );
 }
 

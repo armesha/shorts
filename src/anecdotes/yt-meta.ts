@@ -45,15 +45,6 @@ export function ytMeta(
   title: string,
   text: string,
 ): { title: string; description: string; tags: string[] } {
-  if (deck.longVideo) {
-    const cleanTitle = (title || deck.genericTitles?.[0] || deck.name).trim();
-    const body = (text || deck.name).trim();
-    return {
-      title: `${cleanTitle} ${deck.emoji}`.slice(0, 100),
-      description: withHashtags(body, deck.hashtags),
-      tags: deck.tags,
-    };
-  }
   if (deck.quote) {
     const cleanAuthor = (title || deck.genericTitles?.[0] || deck.name).trim();
     const cleanQuote = (text || "").replace(/\s+/g, " ").trim();

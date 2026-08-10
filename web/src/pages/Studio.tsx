@@ -21,9 +21,9 @@ import { isMgsLegacyUser } from "../lib/accountLimits";
 const bgLabel = (f: string) => f.replace(/\.(jpe?g|png)$/i, "");
 const musicLabel = (f: string) => f.split("/").pop()!.replace(/\.\w+$/, "");
 
-function PackKindBadge({ video, longVideo }: { video: boolean; longVideo?: boolean }) {
+function PackKindBadge({ video }: { video: boolean }) {
   const { t } = useT();
-  const label = longVideo ? t("packKind.longVideo") : video ? t("packKind.video") : t("packKind.text");
+  const label = video ? t("packKind.video") : t("packKind.text");
   return (
     <span className={`badge badge-sm gap-1 ${video ? "badge-primary" : "badge-ghost"}`}>
       <AppIcon name={video ? "video" : "cards"} size={12} />
@@ -32,8 +32,8 @@ function PackKindBadge({ video, longVideo }: { video: boolean; longVideo?: boole
   );
 }
 
-const packKindLabel = (t: ReturnType<typeof useT>["t"], item: { video?: boolean; longVideo?: boolean }) =>
-  item.longVideo ? t("packKind.longVideo") : item.video ? t("packKind.video") : t("packKind.text");
+const packKindLabel = (t: ReturnType<typeof useT>["t"], item: { video?: boolean }) =>
+  item.video ? t("packKind.video") : t("packKind.text");
 
 export default function Studio() {
   const { t } = useT();
@@ -77,7 +77,6 @@ export default function Studio() {
   const hasTextSources = gens.some((x) => x.total > 0 && !x.preFact && !x.liveVideo) || sourcePacks.length > 0;
   const showPackKind = hasVideoSources && hasTextSources;
   const selectedIsVideo = !isPack && !!(g?.preFact || selectedIsLiveVideo);
-  const selectedIsLongVideo = !isPack && !!g?.longVideo;
   // «За раз» не больше, чем осталось СВОБОДНЫХ (неиспользованных) карточек в выбранной деке/паке —
   // для всех (и юзеров, и админов). Для пака берём available (cards − used), не общее число карточек.
   const remaining = isPack ? curPack?.available ?? curPack?.cards ?? 0 : g?.available ?? 0;
@@ -363,7 +362,7 @@ export default function Studio() {
                   ) : (
                     g && (
                       <div className="text-sm text-base-content/60 mt-1 flex flex-wrap items-center gap-1.5">
-                        {showPackKind && <PackKindBadge video={selectedIsVideo} longVideo={selectedIsLongVideo} />}
+                        {showPackKind && <PackKindBadge video={selectedIsVideo} />}
                         <span className="text-success font-medium">{t("studio.availableCount", { n: g.available })}</span>
                         {g.used > 0 && <> · {t("studio.usedCount", { n: g.used })}</>}
                       </div>

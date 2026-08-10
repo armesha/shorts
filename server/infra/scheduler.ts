@@ -33,12 +33,7 @@ function removeVideoFiles(outputDir: string, v: Video): void {
   }
 }
 
-function isLongVideoDeckId(deckId: string): boolean {
-  return !!DECKS.find((deck) => deck.id === deckId)?.longVideo;
-}
-
 function isSchedulerSourceDeck(deckId: string): boolean {
-  if (isLongVideoDeckId(deckId)) return false;
   return DECKS.some((deck) => deck.id === deckId) || isPackDeckId(deckId) || deckId.startsWith("telegram-circles:");
 }
 

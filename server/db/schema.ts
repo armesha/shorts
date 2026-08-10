@@ -173,11 +173,6 @@ export function applySchema(db: DatabaseSync): void {
       deck_id TEXT NOT NULL,
       PRIMARY KEY (user_id, deck_id)
     );
-    CREATE TABLE IF NOT EXISTS user_granted_long_video_decks (
-      user_id INTEGER NOT NULL,
-      deck_id TEXT NOT NULL,
-      PRIMARY KEY (user_id, deck_id)
-    );
     CREATE TABLE IF NOT EXISTS user_feature_access (
       user_id INTEGER NOT NULL,
       feature TEXT NOT NULL,
@@ -314,11 +309,6 @@ export function applySchema(db: DatabaseSync): void {
   addColumn("accounts", "slot_videos TEXT DEFAULT '{}'");
   addColumn("accounts", "slot_decks TEXT DEFAULT '{}'");
   addColumn("accounts", "source_decks TEXT DEFAULT '[]'");
-  addColumn("accounts", "long_video_decks TEXT DEFAULT '[]'");
-  db.prepare(
-    "INSERT OR IGNORE INTO user_granted_long_video_decks (user_id, deck_id) SELECT user_id, deck_id FROM user_granted_decks WHERE deck_id LIKE 'long-%'",
-  ).run();
-  db.prepare("DELETE FROM user_granted_decks WHERE deck_id LIKE 'long-%'").run();
   db.prepare(
     "UPDATE accounts SET source_decks = json_array(lang) WHERE (source_decks IS NULL OR source_decks = '[]') AND TRIM(COALESCE(lang, '')) != ''",
   ).run();
@@ -419,9 +409,7 @@ export function applySchema(db: DatabaseSync): void {
     INSERT INTO ideas (title, description, author_name)
     SELECT title, description, author_name
     FROM (
-      SELECT 'Длинные видео с автоматической нарезкой' AS title, 'Делать ролики примерно по 10 минут с голосом и сразу получать из них короткие фрагменты для Shorts.' AS description, 'Стас' AS author_name
-      UNION ALL SELECT 'Контекстные Shorts в длинный ролик', 'Генерировать связанные короткие ролики и затем склеивать их в один длинный выпуск.', 'Стас'
-      UNION ALL SELECT 'Разборы популярных роликов', 'Делать собственный пересказ или разбор с оригинальным сценарием и реакцией, без перезалива чужого контента.', 'Стас'
+      SELECT 'Разборы популярных роликов' AS title, 'Делать собственный пересказ или разбор с оригинальным сценарием и реакцией, без перезалива чужого контента.' AS description, 'Стас' AS author_name
       UNION ALL SELECT 'Реакционный ИИ-аватар', 'Аватар реагирует на анекдоты и мемы; голос, эмоции и тайминг должны совпадать с роликом.', 'Стас'
       UNION ALL SELECT 'Анимационные ролики', 'Попробовать короткие смешные мультфильмы и отдельные анимированные форматы.', 'Стас'
       UNION ALL SELECT 'Дайджест за несколько часов', 'Собирать выжимку событий за 3–4 часа вокруг одного тезиса и выпускать её как один Shorts.', 'Стас'
@@ -460,7 +448,7 @@ export function applySchema(db: DatabaseSync): void {
   // Schema version stamp. Everything above is additive & idempotent, so it self-applies on every boot.
   // For a FUTURE non-additive change (rename/drop/type/constraint), gate it on this version, e.g.:
   //   if (schemaVersion < 2) { db.exec("BEGIN; <migration>; PRAGMA user_version = 2; COMMIT;"); }
-  const SCHEMA_VERSION = 2;
+  const SCHEMA_VERSION = 3;
   const schemaVersion = (db.prepare("PRAGMA user_version").get() as { user_version?: number })?.user_version ?? 0;
   // v2 (one-time): mirror every connected channel's editable dashboard name to its real YouTube title —
   // a forced backfill so existing channels stop showing the "Новый канал" placeholder / stale labels.
@@ -471,6 +459,30 @@ export function applySchema(db: DatabaseSync): void {
       "UPDATE accounts SET channel_name = yt_channel_title " +
         "WHERE yt_channel_title IS NOT NULL AND TRIM(yt_channel_title) != ''",
     ).run();
+  }
+  // v3: long-video packs and their dedicated UI/API were retired. Remove stale grants, catalog rows,
+  // channel settings and the two old feature ideas only after the old server process has stopped.
+  if (schemaVersion < 3) {
+    db.exec("BEGIN");
+    try {
+      db.prepare("DELETE FROM content_items WHERE deck_id LIKE 'long-%'").run();
+      db.prepare("DELETE FROM content_decks WHERE deck_id LIKE 'long-%'").run();
+      db.prepare("DELETE FROM videos WHERE deck LIKE 'long-%'").run();
+      db.prepare("DELETE FROM user_granted_decks WHERE deck_id LIKE 'long-%'").run();
+      db.prepare(
+        "DELETE FROM ideas WHERE title IN ('Длинные видео с автоматической нарезкой', 'Контекстные Shorts в длинный ролик')",
+      ).run();
+      db.exec("DROP TABLE IF EXISTS user_granted_long_video_decks");
+      const accountColumns = db.prepare("PRAGMA table_info(accounts)").all() as Row[];
+      if (accountColumns.some((column) => column.name === "long_video_decks")) {
+        db.exec("ALTER TABLE accounts DROP COLUMN long_video_decks");
+      }
+      db.exec("PRAGMA user_version = 3");
+      db.exec("COMMIT");
+    } catch (error) {
+      db.exec("ROLLBACK");
+      throw error;
+    }
   }
   if (schemaVersion < SCHEMA_VERSION) db.exec(`PRAGMA user_version = ${SCHEMA_VERSION}`);
 }

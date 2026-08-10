@@ -11,7 +11,7 @@ import type {
   PackMusicUploadResult, MusicTrack, StatRow, ChannelTotals, PlatformSummary, StatPoint,
   AdminAnalytics, UserAnalytics, ErrorLogItem, NotificationItem, NotificationCounts, SystemStatus, IdeaItem,
   SignalsResponse, SignalsSettings, SignalsSettingsUpdateResult,
-  ContentCatalogResponse, AccountReadiness, QueueOverview, LongVideoCatalog, VideoCountsResponse,
+  ContentCatalogResponse, AccountReadiness, QueueOverview, VideoCountsResponse,
   VideoLibraryKind, VideoLibraryPage, VideoLibrarySort, BulkPostNowResponse,
   ChannelThemeBlockAccount, ChannelThemeBlocksResponse, ChannelThemeBlockGenerateResult,
   ChannelThemeBlockNormalizeResult, ChannelThemeBlockScheduleResult, ChannelThemeBlockSourceGroup,
@@ -114,8 +114,8 @@ export const apiClient = {
   updateAdminReadinessLimits: (body: { minRunwayDays: number }) =>
     send<ReadinessLimits>("/admin/readiness-limits", "PUT", body),
   manualVideoLimits: () => get<ManualVideoLimits>("/videos/manual-limits"),
-  setUserDecks: (userId: number, hidden: string[], grants?: string[], longVideoGrants?: string[]) =>
-    send<{ ok: boolean; hidden: string[] }>(`/admin/users/${userId}/decks`, "PUT", { hidden, grants, longVideoGrants }),
+  setUserDecks: (userId: number, hidden: string[], grants?: string[]) =>
+    send<{ ok: boolean; hidden: string[] }>(`/admin/users/${userId}/decks`, "PUT", { hidden, grants }),
   // «Бесконечный пак» (имитация) — вкл/выкл для юзера: весь пак свободен + рецикл очереди.
   setUserInfinitePacks: (userId: number, enabled: boolean) =>
     send<{ ok: boolean; enabled: boolean }>(`/admin/users/${userId}/infinite-packs`, "PUT", { enabled }),
@@ -178,7 +178,6 @@ export const apiClient = {
       "POST",
       { sourceWeights },
     ),
-  longVideos: (cacheBust?: number) => get<LongVideoCatalog>(`/long-videos${cacheBust ? `?t=${cacheBust}` : ""}`),
   deleteClipDemo: (packId: string, itemId: string) =>
     send<{ ok: boolean; itemId: string }>(`/clip-demos/packs/${encodeURIComponent(packId)}/items/${encodeURIComponent(itemId)}`, "DELETE"),
   adminLowDecks: () => get<LowDeckRow[]>("/admin/low-decks"),
@@ -189,8 +188,6 @@ export const apiClient = {
   updateAccount: (id: number | string, data: Partial<Account>) =>
     send<Account>(`/accounts/${id}`, "PUT", data),
   deleteAccount: (id: number | string) => send<{ ok: boolean }>(`/accounts/${id}`, "DELETE"),
-  addLongVideoToLibrary: (accountId: number | string, deck: string) =>
-    send<VideoItem>("/videos/long", "POST", { accountId: Number(accountId), deck }),
   avatars: () => get<string[]>("/avatars"),
   uploadAvatar: (id: number | string, dataUrl: string) =>
     send<Account>(`/accounts/${id}/avatar`, "POST", { dataUrl }),

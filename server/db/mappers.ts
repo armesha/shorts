@@ -62,7 +62,6 @@ export const rowToAccount = (r: Row): Account => ({
   channelName: r.yt_channel_title || r.channel_name,
   lang: r.lang,
   sourceDecks: parseStringArray(r.source_decks, r.lang ? [r.lang] : []),
-  longVideoDecks: parseStringArray(r.long_video_decks, []),
   channelLang: r.channel_lang ?? "",
   timezone: normalizeTimeZone(r.timezone),
   schedule: JSON.parse(r.schedule),

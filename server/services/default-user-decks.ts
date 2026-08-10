@@ -6,13 +6,12 @@ const RUSSIAN_JOKE_RE = /(анекдот|шутк|shutk|jokes?\b|witze\b|barzell
 
 export interface DefaultRegisteredUserGrantIds {
   deckIds: string[];
-  longVideoDeckIds: string[];
   packDeckIds: string[];
 }
 
 type GrantDb = Pick<
   Db,
-  "grantedDecksFor" | "setGrantedDecks" | "grantedLongVideoDecksFor" | "setGrantedLongVideoDecks"
+  "grantedDecksFor" | "setGrantedDecks"
 >;
 
 function unique(ids: string[]): string[] {
@@ -38,11 +37,9 @@ export function isDefaultRegisteredUserPack(pack: Pick<PackSummary, "id" | "name
 
 export function registeredUserDefaultGrantIds(): DefaultRegisteredUserGrantIds {
   const deckIds: string[] = [];
-  const longVideoDeckIds: string[] = [];
   for (const deck of DECKS) {
     if (!deck.adminOnly || !deck.grantable || !isRussianJokeDeck(deck)) continue;
-    if (deck.longVideo) longVideoDeckIds.push(deck.id);
-    else deckIds.push(deck.id);
+    deckIds.push(deck.id);
   }
 
   const packDeckIds = listAllPacks()
@@ -51,7 +48,6 @@ export function registeredUserDefaultGrantIds(): DefaultRegisteredUserGrantIds {
 
   return {
     deckIds: unique(deckIds),
-    longVideoDeckIds: unique(longVideoDeckIds),
     packDeckIds: unique(packDeckIds),
   };
 }
@@ -60,9 +56,6 @@ export function grantDefaultRegisteredUserDecks(db: GrantDb, userId: number): De
   const defaults = registeredUserDefaultGrantIds();
   if (defaults.deckIds.length) {
     db.setGrantedDecks(userId, unique([...db.grantedDecksFor(userId), ...defaults.deckIds]));
-  }
-  if (defaults.longVideoDeckIds.length) {
-    db.setGrantedLongVideoDecks(userId, unique([...db.grantedLongVideoDecksFor(userId), ...defaults.longVideoDeckIds]));
   }
 
   const packIds = new Set(defaults.packDeckIds.map((id) => id.replace(/^pack:/, "")));

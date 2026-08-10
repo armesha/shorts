@@ -128,7 +128,7 @@ function queueSourceDecks(
     ...new Set(
       ids
         .map((x) => String(x || "").trim())
-        .filter((deckId) => deckId && !DECKS.find((deck) => deck.id === deckId)?.longVideo)
+        .filter(Boolean)
         .filter((deckId) => globallyVisibleDeckIds.has(deckId))
         .filter((deckId) => !ownerIsSuperAdmin || !isForbiddenSuperAdminSourceDeck(deckId)),
     ),

@@ -4,7 +4,6 @@ export interface Account {
   channelName: string;
   lang: string; // выбор контента: встроенный пак (ru/de/…) или свой пак ("pack:<id>")
   sourceDecks?: string[]; // выбранные источники канала; старые аккаунты используют lang
-  longVideoDecks?: string[]; // длинные видео-паки: только ручное добавление в библиотеку + ручная выкладка
   channelLang?: string; // язык канала (ru/de/it/fr/en/ar) — пак должен совпадать по языку
   timezone?: string; // IANA timezone used for schedule HH:MM values
   schedule: string[];
@@ -62,7 +61,6 @@ export interface Generator {
   ai: boolean;
   preFact?: boolean; // pre-built video pack — Studio shows a random video instead of a text card
   liveVideo?: boolean; // video assembled on demand from an external source
-  longVideo?: boolean; // long pre-built compilation assembled from many short scenes
   gallery?: boolean; // static deck (deterministic per-card render) — browsable in the Gallery page
   total: number;
   titled: number;
@@ -263,7 +261,6 @@ export interface DeckInfo {
   pack?: boolean; // кастомный пак (id вида "pack:<id>"); доступ — opt-in (гранты), а не hidden
   grantable?: boolean; // встроенный admin-only deck, который админ выдает opt-in галочкой
   adminOnly?: boolean; // admin-only дека: юзеру недоступна («—» в матрице), но админ может скрыть её у себя
-  longVideo?: boolean; // длинный video-pack: отдельная таблица выдачи в админке
   defaultForNewUser?: boolean; // серверный дефолт для нового обычного пользователя
 }
 /** One row of the admin pack-visibility matrix: a user + which packs are hidden / actually used. */
@@ -274,7 +271,6 @@ export interface UserDeckRow {
   isSuperAdmin?: boolean;
   hidden: string[];
   grantedPacks: string[]; // id opt-in паков: кастомные "pack:<id>" + grantable built-in deck ids
-  grantedLongVideos: string[]; // id opt-in long-video паков, отдельная таблица прав на backend
   used: string[];
   scheduled: number; // posts/day planned across all the user's channels
   library: number; // videos queued in the user's libraries
@@ -342,35 +338,6 @@ export interface GeneratedVideo {
   chars: number;
   bg: string;
   music: string;
-}
-
-export interface LongVideoItem {
-  id: string;
-  deckId: string;
-  deckName: string;
-  title: string;
-  text: string;
-  videoUrl: string;
-  file: string;
-  durationSec: number | null;
-  plannedDurationSec: number | null;
-  sceneCount: number | null;
-  music: string | null;
-  source: string | null;
-  builtAt: string | null;
-}
-
-export interface LongVideoPack {
-  id: string;
-  title: string;
-  lang: string | null;
-  count: number;
-  items: LongVideoItem[];
-}
-
-export interface LongVideoCatalog {
-  packs: LongVideoPack[];
-  total: number;
 }
 
 export interface VideoItem {

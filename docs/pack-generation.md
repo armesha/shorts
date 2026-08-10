@@ -131,7 +131,6 @@ Shorts очистить их render-progress и истории только по
 `server/services/super-admin-forbidden-source-decks.ts` и не должны появляться в `sourceDecks`,
 `slotDecks`, picker'ах и новых block rules. Новые мемы для нерелигиозных каналов - только
 `pack:new-memes-<lang>-superadmin`; русский блок использует `pack:new-memes-ru-superadmin`.
-Длинные видео в block mix не включать: длинные сборники публикуются отдельно из библиотеки канала.
 
 Декоративные смеющиеся emoji/GIF в шаблонах анекдотов допустимы, если они не мешают чтению, не
 перекрывают текст и не выглядят как плашка/водяной знак/название канала. GIF-акценты держать только в
@@ -383,33 +382,6 @@ Prebuilt MP4 допустимы как исключение для готовы�
 индивидуальных визуальных MP4 или уже существующих legacy prebuilt decks. Для нового статичного пака
 prebuilt MP4 считается исключением и требует явного запроса пользователя.
 
-## Общее правило для длинных видео
-
-`longVideo` / длинные сборники не делаются как Shorts. По умолчанию это обычное горизонтальное видео:
-
-- размер кадра строго `1920x1080`;
-- картинка каждой сцены статичная: один читаемый PNG/card на весь анекдот, без zoompan, camera motion и
-  прочего движения внутри сцены;
-- между анекдотами нужны плавные переходы (`fade`), чтобы смена карточек не била по глазам;
-- музыка должна быть одной цельной дорожкой на весь ролик, без рестарта/смены на каждом анекдоте;
-- для длинных видео держи отдельную музыку в `assets/audio/long-videos/`, только license-safe /
-  no-copyright;
-- исключение для исламских long-video: не ставь обычную музыку и инструменты. Используй только
-  тихий немелодический фон без инструментов из `assets/audio/islamic/` или тишину; фон тоже должен
-  идти одной цельной дорожкой на весь ролик;
-- громкость музыки низкая, чтобы не мешать чтению;
-- длительность сцен считай по символам, чтобы человек успел спокойно прочитать текст.
-- у long-video пака сразу должны быть готовые YouTube `title`, `description`, `hashtags` и `tags`;
-  не наследуй `#shorts` в названии/описании/тегах;
-- `description` должен быть зрительским и естественным: что это за выпуск, зачем смотреть, какой тон /
-  настроение. Не пиши внутренние детали сборки вроде "из встроенной деки", "33 анекдота",
-  "public-domain музыка", "читабельный видеосборник"; такие сведения держи в `sources.json`, а не в
-  описании для YouTube;
-- использованные исходные элементы нужно вести в отдельном ledger/usage-файле пака. Для длинных
-  выпусков нельзя повторно брать анекдот/карточку, чей `sourceId` уже был в предыдущем длинном ролике;
-- long-video паки не являются источниками расписания канала: канал включает их отдельной галочкой,
-  готовый MP4 добавляется в библиотеку вручную, а публикация идет отдельной кнопкой «Выложить».
-
 ## Быстрая карта паков
 
 | Пак / deck | Где результат | Как появляется контент | LLM нужен |
@@ -431,10 +403,6 @@ prebuilt MP4 считается исключением и требует явн�
 | `prayers-en` Christian Prayers | `data/prayers-en/videos.json` + `assets/fact-videos/prayers-en/` | готовые английские prayer-card MP4 с оригинальным devotional-текстом и локальным HTML/CSS-шаблоном, без внешних медиа | нет |
 | `space` Space | `data/space/videos.json` + `assets/fact-videos/space/` | готовые MP4 | не в рантайме |
 | `animal-superheroes` / `animal-superheroes-en` ЗвероГерои / Animal Heroes | `data/output/admin-demos/manifest.json` + `data/animal-superheroes*/videos.json` + `assets/fact-videos/animal-superheroes*/` | сериальные MP4-комиксы RU/EN с одинаковым визуалом, ElevenLabs-озвучкой и safe-zone karaoke-субтитрами | нет |
-| `long-anecdotes-ru` Русские анекдоты | `data/long-anecdotes-ru/videos.json` + `assets/fact-videos/long-anecdotes-ru/` | длинный MP4-сборник из коротких читаемых сцен RU-анекдотов под музыку | нет |
-| `long-anecdotes-soul-ru` Русские анекдоты | `data/long-anecdotes-soul-ru/videos.json` + `assets/fact-videos/long-anecdotes-soul-ru/` | отдельный длинный MP4-пак из custom pack `data/packs/анекдоты-ру-впн-mqe5ovw1.json` | нет |
-| `long-islamic-ar` القرآن والحديث والدعاء | `data/long-islamic-ar/videos.json` + `assets/fact-videos/long-islamic-ar/` | отдельный длинный MP4-пак для исламского канала из точных карточек `data/islamic/cards.json`, с немелодическим фоном без инструментов | нет |
-| `long-christian-en` The Faithful Journey | `data/long-christian-en/videos.json` + `assets/fact-videos/long-christian-en/` | отдельный длинный MP4-пак для английского христианского канала из точных KJV-карточек `data/christian/cards.json` | нет |
 | `The Mind Edge` template-pack | `assets/template-packs/the-mind-edge/` -> `data/packs/` seed | LLM-батчи -> `cards.json`, шаблоны из кода | да, для новых карточек |
 | `psychology-mgs` template-pack | `assets/template-packs/psychology-mgs/` -> `data/packs/` seed | карточки + 40 шаблонов | зависит от источника новых карточек |
 | `Curiosaurs English Facts` template-pack | `assets/template-packs/curiosaurs-english/` -> `data/packs/` seed | локальный набор kid-safe facts + PNG-шаблоны | нет |
@@ -466,173 +434,6 @@ payload, а не как правило генерации контента.
 4. Для template-pack запусти его QA-рендер или seed-скрипт без дублирования, если он идемпотентный.
 5. После правок `src/**` или `server/**` серверу нужен перезапуск, но не перезапускай общий сервер без
    разрешения пользователя. Чистые изменения `docs/**` перезапуска не требуют.
-
-## Long video pack: `long-anecdotes-ru`
-
-Это новый тип встроенного видео-пака: `preFact + longVideo`. Он виден как отдельный длинный видеотип,
-но использует тот же безопасный runtime-контракт, что и другие prebuilt-деки: генерация не рендерит
-текст заново, а копирует готовый MP4 из `assets/fact-videos/long-anecdotes-ru/` в библиотеку канала.
-
-Где что лежит:
-
-- исходные тексты: существующая RU-дека `data/anecdotes/titled.json`;
-- сборщик: `scripts/build-long-anecdotes-ru.mjs`;
-- расчет сцен: `data/long-anecdotes-ru/scenes.json` для выпуска 1 и `scenes-00N.json` для следующих;
-- общий ledger использованных анекдотов: `data/long-anecdotes-ru/usage.json`;
-- регистрация для runtime: `data/long-anecdotes-ru/videos.json` и `data/long-anecdotes-ru/index.json`;
-- source/music ledger: `data/long-anecdotes-ru/sources.json`;
-- финальный локальный MP4: `assets/fact-videos/long-anecdotes-ru/long-anecdotes-ru-001.mp4`;
-- контакт-лист проверки: `data/output/long-anecdotes-ru/contact.jpg`.
-
-Названия выпусков в `videos.json` должны быть разнообразными и человеческими. Не оставляй однотипные
-`Выпуск N` / `Episode N` как финальный YouTube title, если только это не часть нормального названия.
-
-Пересборка:
-
-```bash
-node --import tsx scripts/build-long-anecdotes-ru.mjs --dry-run
-node --import tsx scripts/build-long-anecdotes-ru.mjs
-# без повторного рендера MP4: пересобрать только usage.json из готовых scenes/videos
-node --import tsx scripts/build-long-anecdotes-ru.mjs --write-usage
-
-# отдельный long-video пак «Русские анекдоты», не добавляет выпуски в библиотеку канала
-LONG_VIDEO_PROFILE=soul EPISODE_START=1 EPISODE_COUNT=2 node --import tsx scripts/build-long-anecdotes-ru.mjs --dry-run
-LONG_VIDEO_PROFILE=soul EPISODE_START=1 EPISODE_COUNT=2 node --import tsx scripts/build-long-anecdotes-ru.mjs
-```
-
-Скрипт не запускает LLM и не скачивает интернет-источники. Первый выпуск использует фиксированный
-allow-list id из `data/anecdotes/titled.json`, потому что в общей RU-деке есть взрослые/политические
-и токсичные шутки. Если пополняешь выпуск вручную, сначала проверь тексты глазами и только потом меняй
-`FIRST_SERIES_IDS`. Если нужно именно интернет-ранжирование "топ популярных", сначала отдельно проверь
-лицензию источника; не копируй тексты с сайтов анекдотов без понятных прав.
-
-Учёт использованных анекдотов обязателен. `usage.json` содержит все `sourceId`, которые уже попали в
-длинные MP4, с привязкой к конкретному ролику и порядку сцены. Скрипт сверяет новые выпуски с уже
-готовыми `videos.json`/`scenes*.json` и падает при повторе, если это не намеренная пересборка того же
-самого файла. Перед добавлением новых выпусков проверь:
-
-```bash
-node --import tsx scripts/build-long-anecdotes-ru.mjs --write-usage
-node --input-type=module -e 'import fs from "node:fs"; const u=JSON.parse(fs.readFileSync("data/long-anecdotes-ru/usage.json","utf8")); console.log(u.totalVideos, u.totalScenes, new Set(u.usedSourceIds).size)'
-```
-
-Профиль `LONG_VIDEO_PROFILE=soul` пишет отдельный deck `long-anecdotes-soul-ru`:
-
-- источник: `data/packs/анекдоты-ру-впн-mqe5ovw1.json` — custom pack русских анекдотов;
-- каждая карточка пакa разбивается на отдельные сцены по элементам массива `values.text`;
-- результат: два готовых MP4 в `assets/fact-videos/long-anecdotes-soul-ru/`;
-- runtime-регистрация: `data/long-anecdotes-soul-ru/videos.json`;
-- ledger: `data/long-anecdotes-soul-ru/usage.json`;
-- это именно отдельный long-video pack. Не добавляй эти MP4 в библиотеку канала автоматически: канал
-  должен видеть пак с доступными роликами, а добавление в библиотеку выполняется отдельной кнопкой.
-
-Формат и визуальные правила этого пака следуют общему правилу длинных видео:
-
-- финальный MP4: обычный горизонтальный `1920x1080`, не вертикальный Shorts;
-- каждая сцена рендерится как статичная landscape-карточка, без zoom/pan;
-- между анекдотами стоит мягкий fade-in/fade-out;
-- музыка берётся из отдельной папки `assets/audio/long-videos/`;
-- текущая музыка: `assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus`;
-- источник: Wikimedia Commons, `File:Swingin' the Operas by Fats Waller (1939, Jazz piano).opus`;
-- Commons помечает файл как Public Domain / free of known copyright restrictions, длительность около
-  `10:01`;
-- финальный MP4 мапит эту длинную композицию как одну дорожку на весь ролик, без лупа и без
-  перезапуска музыки на сценах.
-
-Тайминг сцены считается по символам:
-
-```text
-durationSec = clamp(11, 18, ceil((chars / 22 + 3) * 0.88))
-```
-
-Это текущий сокращённый на ~12% режим чтения. Зритель получает примерно 11-18 секунд на карточку,
-а новые выпуски собираются примерно в 7-10 минут.
-Переходы делаются через мягкий fade-in/fade-out `0.8s`. README исходной папки
-`assets/audio/anekdoty/` помечает текущие джазовые фрагменты как Public Domain.
-
-Проверка после сборки:
-
-```bash
-node --input-type=module -e 'import fs from "node:fs"; for (const p of ["data/long-anecdotes-ru/videos.json","data/long-anecdotes-ru/usage.json","data/long-anecdotes-ru/sources.json"]) console.log(p, Array.isArray(JSON.parse(fs.readFileSync(p,"utf8"))) ? JSON.parse(fs.readFileSync(p,"utf8")).length : "ok")'
-for f in assets/fact-videos/long-anecdotes-ru/long-anecdotes-ru-00*.mp4; do ffprobe -hide_banner -v error -show_entries format=duration -of default=nw=1:nk=1 "$f"; done
-ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0:s=x assets/fact-videos/long-anecdotes-ru/long-anecdotes-ru-001.mp4
-```
-
-### Long Islamic (`long-islamic-ar`)
-
-Отдельный long-video pack для канала `القرآن والحديث والدعاء`.
-
-- источник точного текста: `data/islamic/cards.json`;
-- сборщик: `scripts/build-long-islamic-ar.mjs`;
-- результат: `assets/fact-videos/long-islamic-ar/long-islamic-ar-00N.mp4`;
-- runtime-регистрация: `data/long-islamic-ar/videos.json`;
-- ledger использованных карточек: `data/long-islamic-ar/usage.json`;
-- контакт-листы: `data/output/long-islamic-ar/contact-long-islamic-ar-00N.jpg`.
-
-Исламские длинные видео используют одну длинную мелодичную дорожку из общего long-video пула:
-
-```text
-assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus
-```
-
-Шумовые ambient/drone-подложки здесь не используются.
-
-Пересборка 5 выпусков по 7-11 минут:
-
-```bash
-node --import tsx scripts/build-long-islamic-ar.mjs --dry-run
-node --import tsx scripts/build-long-islamic-ar.mjs
-node --import tsx scripts/build-long-islamic-ar.mjs --write-usage
-```
-
-Тайминг сцены считается по арабским символам:
-
-```text
-durationSec = clamp(16, 48, ceil(chars / 18 + 9))
-```
-
-Как и в остальных long-video паках, не добавляй MP4 в библиотеку канала автоматически: канал включает
-пак отдельной галочкой, затем вручную забирает нужный готовый ролик в библиотеку.
-
-### Long Christian (`long-christian-en`)
-
-Отдельный long-video pack для английского христианского канала `The Faithful Journey`.
-
-- источник точного текста: `data/christian/cards.json` (KJV);
-- сборщик: `scripts/build-long-christian-en.mjs`;
-- результат: `assets/fact-videos/long-christian-en/long-christian-en-00N.mp4`;
-- runtime-регистрация: `data/long-christian-en/videos.json`;
-- ledger использованных карточек: `data/long-christian-en/usage.json`;
-- контакт-листы: `data/output/long-christian-en/contact-long-christian-en-00N.jpg`.
-
-Сборщик не переписывает Bible text и не запускает LLM: он берёт готовые KJV-карточки, рассчитывает
-время чтения по символам, рендерит статичные landscape-карточки `1920x1080` и добавляет мягкие fades.
-YouTube title/description/tags берутся из метаданных пака и должны звучать естественно для зрителя.
-
-Звук:
-
-```text
-assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus
-```
-
-Это одна длинная мелодичная дорожка для всего ролика; ambient/pad-подложки больше не используются.
-
-Пересборка 10 выпусков по 7-11 минут:
-
-```bash
-node --import tsx scripts/build-long-christian-en.mjs --dry-run
-node --import tsx scripts/build-long-christian-en.mjs
-node --import tsx scripts/build-long-christian-en.mjs --write-usage
-```
-
-Тайминг сцены считается по английским символам:
-
-```text
-durationSec = clamp(24, 44, ceil(chars / 15 + 8))
-```
-
-Как и в остальных long-video паках, не добавляй MP4 в библиотеку канала автоматически: канал включает
-пак отдельной галочкой, затем вручную забирает нужный готовый ролик в библиотеку.
 
 ## Chistes ES: испанские анекдоты без API
 

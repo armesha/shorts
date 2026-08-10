@@ -238,9 +238,6 @@ function builtinReport(deckId, accounts) {
   if (["christian-quotes-en", "christian-facts-en"].includes(deckId)) {
     return titledReport(deckId, accounts, deckId, "rendered through quote/religious visual fallback backgrounds");
   }
-  if (/^long-/.test(deckId)) {
-    return visualDirReport(deckId, accounts, deckId, "long-video deck with prepared scenes and local footage", deckId);
-  }
   if (/^quotes-/.test(deckId)) {
     return titledReport(deckId, accounts, deckId === "quotes-de" ? "quotes-de-combined" : deckId, "portrait/artwork when available; generated quote fallback backgrounds otherwise");
   }
@@ -274,13 +271,12 @@ try {
   const user = db.prepare("SELECT id, username FROM users WHERE username=?").get(USERNAME);
   if (!user) throw new Error(`User not found: ${USERNAME}`);
   const rows = db
-    .prepare("SELECT id, channel_name, source_decks, slot_decks, long_video_decks FROM accounts WHERE user_id=? ORDER BY id")
+    .prepare("SELECT id, channel_name, source_decks, slot_decks FROM accounts WHERE user_id=? ORDER BY id")
     .all(user.id);
   const deckAccounts = new Map();
   for (const row of rows) {
     for (const deckId of parseJson(row.source_decks, [])) addDeckUse(deckAccounts, deckId, row, "source");
     for (const deckId of stringValuesDeep(parseJson(row.slot_decks, {}))) addDeckUse(deckAccounts, deckId, row, "slot");
-    for (const deckId of parseJson(row.long_video_decks, [])) addDeckUse(deckAccounts, deckId, row, "long");
   }
   const decks = [...deckAccounts.keys()].sort();
   const reports = decks.map((deckId) => (deckId.startsWith("pack:") ? packReport(deckId, deckAccounts.get(deckId)) : builtinReport(deckId, deckAccounts.get(deckId))));

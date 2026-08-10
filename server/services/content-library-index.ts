@@ -124,7 +124,7 @@ export function syncContentLibraryIndex(db: DatabaseSync): { decks: number; item
       const { items, hash } = loadDeckItems(deck);
       seen.add(deck.id);
       delItems.run(deck.id);
-      deckStmt.run(deck.id, deck.name, deckLang(deck.id) || null, deck.preFact ? 1 : 0, deck.longVideo ? 1 : 0, items.length, hash, now);
+      deckStmt.run(deck.id, deck.name, deckLang(deck.id) || null, deck.preFact ? 1 : 0, 0, items.length, hash, now);
       items.forEach((item, index) => {
         const normalized: PackItem = {
           ...item,

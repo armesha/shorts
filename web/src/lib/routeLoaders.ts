@@ -16,7 +16,6 @@ const routeLoaders = {
   users: () => import("../pages/Users"),
   clipDemos: () => import("../pages/ClipDemos"),
   examples: () => import("../pages/Examples"),
-  longVideos: () => import("../pages/LongVideos"),
   templateEditor: () => import("../pages/TemplateEditor"),
   circleEditor: () => import("../pages/CircleEditor"),
   bannerLibrary: () => import("../pages/BannerLibrary"),
@@ -80,8 +79,6 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
       return "clipDemos";
     case "/examples":
       return "examples";
-    case "/long-videos":
-      return "longVideos";
     case "/errors":
       return "errors";
     case "/system":

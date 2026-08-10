@@ -42,10 +42,6 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const pack = getPack(packId, userId, isSuperAdmin);
     return pack && isCustomPackGloballyVisible(db, pack) ? pack : null;
   };
-  const isGrantableLongVideoDeckId = (deckId: string): boolean => {
-    const deck = DECKS.find((d) => d.id === deckId);
-    return !!deck?.longVideo && isGrantableBuiltinDeck(deck);
-  };
   const currentAccountDecksByUser = (): Record<number, string[]> => {
     const sets: Record<number, Set<string>> = {};
     const add = (userId: number, deckId: string) => {
@@ -53,13 +49,12 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       (sets[userId] ??= new Set()).add(deckId);
     };
     const rows = db.db
-      .prepare("SELECT user_id, lang, source_decks, long_video_decks FROM accounts WHERE user_id IS NOT NULL")
+      .prepare("SELECT user_id, lang, source_decks FROM accounts WHERE user_id IS NOT NULL")
       .all() as Row[];
     for (const row of rows) {
       const userId = Number(row.user_id);
       const sourceDecks = parseStringArray(row.source_decks, row.lang ? [String(row.lang)] : []);
       for (const deckId of sourceDecks) add(userId, deckId);
-      for (const deckId of parseStringArray(row.long_video_decks, [])) add(userId, deckId);
     }
     return Object.fromEntries(Object.entries(sets).map(([userId, decks]) => [Number(userId), [...decks]]));
   };
@@ -224,7 +219,6 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const defaultGrants = registeredUserDefaultGrantIds();
     const defaultDeckIds = new Set([
       ...defaultGrants.deckIds,
-      ...defaultGrants.longVideoDeckIds,
       ...defaultGrants.packDeckIds,
     ]);
     // встроенные деки + кастомные паки (всегда показываем паки колонками; id = "pack:<id>").
@@ -237,7 +231,6 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
         pack: false,
         grantable: !!(d.adminOnly && d.grantable),
         adminOnly: !!d.adminOnly,
-        longVideo: !!d.longVideo,
         defaultForNewUser: defaultDeckIds.has(d.id),
       })),
       ...allVisiblePacks().map((p) => {
@@ -259,7 +252,6 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     if (!requireAdmin(req, reply)) return;
     const hidden = db.hiddenDecksByUser();
     const grantedBuiltins = db.grantedDecksByUser();
-    const grantedLongVideos = db.grantedLongVideoDecksByUser();
     const used = currentAccountDecksByUser();
     const posted = db.postedByUserDeck();
     const allPacks = allVisiblePacks();
@@ -287,7 +279,6 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
             .filter((p) => userIsSuperAdmin || p.owners.includes(u.id) || p.grants.includes(u.id))
             .map((p) => `pack:${p.id}`),
         ],
-        grantedLongVideos: (grantedLongVideos[u.id] ?? []).filter((deckId) => visibleBuiltInIds.has(deckId)),
         used: (used[u.id] ?? []).filter((deckId) => visibleDeckIds.has(deckId)),
         scheduled: db.scheduleSlotsForUser(u.id), // posts/day planned across all their channels
         library: db.countVideosByUser(u.id), // videos queued in their libraries
@@ -304,11 +295,8 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const id = Number((req.params as { id: string }).id);
     const target = db.getUserById(id);
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
-    const body = (req.body as { hidden?: string[]; grants?: string[]; longVideoGrants?: string[] }) ?? {};
+    const body = (req.body as { hidden?: string[]; grants?: string[] }) ?? {};
     const rawGrants = Array.isArray(body.grants) ? body.grants.map((g) => String(g || "").trim()).filter(Boolean) : [];
-    const rawLongVideoGrants = Array.isArray(body.longVideoGrants)
-      ? body.longVideoGrants.map((g) => String(g || "").trim()).filter(Boolean)
-      : rawGrants.filter(isGrantableLongVideoDeckId);
     const visibleBuiltInIds = new Set(filterGloballyVisibleBuiltInDecks(db, DECKS).map((deck) => deck.id));
 
     // ГЛАВНЫЙ АДМИН: видит всё по умолчанию → hidden работает как opt-out и может содержать
@@ -324,7 +312,6 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       ];
       db.setHiddenDecks(id, adminHidden);
       db.setGrantedDecks(id, []); // у админа полный доступ — гранты не используются
-      db.setGrantedLongVideoDecks(id, []); // long-video гранты живут отдельно и админу тоже не нужны
       return { ok: true, hidden: adminHidden };
     }
 
@@ -341,9 +328,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       ];
       db.setHiddenDecks(id, adminHidden);
       db.setGrantedDecks(id, []);
-      db.setGrantedLongVideoDecks(id, []);
-      const grants = rawGrants.filter((g) => !isGrantableLongVideoDeckId(g));
-      const want = new Set(grants.filter((g) => g.startsWith("pack:")).map((g) => g.replace(/^pack:/, "")));
+      const want = new Set(rawGrants.filter((g) => g.startsWith("pack:")).map((g) => g.replace(/^pack:/, "")));
       for (const p of allVisiblePacks()) {
         if (p.owners.includes(id)) continue;
         setGrant(p.id, id, want.has(p.id));
@@ -357,14 +342,11 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       ? body.hidden.filter((d) => visibleBuiltInIds.has(d) && DECKS.some((x) => x.id === d && !isGrantableBuiltinDeck(x)))
       : [];
     db.setHiddenDecks(id, valid);
-    const grants = rawGrants.filter((g) => !isGrantableLongVideoDeckId(g));
-    const builtInGrants = grants.filter((deckId) => visibleBuiltInIds.has(deckId) && isGrantableBuiltinDeckId(deckId));
+    const builtInGrants = rawGrants.filter((deckId) => visibleBuiltInIds.has(deckId) && isGrantableBuiltinDeckId(deckId));
     db.setGrantedDecks(id, builtInGrants);
-    const longVideoGrants = rawLongVideoGrants.filter((deckId) => visibleBuiltInIds.has(deckId) && isGrantableLongVideoDeckId(deckId));
-    db.setGrantedLongVideoDecks(id, longVideoGrants);
     // Кастомные паки (opt-in): выдать/снять доступ этому юзеру по body.grants (id вида "pack:<id>").
     // Владельца не трогаем.
-    const want = new Set(grants.filter((g) => g.startsWith("pack:")).map((g) => g.replace(/^pack:/, "")));
+    const want = new Set(rawGrants.filter((g) => g.startsWith("pack:")).map((g) => g.replace(/^pack:/, "")));
     for (const p of allVisiblePacks()) {
       if (p.owners.includes(id)) continue; // владельцу грант не нужен
       setGrant(p.id, id, want.has(p.id));

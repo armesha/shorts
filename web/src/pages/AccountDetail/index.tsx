@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
-import { ArrowLeft, Save, Trash2, Check, Plus, RefreshCw, Loader2, Play, Upload } from "lucide-react";
+import { ArrowLeft, Save, Trash2, Check, Plus, RefreshCw, Loader2 } from "lucide-react";
 import { apiClient, type Account, type VideoItem, type Generator, type PackSummary, type OAuthClient, type AccountReadiness, type VideoLibraryPage } from "../../lib/api";
 import { confirmDialog } from "../../lib/confirm";
 import { useAuth } from "../../lib/auth";
@@ -17,7 +17,6 @@ import {
 } from "../../lib/deck";
 import { isMainAdmin } from "../../lib/authz";
 import { isMgsLegacyUser } from "../../lib/accountLimits";
-import { cleanDisplayText } from "../../lib/text";
 import {
   toMin,
   randomDayTimes,
@@ -56,7 +55,6 @@ function readDataUrl(file: File): Promise<string> {
 }
 
 const LIBRARY_PAGE_SIZE = 6;
-const LONG_LIBRARY_PAGE_SIZE = 100;
 const EMPTY_VIDEO_PAGE: VideoLibraryPage = {
   items: [],
   total: 0,
@@ -105,8 +103,6 @@ export default function AccountDetail() {
   const slotDeckSaveChain = useRef<Promise<unknown>>(Promise.resolve());
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [videoPage, setVideoPage] = useState<VideoLibraryPage>(EMPTY_VIDEO_PAGE);
-  const [longLibraryVideos, setLongLibraryVideos] = useState<VideoItem[]>([]);
-  const [longVideoPage, setLongVideoPage] = useState<VideoLibraryPage>(EMPTY_VIDEO_PAGE);
   const [readiness, setReadiness] = useState<AccountReadiness | null>(null);
   const [sort, setSort] = useState<"date" | "title" | "posts">("date");
   const [posting, setPosting] = useState<number | null>(null);
@@ -118,14 +114,7 @@ export default function AccountDetail() {
     sourceDecksRef.current = next;
     setSourceDecksState(next);
   };
-  const longVideoDecksRef = useRef<string[]>([]);
-  const [longVideoDecks, setLongVideoDecksState] = useState<string[]>([]);
-  const setLongVideoDecks = (next: string[]) => {
-    longVideoDecksRef.current = next;
-    setLongVideoDecksState(next);
-  };
   const [generateDeck, setGenerateDeck] = useState("");
-  const [addingLongVideoDeck, setAddingLongVideoDeck] = useState<string | null>(null);
   const [lastPosted, setLastPosted] = useState<{ title: string; url: string } | null>(null);
   const [preview, setPreview] = useState<VideoItem | null>(null);
   const [batchN, setBatchN] = useState(5);
@@ -156,15 +145,10 @@ export default function AccountDetail() {
 
   const reloadReadiness = () => apiClient.accountReadiness(id!).then(setReadiness).catch(() => {});
   const reloadVideos = (nextPage = page, nextSort = sort, opts: { skipReadiness?: boolean } = {}) =>
-    Promise.all([
-      apiClient.videosPage(id!, { kind: "regular", page: nextPage, pageSize: LIBRARY_PAGE_SIZE, sort: nextSort }),
-      apiClient.videosPage(id!, { kind: "long", page: 1, pageSize: LONG_LIBRARY_PAGE_SIZE, sort: "date" }),
-    ])
-      .then(([regular, long]) => {
+    apiClient.videosPage(id!, { kind: "regular", page: nextPage, pageSize: LIBRARY_PAGE_SIZE, sort: nextSort })
+      .then((regular) => {
         setVideoPage(regular);
         setVideos(regular.items);
-        setLongVideoPage(long);
-        setLongLibraryVideos(long.items);
         if (regular.page !== nextPage) setPage(regular.page);
       })
       .catch(() => {})
@@ -205,7 +189,7 @@ export default function AccountDetail() {
       : [];
   const remaining = generateDeckIds.reduce((sum, deckId) => sum + sourceRemaining(deckId), 0);
   const trackedQueueForThisAccount = q.accountId === Number(id) ? Math.max(0, q.total - q.done) : 0;
-  const libraryLoadedTotal = Math.max(videoPage.totalAll, videoPage.total + longVideoPage.total);
+  const libraryLoadedTotal = videoPage.totalAll;
   const libraryAvailable = libraryCap == null ? Number.MAX_SAFE_INTEGER : Math.max(0, libraryCap - libraryLoadedTotal - trackedQueueForThisAccount);
   // «Сделать сразу» не больше остатка свободных карточек выбранного контента и свободного места в библиотеке.
   const roleMax = user?.role === "admin" || ownerIsMgs ? 100 : USER_BATCH_VIDEO_CAP;
@@ -242,7 +226,6 @@ export default function AccountDetail() {
           setSourceDecks(sources);
           setGenerateDeck(sources[0] || a.lang);
         }
-        setLongVideoDecks(a.longVideoDecks ?? []);
         setChannelLang(a.channelLang || DECK_LANG[a.lang] || "");
         setTimes(
           user?.isSuperAdmin === true && (!a.userId || a.userId === user.id)
@@ -355,7 +338,6 @@ export default function AccountDetail() {
     setAccount(updated);
     setLang(updated.lang);
     setSourceDecks((updated.sourceDecks?.length ? updated.sourceDecks : [updated.lang]).filter(Boolean));
-    setLongVideoDecks(updated.longVideoDecks ?? []);
     setChannelLang(updated.channelLang || DECK_LANG[updated.lang] || channelLang);
     setSlotVideos(updated.slotVideos || {});
     setSlotDecks(updated.slotDecks || {});
@@ -369,7 +351,6 @@ export default function AccountDetail() {
     try {
       const latestSources = overrides.sourceDecks ?? (sourceDecksRef.current.length ? sourceDecksRef.current : sourceDecks);
       const cleanSources = [...new Set((latestSources.length ? latestSources : [lang]).filter(Boolean))];
-      const cleanLongVideoDecks = [...new Set(longVideoDecksRef.current.filter(Boolean))];
       const sourceLangs = [...new Set(cleanSources.map(contentLang).filter(Boolean))];
       const effectiveChannelLang = sourceLangs.length === 1 ? sourceLangs[0] : channelLangRef.current || channelLang;
       const effectiveTimes = ownerIsSuperAdminAccount ? cleanSuperAdminScheduleTimes(times, effectiveChannelLang, ownerTimeZone) : times;
@@ -402,7 +383,6 @@ export default function AccountDetail() {
         channelName,
         lang: cleanSources[0] || lang,
         sourceDecks: cleanSources,
-        longVideoDecks: cleanLongVideoDecks,
         channelLang: effectiveChannelLang,
         schedule: effectiveTimes,
         slotVideos: effectiveSlotVideos,
@@ -482,7 +462,7 @@ export default function AccountDetail() {
   async function postNow(vid: number) {
     setPosting(vid);
     try {
-      const v = [...videos, ...longLibraryVideos].find((x) => x.id === vid);
+      const v = videos.find((x) => x.id === vid);
       const r = await apiClient.postVideoNow(vid);
       if (r.url) setLastPosted({ title: v?.title ?? t("account.videoFallbackTitle"), url: r.url });
       await reloadVideos(); // posted video is removed server-side → disappears from the list
@@ -576,28 +556,6 @@ export default function AccountDetail() {
     }
   }
 
-  async function addLongVideoToLibrary(deckId: string) {
-    if (!deckId) return;
-    if (!longVideoDecks.includes(deckId)) {
-      notify(t("account.longVideoEnableFirst"), "error");
-      return;
-    }
-    if ((sourcesDirty || longVideoDecksDirty) && !(await save())) return;
-    setAddingLongVideoDeck(deckId);
-    try {
-      await apiClient.addLongVideoToLibrary(id!, deckId);
-      setPage(1);
-      await reloadVideos(1, sort);
-      notify(t("account.longVideoAdded"), "success");
-      void reloadReadiness();
-      apiClient.generators().then(setGens).catch(() => {});
-    } catch (e) {
-      notify(t("account.longVideoAddFailed") + " " + String(e), "error");
-    } finally {
-      setAddingLongVideoDeck(null);
-    }
-  }
-
   async function removeVid(vid: number) {
     if (!(await confirmDialog(t("account.deleteVideoConfirm"), { confirmText: t("common.delete"), danger: true }))) return;
     await apiClient.deleteVideo(vid);
@@ -609,7 +567,7 @@ export default function AccountDetail() {
   // Удалить все обычные ролики, которые выкладывались больше одного раза (postCount > 1).
   async function removePosted() {
     const all = await fetchAllAccountVideos();
-    const targets = all.filter((v) => !isLongVideoDeck(v.deck) && v.postCount > 1);
+    const targets = all.filter((v) => v.postCount > 1);
     if (targets.length === 0) return;
     if (!(await confirmDialog(t("account.deletePostedConfirm", { n: targets.length }), { confirmText: t("common.delete"), danger: true }))) return;
     for (const v of targets) await apiClient.deleteVideo(v.id);
@@ -617,11 +575,11 @@ export default function AccountDetail() {
   }
 
   // Очистить ВСЮ библиотеку канала (например, после смены пака — старый контент больше не подходит).
-  async function clearLibrary(kind: "regular" | "long" = "regular") {
+  async function clearLibrary() {
     setClearing(true);
     try {
       const all = await fetchAllAccountVideos();
-      const targets = all.filter((v) => (kind === "long" ? isLongVideoDeck(v.deck) : !isLongVideoDeck(v.deck)));
+      const targets = all;
       if (targets.length === 0) return;
       if (
         !(await confirmDialog(t("account.clearLibraryConfirm", { n: targets.length }), {
@@ -640,11 +598,7 @@ export default function AccountDetail() {
     }
   }
 
-  const allLongVideoGens = gens.filter((g) => g.longVideo);
-  const longVideoGens = allLongVideoGens.filter((g) => !channelLang || (DECK_LANG[g.id] || g.id) === channelLang);
-  const normalGens = gens.filter((g) => !g.longVideo);
-  const longVideoDeckIds = new Set(allLongVideoGens.map((g) => g.id));
-  const isLongVideoDeck = (deckId: string) => longVideoDeckIds.has(deckId) || longVideoDecks.includes(deckId);
+  const normalGens = gens;
   const pageVideos = videos;
   const pageCount = videoPage.pageCount;
   const clampedPage = videoPage.page;
@@ -693,25 +647,8 @@ export default function AccountDetail() {
     );
     setSlotDecks((prev) => Object.fromEntries(Object.entries(prev).filter(([, deckId]) => clean.includes(deckId) || deckId === "manual")));
   };
-  useEffect(() => {
-    if (longVideoDeckIds.size === 0) return;
-    const misplaced = selectedSources.filter((deckId) => longVideoDeckIds.has(deckId));
-    if (misplaced.length === 0) return;
-    const normalSources = selectedSources.filter((deckId) => !longVideoDeckIds.has(deckId));
-    const fallback = normalSources.length
-      ? normalSources
-      : [normalGens.find((g) => contentLang(g.id) === channelLang)?.id || normalGens[0]?.id || "ru"];
-    setSourceDecks(fallback);
-    setLang(fallback[0] || "ru");
-    setLongVideoDecks([...new Set([...longVideoDecks, ...misplaced])]);
-    setGenerateDeck((cur) => (fallback.includes(cur) ? cur : fallback[0] || ""));
-    setSlotDecks((prev) => Object.fromEntries(Object.entries(prev).filter(([, deckId]) => fallback.includes(deckId) || deckId === "manual")));
-  }, [channelLang, contentLang, longVideoDeckIds, longVideoDecks, normalGens, selectedSources]);
   const savedSources = account ? (account.sourceDecks?.length ? account.sourceDecks : [account.lang]).filter(Boolean) : selectedSources;
   const sourcesDirty = savedSources.join("") !== selectedSources.join("");
-  const savedLongVideoDecks = account?.longVideoDecks ?? [];
-  const longVideoDecksDirty = savedLongVideoDecks.join("") !== longVideoDecks.join("");
-  const updateLongVideoDecks = (next: string[]) => setLongVideoDecks([...new Set(next.filter(Boolean))]);
   // Единый пикер источников: встроенные деки + кастомные паки, сгруппированы только по языку.
   // Группы (данные) считает чистый хелпер sources.ts; здесь только JSX-рендер <optgroup>.
   const deckOptions = (excludeSelected = false) => {
@@ -729,7 +666,7 @@ export default function AccountDetail() {
       <optgroup key={grp.key} label={grp.title}>
         {grp.items.map((it) => (
           <option key={it.id} value={it.id}>
-            {showPackKind ? `[${it.longVideo ? t("packKind.longVideo") : it.video ? t("packKind.video") : t("packKind.text")}] ` : ""}
+            {showPackKind ? `[${it.video ? t("packKind.video") : t("packKind.text")}] ` : ""}
             {it.label}
           </option>
         ))}
@@ -1237,7 +1174,7 @@ export default function AccountDetail() {
         sort={sort}
         setSort={setSort}
         clearing={clearing}
-        clearLibrary={() => clearLibrary("regular")}
+        clearLibrary={clearLibrary}
         selectedSources={selectedSources}
         deckName={deckName}
         deckMeta={deckMeta}
@@ -1276,7 +1213,6 @@ export default function AccountDetail() {
         removeVid={removeVid}
         posting={posting}
         postNow={postNow}
-        isLongVideoDeck={isLongVideoDeck}
         librarySourceName={librarySourceName}
         pageCount={pageCount}
         clampedPage={clampedPage}
@@ -1311,152 +1247,6 @@ export default function AccountDetail() {
         t={t}
       />
 
-      {(longVideoGens.length > 0 || longVideoPage.total > 0) && (
-        <section id="channel-long-content" className="card bg-base-100 border border-base-300">
-          <div className="card-body gap-4">
-            <div className="flex items-center justify-between gap-2 flex-wrap">
-              <h2 className="card-title text-base">{t("account.longContentTitle")}</h2>
-              <div className="flex items-center gap-2">
-                {longVideoDecksDirty && (
-                  <button className="btn btn-sm btn-outline gap-1" onClick={save} disabled={saving}>
-                    {saving ? <span className="loading loading-spinner loading-xs" /> : <Save size={14} />}
-                    {t("common.save")}
-                  </button>
-                )}
-                {longVideoPage.total > 0 && (
-                  <button
-                    className="btn btn-sm btn-error btn-outline gap-1"
-                    onClick={() => clearLibrary("long")}
-                    disabled={clearing}
-                    title={t("account.clearAllTitle")}
-                  >
-                    {clearing ? <Loader2 className="animate-spin" size={14} /> : <Trash2 size={14} />}
-                    {t("account.clearAll")}
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {longVideoGens.length > 0 && (
-              <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
-                {longVideoGens.map((opt) => {
-                  const checked = longVideoDecks.includes(opt.id);
-                  const inLibrary = libraryDeckCounts.get(opt.id) ?? longLibraryVideos.filter((v) => v.deck === opt.id).length;
-                  const total = opt.total ?? Math.max(opt.available ?? 0, inLibrary);
-                  const remaining = Math.min(opt.available ?? total, Math.max(0, total - inLibrary));
-                  const busy = addingLongVideoDeck === opt.id;
-                  return (
-                    <label key={opt.id} className="flex items-center gap-2 rounded-md border border-base-300 bg-base-200/30 p-2 text-sm">
-                      <input
-                        type="checkbox"
-                        className="checkbox checkbox-sm"
-                        checked={checked}
-                        onChange={(e) =>
-                          updateLongVideoDecks(
-                            e.target.checked ? [...longVideoDecks, opt.id] : longVideoDecks.filter((deckId) => deckId !== opt.id),
-                          )
-                        }
-                      />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate font-semibold" title={deckName(opt.id)}>
-                          {deckName(opt.id)}
-                        </span>
-                      </span>
-                      <span className="badge badge-ghost shrink-0">{remaining}</span>
-                      <button
-                        type="button"
-                        className="btn btn-xs btn-primary gap-1 shrink-0"
-                        disabled={!checked || !canPrepareLibrary || busy || saving || remaining < 1}
-                        title={
-                          !checked
-                            ? t("account.longVideoEnableFirst")
-                            : !canPrepareLibrary
-                              ? t("account.connectFirst")
-                              : remaining < 1
-                                ? t("account.longVideoNoFresh")
-                                : t("account.longVideoAddTitle")
-                        }
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          void addLongVideoToLibrary(opt.id);
-                        }}
-                      >
-                        {busy ? <Loader2 className="animate-spin" size={12} /> : <Plus size={12} />}
-                        {t("account.longVideoAddButton")}
-                      </button>
-                    </label>
-                  );
-                })}
-              </div>
-            )}
-
-            {longVideoPage.total > 0 && (
-              <div className="grid grid-cols-1 gap-x-3 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
-                {longLibraryVideos.map((v) => (
-                  <div key={v.id} className="group min-w-0">
-                    <div className="relative mx-auto aspect-video w-full max-w-[360px] overflow-hidden rounded-lg border border-base-300 bg-base-200">
-                      <div
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => setPreview(v)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            setPreview(v);
-                          }
-                        }}
-                        title={t("account.openAndWatch")}
-                        className="absolute inset-0 cursor-pointer"
-                      >
-                        {v.imageRel ? (
-                          <img src={`/files/${v.imageRel}`} alt="" className="h-full w-full object-cover" loading="lazy" />
-                        ) : (
-                          <video
-                            src={`/files/${v.videoRel}`}
-                            muted
-                            playsInline
-                            preload="metadata"
-                            className="pointer-events-none h-full w-full object-cover"
-                            aria-hidden="true"
-                          />
-                        )}
-                        <span className="absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/30">
-                          <Play size={34} fill="currentColor" className="text-white opacity-0 drop-shadow-lg transition group-hover:opacity-100" />
-                        </span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeVid(v.id)}
-                        title={t("account.removeFromLibrary")}
-                        className="btn btn-error btn-xs btn-circle absolute right-1 top-1 z-10 opacity-0 transition group-hover:opacity-100"
-                      >
-                        <Trash2 size={12} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => postNow(v.id)}
-                        disabled={posting === v.id || account.status !== "connected"}
-                        title={account.status !== "connected" ? t("account.connectFirst") : t("account.postNowTitle")}
-                        className="btn btn-primary btn-xs absolute inset-x-1.5 bottom-1.5 z-10 gap-1 opacity-0 transition group-hover:opacity-100"
-                      >
-                        {posting === v.id ? <Loader2 className="animate-spin" size={12} /> : <Upload size={12} />}
-                        {t("account.post")}
-                      </button>
-                    </div>
-                    <div className="mx-auto mt-1.5 max-w-[360px] text-sm font-medium leading-tight line-clamp-2" title={cleanDisplayText(v.title)}>
-                      {cleanDisplayText(v.title)}
-                    </div>
-                    <div className="mx-auto mt-1 max-w-[360px] truncate text-[11px] text-base-content/50">
-                      {librarySourceName(v.deck)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-      )}
     </div>
   );
 }
