@@ -34,7 +34,7 @@ const FACT_TTS_VOICE_BY_LANG: Record<string, string> = {
 
 // These decks contain final, already-voiced MP4 files. They must never pass through the
 // localized fact branch: doing so would replace their audio and burn a second subtitle layer in.
-const FINAL_PREBUILT_AUDIO_DECKS = new Set(["voiced-memes-ru"]);
+const FINAL_PREBUILT_AUDIO_DECKS = new Set(["voiced-memes-ru", "shortrobot1"]);
 
 export function localizedFactVoiceForDeck(deckId: string): string | undefined {
   if (FINAL_PREBUILT_AUDIO_DECKS.has(deckId)) return undefined;

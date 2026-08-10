@@ -1579,14 +1579,18 @@ node --input-type=module -e 'import fs from "node:fs"; import path from "node:pa
 пользователям через матрицу прав.
 
 - входящие MP4 и метаданные: `tmp/channel-103-rofls-inbox/`;
+- финальные MP4: `tmp/channel-103-rofls-with-endcard/`; к каждому исходнику добавляется один из пяти
+  трёхсекундных вариантов `shortrobot-endcard-voices-short`, распределённых случайно и поровну (17×5);
 - импорт: `node scripts/import-shortrobot1-pack.mjs`;
 - runtime-манифесты и provenance: `data/shortrobot1/{videos,index,sources}.json`;
 - локальные MP4: `assets/fact-videos/shortrobot1/`;
 - регистрация: `src/anecdotes/decks.ts`, deck id `shortrobot1`, `preFact: true`, `sequential: true`.
 
-Повторный импорт детерминированно пересобирает те же 85 позиций. Он не переписывает исходные ролики и
-не использует LLM: публичные названия выпусков формируются локально по порядковому номеру, а исходные
-YouTube-заголовки и URL сохраняются только в `sources.json`.
+Повторный импорт детерминированно пересобирает те же 85 позиций из финальных MP4 с концовкой. Он не
+переписывает исходные ролики и не использует LLM: публичные названия выпусков формируются локально по
+порядковому номеру, а исходные YouTube-заголовки и URL сохраняются только в `sources.json`. Deck входит
+в `FINAL_PREBUILT_AUDIO_DECKS`, поэтому библиотека копирует готовый звук и видео без повторной TTS-
+локализации и без нового текстового слоя.
 
 ### `quotes-de` static quote-card expansion
 
