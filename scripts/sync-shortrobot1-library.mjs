@@ -7,16 +7,17 @@ const ROOT = resolve(import.meta.dirname, "..");
 const DB_PATH = resolve(ROOT, "data/app.db");
 const OUTPUT_DIR = resolve(ROOT, "data/output");
 const ASSET_DIR = resolve(ROOT, "assets/fact-videos/shortrobot1");
-const ACCOUNT_ID = 106;
+const ACCOUNT_ID = Number.parseInt(process.argv[2] || "106", 10);
 const DECK_ID = "shortrobot1";
+if (!Number.isInteger(ACCOUNT_ID) || ACCOUNT_ID <= 0) throw new Error("Pass a valid account id");
 
 const db = new DatabaseSync(DB_PATH, { readOnly: true });
 const account = db
   .prepare("SELECT id, user_id, source_decks FROM accounts WHERE id = ?")
   .get(ACCOUNT_ID);
-if (!account || Number(account.user_id) !== 1) throw new Error("Unexpected owner for account 106");
+if (!account || Number(account.user_id) !== 1) throw new Error(`Unexpected owner for account ${ACCOUNT_ID}`);
 if (!JSON.parse(String(account.source_decks || "[]")).includes(DECK_ID)) {
-  throw new Error("Account 106 is not linked to shortrobot1");
+  throw new Error(`Account ${ACCOUNT_ID} is not linked to shortrobot1`);
 }
 
 const rows = db
@@ -28,7 +29,7 @@ const rows = db
   )
   .all(ACCOUNT_ID, DECK_ID);
 db.close();
-if (!rows.length) throw new Error("No shortrobot1 library videos found for account 106");
+if (!rows.length) throw new Error(`No shortrobot1 library videos found for account ${ACCOUNT_ID}`);
 
 let synced = 0;
 for (const row of rows) {
