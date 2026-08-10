@@ -29,6 +29,7 @@ function client(creds: ClientCreds, redirectUri: string) {
 
 const SCOPES = [
   "https://www.googleapis.com/auth/youtube",
+  "https://www.googleapis.com/auth/youtube.force-ssl",
   "https://www.googleapis.com/auth/youtube.upload",
   "https://www.googleapis.com/auth/youtube.readonly",
   "https://www.googleapis.com/auth/yt-analytics.readonly",
@@ -196,6 +197,33 @@ export async function uploadShort(
       },
     },
     media: { body: createReadStream(o.videoPath) },
+  });
+  return res.data.id ?? null;
+}
+
+/** Add one top-level comment to an uploaded video. Requires the youtube.force-ssl OAuth scope. */
+export async function insertVideoComment(
+  creds: ClientCreds,
+  redirectUri: string,
+  refreshToken: string,
+  channelId: string,
+  videoId: string,
+  text: string,
+): Promise<string | null> {
+  const oauth = client(creds, redirectUri);
+  oauth.setCredentials({ refresh_token: refreshToken });
+  const yt = google.youtube({ version: "v3", auth: oauth });
+  const res = await yt.commentThreads.insert({
+    part: ["snippet"],
+    requestBody: {
+      snippet: {
+        channelId,
+        videoId,
+        topLevelComment: {
+          snippet: { textOriginal: sanitizeYtText(text) },
+        },
+      },
+    },
   });
   return res.data.id ?? null;
 }

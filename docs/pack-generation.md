@@ -1382,12 +1382,19 @@ node --input-type=module -e 'import fs from "node:fs"; import path from "node:pa
 - входящие MP4 и метаданные: `tmp/channel-103-rofls-inbox/`;
 - финальные MP4: `tmp/channel-103-rofls-with-endcard/`; к каждому исходнику добавляется один из пяти
   трёхсекундных вариантов `shortrobot-endcard-voices-short`, распределённых случайно и поровну (17×5);
+- финальные MP4 с плашкой: `tmp/channel-103-rofls-with-endcard-and-tag/`; плашка `@shortrobot`
+  показывается только на основной части ролика и исчезает ровно при начале трёхсекундной концовки;
 - импорт: `node scripts/import-shortrobot1-pack.mjs`;
 - runtime-манифесты и provenance: `data/shortrobot1/{videos,index,sources}.json`;
 - локальные MP4: `assets/fact-videos/shortrobot1/`;
 - регистрация: `src/anecdotes/decks.ts`, deck id `shortrobot1`, `preFact: true`, `sequential: true`.
 
-Повторный импорт детерминированно пересобирает те же 85 позиций из финальных MP4 с концовкой. Он не
+После успешной загрузки ролика из `shortrobot1` uploader создаёт верхний комментарий с рекламой
+`@shortrobot` через YouTube `commentThreads.insert`; другие паки этот комментарий не получают. Для
+этого OAuth-подключение канала должно включать scope `youtube.force-ssl`. Ошибка комментария
+логируется отдельно и не превращает уже успешно загруженное видео в ошибочную публикацию.
+
+Повторный импорт детерминированно пересобирает те же 85 позиций из финальных MP4 с концовкой и плашкой. Он не
 переписывает исходные ролики и не использует LLM: публичные названия выпусков формируются локально по
 порядковому номеру, а исходные YouTube-заголовки и URL сохраняются только в `sources.json`. Deck входит
 в `FINAL_PREBUILT_AUDIO_DECKS`, поэтому библиотека копирует готовый звук и видео без повторной TTS-

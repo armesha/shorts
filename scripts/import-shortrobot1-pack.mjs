@@ -5,11 +5,13 @@ const ROOT = resolve(import.meta.dirname, "..");
 const DECK_ID = "shortrobot1";
 const INBOX_DIR = resolve(ROOT, "tmp/channel-103-rofls-inbox");
 const ENDCARD_DIR = resolve(ROOT, "tmp/channel-103-rofls-with-endcard");
+const TAGGED_DIR = resolve(ROOT, "tmp/channel-103-rofls-with-endcard-and-tag");
 const DATA_DIR = resolve(ROOT, "data", DECK_ID);
 const ASSET_DIR = resolve(ROOT, "assets/fact-videos", DECK_ID);
 
 if (!existsSync(INBOX_DIR)) throw new Error(`Inbox not found: ${relative(ROOT, INBOX_DIR)}`);
 if (!existsSync(ENDCARD_DIR)) throw new Error(`Endcard output not found: ${relative(ROOT, ENDCARD_DIR)}`);
+if (!existsSync(TAGGED_DIR)) throw new Error(`Tagged output not found: ${relative(ROOT, TAGGED_DIR)}`);
 
 const inputs = readdirSync(INBOX_DIR, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
@@ -31,8 +33,10 @@ const items = [];
 for (const [index, input] of inputs.entries()) {
   const infoPath = input.mp4.replace(/\.mp4$/i, ".info.json");
   if (!existsSync(infoPath)) throw new Error(`Missing metadata: ${relative(ROOT, infoPath)}`);
-  const processedMp4 = join(ENDCARD_DIR, basename(input.mp4));
-  if (!existsSync(processedMp4)) throw new Error(`Missing endcard video: ${relative(ROOT, processedMp4)}`);
+  const endcardMp4 = join(ENDCARD_DIR, basename(input.mp4));
+  if (!existsSync(endcardMp4)) throw new Error(`Missing endcard video: ${relative(ROOT, endcardMp4)}`);
+  const processedMp4 = join(TAGGED_DIR, basename(input.mp4));
+  if (!existsSync(processedMp4)) throw new Error(`Missing tagged video: ${relative(ROOT, processedMp4)}`);
   const info = JSON.parse(readFileSync(infoPath, "utf8"));
   const sequence = String(index + 1).padStart(3, "0");
   const outputName = `${DECK_ID}-${sequence}.mp4`;
@@ -48,7 +52,8 @@ for (const [index, input] of inputs.entries()) {
     file: `${DECK_ID}/${outputName}`,
     sourceGroup: input.sourceGroup,
     sourceFile: relative(ROOT, input.mp4),
-    processedFile: relative(ROOT, processedMp4),
+    processedFile: relative(ROOT, endcardMp4),
+    taggedFile: relative(ROOT, processedMp4),
     sourceId: String(info.id ?? basename(input.mp4, ".mp4")),
     sourceUrl: String(info.webpage_url ?? info.original_url ?? ""),
     channel: String(info.channel ?? info.uploader ?? ""),

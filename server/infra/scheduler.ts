@@ -4,7 +4,8 @@ import cron from "node-cron";
 import type { Account, Db, Video } from "../db.ts";
 import { DECKS, MANUAL_VIDEO_DECK, getDeck, isPackDeckId } from "../../src/anecdotes/decks.ts";
 import { ytMeta } from "../../src/anecdotes/yt-meta.ts";
-import { uploadShort, ytErrorReason, isYtAuthError, type ClientCreds } from "../services/youtube.ts";
+import { uploadShort, insertVideoComment, ytErrorReason, isYtAuthError, type ClientCreds } from "../services/youtube.ts";
+import { automaticVideoCommentForDeck } from "../services/video-comments.ts";
 import type { Notifier } from "../services/notify-stream.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
 import {
@@ -237,6 +238,16 @@ export function startScheduler(opts: SchedulerOpts) {
             categoryId: manualDefaults?.categoryId,
           }),
         );
+        const automaticComment = automaticVideoCommentForDeck(lib.deck);
+        if (videoId && automaticComment && acc.ytChannelId) {
+          try {
+            await insertVideoComment(creds, opts.redirectUri, token, acc.ytChannelId, videoId, automaticComment);
+          } catch (commentError) {
+            opts.log(
+              `[sched] account ${acc.id}: video ${videoId} uploaded, automatic comment failed: ${ytErrorReason(commentError)}`,
+            );
+          }
+        }
         opts.db.addHistory({
           accountId: acc.id,
           title: meta.title,

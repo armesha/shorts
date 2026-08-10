@@ -227,11 +227,10 @@ export default function AccountDetail() {
           setGenerateDeck(sources[0] || a.lang);
         }
         setChannelLang(a.channelLang || DECK_LANG[a.lang] || "");
-        setTimes(
-          user?.isSuperAdmin === true && (!a.userId || a.userId === user.id)
-            ? cleanSuperAdminScheduleTimes(a.schedule, a.channelLang || a.lang, user?.timezone || a.timezone)
-            : a.schedule,
-        );
+        // The API schedule is the source of truth. Do not silently hide persisted times here:
+        // otherwise the page can show fewer daily posts than the scheduler actually has. Invalid
+        // super-admin times are still rejected on add/save and cleaned only during an explicit save.
+        setTimes(a.schedule);
         setSlotVideos(a.slotVideos || {});
         setSlotDecks(a.slotDecks || {});
         console.log("[привязка] канал загружен:", {

@@ -23,7 +23,8 @@ import {
 } from "../services/pack-gen.ts";
 import { cleanupDrainedAutoExpireDecksForAccount, removeAutoExpiredDeckFromAccount } from "../services/auto-expire-packs.ts";
 import { buildFactLibraryVideo } from "../services/fact-gen.ts";
-import { uploadShort, isYtAuthError, ytErrorReason } from "../services/youtube.ts";
+import { uploadShort, insertVideoComment, isYtAuthError, ytErrorReason } from "../services/youtube.ts";
+import { automaticVideoCommentForDeck } from "../services/video-comments.ts";
 import {
   MANUAL_VIDEO_DECK,
   MAX_MANUAL_VIDEO_UPLOAD_BYTES,
@@ -201,6 +202,17 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
           publishAt,
         }),
       );
+      const automaticComment = automaticVideoCommentForDeck(v.deck);
+      if (youtubeId && automaticComment && acc.ytChannelId) {
+        try {
+          await insertVideoComment(creds, REDIRECT_URI, token, acc.ytChannelId, youtubeId, automaticComment);
+        } catch (commentError) {
+          app.log.warn(
+            { err: commentError, accountId: v.accountId, videoId: youtubeId, deck: v.deck },
+            "automatic YouTube comment failed after successful upload",
+          );
+        }
+      }
       db.addHistory({
         accountId: v.accountId,
         title: meta.title,
