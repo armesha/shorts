@@ -40,6 +40,7 @@ test("deckLang maps built-in decks; '' for packs/unknown", () => {
   assert.equal(deckLang("fact-pt"), "pt");
   assert.equal(deckLang("space-es"), "es");
   assert.equal(deckLang("voiced-memes-ru"), "ru");
+  assert.equal(deckLang("shortrobot1"), "ru");
   assert.equal(deckLang("memes-pt"), "pt");
   assert.equal(deckLang("memes-es"), "es");
   assert.equal(deckLang("memes-hi"), "hi");
@@ -81,6 +82,11 @@ test("getDeck: synthetic deck for pack ids, default for unknown", () => {
   assert.equal(voicedMemes.name, "Озвучка мемов");
   assert.equal(voicedMemes.preFact, true);
   assert.equal(voicedMemes.sequential, true);
+  const shortrobot = getDeck("shortrobot1");
+  assert.equal(shortrobot.name, "shortrobot1");
+  assert.equal(shortrobot.preFact, true);
+  assert.equal(shortrobot.grantable, true);
+  assert.equal(shortrobot.sequential, true);
 });
 
 test("pickGenericTitle returns one of the deck's titles", () => {

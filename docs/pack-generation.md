@@ -1572,6 +1572,22 @@ node --input-type=module -e 'import fs from "node:fs"; const m=JSON.parse(fs.rea
 node --input-type=module -e 'import fs from "node:fs"; import path from "node:path"; for (const d of ["data/fact-videos","data/quotes-de","data/space"]) { const arr=JSON.parse(fs.readFileSync(`${d}/videos.json`,"utf8")); const missing=arr.filter(x=>!fs.existsSync(path.resolve("assets/fact-videos",x.file))).map(x=>x.file); const idxPath=`${d}/index.json`; const idx=fs.existsSync(idxPath)?JSON.parse(fs.readFileSync(idxPath,"utf8")):{total:arr.length}; console.log(d,{videos:arr.length,indexTotal:idx.total,missing:missing.slice(0,5),missingCount:missing.length}); }'
 ```
 
+### `shortrobot1`
+
+`shortrobot1` — последовательный RU prebuilt-видеопак из 85 роликов, на использование которых владелец
+подтвердил разрешение 2026-08-10. Пак доступен администраторам и может точечно выдаваться обычным
+пользователям через матрицу прав.
+
+- входящие MP4 и метаданные: `tmp/channel-103-rofls-inbox/`;
+- импорт: `node scripts/import-shortrobot1-pack.mjs`;
+- runtime-манифесты и provenance: `data/shortrobot1/{videos,index,sources}.json`;
+- локальные MP4: `assets/fact-videos/shortrobot1/`;
+- регистрация: `src/anecdotes/decks.ts`, deck id `shortrobot1`, `preFact: true`, `sequential: true`.
+
+Повторный импорт детерминированно пересобирает те же 85 позиций. Он не переписывает исходные ролики и
+не использует LLM: публичные названия выпусков формируются локально по порядковому номеру, а исходные
+YouTube-заголовки и URL сохраняются только в `sources.json`.
+
 ### `quotes-de` static quote-card expansion
 
 2026-06-25 активный deck `quotes-de` вынесен в tracked-папку `data/quotes-de-combined/` как единый
