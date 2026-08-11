@@ -30,6 +30,33 @@ test("szz routes serve the latest source HTML without restarting", async () => {
   rmSync(dir, { recursive: true, force: true });
 });
 
+test("szz backup routes serve the configured backup without changing the current page", async () => {
+  const dir = mkdtempSync(resolve(tmpdir(), "szz-backup-route-"));
+  const htmlPath = resolve(dir, "ticket.html");
+  const backupHtmlPath = resolve(dir, "ticket-backup.html");
+  writeFileSync(htmlPath, "<!doctype html><title>current tickets</title>");
+  writeFileSync(backupHtmlPath, "<!doctype html><title>backup tickets</title>");
+
+  const app = Fastify();
+  registerSzzRoutes(app, { htmlPath, backupHtmlPath });
+
+  const current = await app.inject({ method: "GET", url: "/szz" });
+  assert.equal(current.statusCode, 200);
+  assert.match(current.body, /current tickets/);
+
+  for (const url of ["/szzbackup", "/szzbackup/"]) {
+    const backup = await app.inject({ method: "GET", url });
+    assert.equal(backup.statusCode, 200);
+    assert.match(backup.headers["content-type"] ?? "", /^text\/html/);
+    assert.equal(backup.headers["cache-control"], "no-store, max-age=0");
+    assert.match(backup.body, /backup tickets/);
+    assert.doesNotMatch(backup.body, /current tickets/);
+  }
+
+  await app.close();
+  rmSync(dir, { recursive: true, force: true });
+});
+
 test("szz offline route downloads the latest source HTML", async () => {
   const dir = mkdtempSync(resolve(tmpdir(), "szz-offline-route-"));
   const htmlPath = resolve(dir, "ticket.html");

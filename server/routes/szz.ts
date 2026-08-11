@@ -4,6 +4,8 @@ import { resolve } from "node:path";
 import type { Db } from "../db.ts";
 
 const DEFAULT_SZZ_HTML_PATH = "/home/davtian/Documents/db/SZZ_DB_ticket_1_1.html";
+const DEFAULT_SZZ_BACKUP_HTML_PATH =
+  "/home/davtian/Documents/db/backups/2026-08-10_20-46-33_before_full_simplification/SZZ_DB_ticket_1_1.html";
 const DEFAULT_SZZ_ANSWERS_PDF_PATH = "/home/davtian/Documents/db/SZZ_DB.pdf";
 const DEFAULT_SZZ_TOPICS_PDF_PATH =
   "/home/davtian/Documents/db/final-verzetoszzbcitb0688a140009113064_DB.pdf";
@@ -12,6 +14,7 @@ const SZZ_TICKET_PDF_FILE = /^SZZ_DB_ticket_1_(?:[1-9]|1[0-9]|2[0-3])\.pdf$/;
 
 type SzzRouteOptions = {
   htmlPath?: string;
+  backupHtmlPath?: string;
   answersPdfPath?: string;
   topicsPdfPath?: string;
   ticketPdfsPath?: string;
@@ -117,6 +120,11 @@ function sendSzzPdf(reply: FastifyReply, pdfPath: string, fileName: string) {
 
 export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions = {}) {
   const htmlPath = resolve(options.htmlPath ?? process.env.SZZ_HTML_PATH ?? DEFAULT_SZZ_HTML_PATH);
+  const backupHtmlPath = resolve(
+    options.backupHtmlPath ??
+      process.env.SZZ_BACKUP_HTML_PATH ??
+      DEFAULT_SZZ_BACKUP_HTML_PATH,
+  );
   const answersPdfPath = resolve(
     options.answersPdfPath ?? process.env.SZZ_ANSWERS_PDF_PATH ?? DEFAULT_SZZ_ANSWERS_PDF_PATH,
   );
@@ -131,6 +139,8 @@ export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions
 
   app.get("/szz", async (_req, reply) => sendSzzPage(reply, htmlPath));
   app.get("/szz/", async (_req, reply) => sendSzzPage(reply, htmlPath));
+  app.get("/szzbackup", async (_req, reply) => sendSzzPage(reply, backupHtmlPath));
+  app.get("/szzbackup/", async (_req, reply) => sendSzzPage(reply, backupHtmlPath));
   app.get("/szz/SZZ_DB_offline.html", async (_req, reply) =>
     sendSzzPage(reply, htmlPath, "SZZ_DB_offline.html"),
   );
