@@ -1,0 +1,14 @@
+FFmpeg
+======
+
+This package redistributes the unmodified ffmpeg.exe from the 64-bit Windows
+"release essentials" build published by Gyan Doshi.
+
+Build source: https://www.gyan.dev/ffmpeg/builds/
+Upstream project: https://ffmpeg.org/
+Exact bundled version and configuration are recorded in ffmpeg/README.txt.
+The corresponding FFmpeg source is linked from the build README and build page.
+
+The bundled build is licensed under GNU GPL version 3. A copy of the license is
+included as ffmpeg/LICENSE. FFmpeg and its authors do not endorse this tool.
+
