@@ -25,6 +25,7 @@ const routeLoaders = {
   ideas: () => import("../pages/Ideas"),
   signals: () => import("../pages/Signals"),
   signalsAnalysis: () => import("../pages/SignalsAnalysis"),
+  stasReport: () => import("../pages/StasReport"),
 };
 
 export const pageLoaders = routeLoaders;
@@ -53,6 +54,7 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
   if (pathname === "/admin/analytics") return "statistics";
   if (pathname === "/tg") return "telegramMiniApp";
   if (pathname === "/signals/analysis") return "signalsAnalysis";
+  if (pathname === "/stas") return "stasReport";
 
   switch (pathname) {
     case "/overview":

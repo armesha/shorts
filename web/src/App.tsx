@@ -36,6 +36,7 @@ const TelegramMiniApp = lazy(pageLoaders.telegramMiniApp);
 const Ideas = lazy(pageLoaders.ideas);
 const Signals = lazy(pageLoaders.signals);
 const SignalsAnalysis = lazy(pageLoaders.signalsAnalysis);
+const StasReport = lazy(pageLoaders.stasReport);
 
 function CreatorExternalRedirect() {
   useEffect(() => {
@@ -118,6 +119,14 @@ function RootRoutes() {
   return (
     <Routes>
       <Route
+        path="/stas"
+        element={
+          <Suspense fallback={<StasReportFallback />}>
+            <StasReport />
+          </Suspense>
+        }
+      />
+      <Route
         path="/tg"
         element={
           <Suspense fallback={<TelegramMiniAppFallback />}>
@@ -127,6 +136,18 @@ function RootRoutes() {
       />
       <Route path="*" element={<Gate />} />
     </Routes>
+  );
+}
+
+function StasReportFallback() {
+  return (
+    <div className="min-h-screen bg-[#f2efe8] px-5 py-16 text-[#20231f]">
+      <div className="mx-auto max-w-3xl animate-pulse space-y-5" aria-label="Загрузка исследования">
+        <div className="h-4 w-36 rounded bg-[#d8d3c8]" />
+        <div className="h-14 max-w-2xl rounded bg-[#d8d3c8]" />
+        <div className="h-28 rounded-xl bg-[#e1ddd4]" />
+      </div>
+    </div>
   );
 }
 
