@@ -99,6 +99,15 @@ test("Telegram bot menu exposes clear circle navigation and back actions", async
     assert.ok(homeButtons.some((button) => button.web_app?.url === "https://shareboard.live/tg"));
     assert.ok(homeButtons.some((button) => button.url === "https://shareboard.live/circles"));
 
+    await bot.entry({ from: { id: 100 }, chat: { id: 100 } }, "help");
+    const help = requests.at(-1);
+    assert.match(help?.body.text ?? "", /@ShortRobotAdmin/);
+    assert.doesNotMatch(help?.body.text ?? "", /Что умеет бот/);
+    assert.deepEqual(callbackData(help?.body.reply_markup), ["s:home"]);
+    assert.ok(help?.body.reply_markup?.inline_keyboard.flat().some(
+      (button) => button.url === "https://t.me/ShortRobotAdmin",
+    ));
+
     await bot.entry({ from: { id: 100 }, chat: { id: 100 } }, "circles");
     const circles = requests.at(-1);
     assert.match(circles?.body.text ?? "", /Отправьте или перешлите/);

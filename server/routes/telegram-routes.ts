@@ -126,7 +126,7 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
       { command: "stats", description: "Статистика каналов" },
       { command: "circles", description: "Добавить Telegram-кружок" },
       { command: "settings", description: "Настройки уведомлений" },
-      { command: "help", description: "Что умеет бот" },
+      { command: "help", description: "Связаться с администратором" },
     ]);
     const base = (process.env.PUBLIC_BASE_URL || "").trim().replace(/\/+$/, "");
     if (!base) {
