@@ -201,15 +201,22 @@ export function makeBotStats(deps: BotStatsDeps) {
 
   function helpView(): { text: string; keyboard: InlineKeyboard } {
     const text =
-      `${bold("❔ Помощь")}\n\n` +
-      `Если возник вопрос или что-то не работает, напишите администратору: ${bold("@ShortRobotAdmin")}.\n\n` +
-      `Кратко опишите проблему и укажите, что именно вы пытались сделать.`;
+      `${bold("Что умеет бот")}\n\n` +
+      `• ${bold("/menu")} — главный экран с быстрыми действиями.\n` +
+      `• ${bold("/circles")} — добавить видеокружок и открыть редактор.\n` +
+      `• ${bold("/stats")} — статистика каналов: вкладка ${bold("Analytics")} (метрики за 7/30/90 дней) и вкладка ${bold("Data API")} (публичные счётчики за всё время) — как на сайте.\n` +
+      `• ${bold("/settings")} — настройка уведомлений прямо в Telegram.\n` +
+      `• Бот присылает критичные сообщения: отвязался канал, проблемы YouTube API/Analytics, лимиты и ошибки, если категории включены.\n\n` +
+      `Кнопки редактируют это же сообщение, поэтому чат не засоряется.`;
     return {
       text,
       keyboard: {
         inline_keyboard: [
-          [{ text: "✉️ Написать администратору", url: "https://t.me/ShortRobotAdmin" }],
-          [{ text: "🏠 Главное меню", callback_data: "s:home" }],
+          [{ text: "⭕ Добавить кружок", callback_data: "s:circles" }],
+          [
+            { text: "🏠 Меню", callback_data: "s:home" },
+            { text: "🔔 Настройки", callback_data: "s:settings" },
+          ],
         ],
       },
     };
