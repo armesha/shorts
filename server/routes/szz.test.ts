@@ -7,6 +7,12 @@ import Fastify from "fastify";
 import { openDb } from "../db.ts";
 import { registerSzzRoutes } from "./szz.ts";
 
+function allTicketCountUpdates(updatedAt: number): Record<string, number> {
+  return Object.fromEntries(
+    Array.from({ length: 23 }, (_, index) => [`ticket-1-${index + 1}`, updatedAt]),
+  );
+}
+
 test("szz routes serve the latest source HTML without restarting", async () => {
   const dir = mkdtempSync(resolve(tmpdir(), "szz-route-"));
   const htmlPath = resolve(dir, "ticket.html");
@@ -207,6 +213,11 @@ test("szz ticket PDF route serves only the 23 generated ticket files", async () 
 });
 
 test("szz study state is stored per authenticated user and rejects stale writes", async () => {
+  const firstUpdatedAt = 2_000_000_000_000;
+  const staleUpdatedAt = firstUpdatedAt - 100;
+  const secondUpdatedAt = firstUpdatedAt + 100;
+  const accidentalUpdatedAt = firstUpdatedAt + 200;
+  const intentionalUpdatedAt = firstUpdatedAt + 300;
   const db = openDb(":memory:");
   const firstUser = db.createUser({ username: "szz-first", passHash: "x" });
   const secondUser = db.createUser({ username: "szz-second", passHash: "x" });
@@ -244,7 +255,7 @@ test("szz study state is stored per authenticated user and rejects stale writes"
       completed: 1,
       rounds: 2,
     },
-    updatedAt: 200,
+    updatedAt: firstUpdatedAt,
   };
   const saved = await app.inject({
     method: "PUT",
@@ -252,19 +263,25 @@ test("szz study state is stored per authenticated user and rejects stale writes"
     headers: { "x-test-user-id": String(firstUser.id) },
     payload: { state: firstState },
   });
+  const firstStoredState = {
+    ...firstState,
+    ticketCountUpdates: allTicketCountUpdates(firstUpdatedAt),
+  };
   assert.equal(saved.statusCode, 200);
   assert.equal(saved.json().saved, true);
-  assert.deepEqual(saved.json().state, firstState);
+  assert.deepEqual(saved.json().state, firstStoredState);
 
   const stale = await app.inject({
     method: "PUT",
     url: "/api/szz/state",
     headers: { "x-test-user-id": String(firstUser.id) },
-    payload: { state: { ...firstState, ticketOrder: ["ticket-1-9"], updatedAt: 100 } },
+    payload: {
+      state: { ...firstState, ticketOrder: ["ticket-1-9"], updatedAt: staleUpdatedAt },
+    },
   });
   assert.equal(stale.statusCode, 200);
   assert.equal(stale.json().saved, false);
-  assert.deepEqual(stale.json().state, firstState);
+  assert.deepEqual(stale.json().state, firstStoredState);
 
   const secondState = {
     version: 1,
@@ -272,7 +289,7 @@ test("szz study state is stored per authenticated user and rejects stale writes"
     reviews: {},
     activityDates: {},
     ticketOrder: ["ticket-1-23"],
-    updatedAt: 300,
+    updatedAt: secondUpdatedAt,
   };
   await app.inject({
     method: "PUT",
@@ -280,6 +297,11 @@ test("szz study state is stored per authenticated user and rejects stale writes"
     headers: { "x-test-user-id": String(secondUser.id) },
     payload: { state: secondState },
   });
+  const secondStoredState = {
+    ...secondState,
+    ticketCounts: {},
+    ticketCountUpdates: allTicketCountUpdates(secondUpdatedAt),
+  };
 
   const firstRead = await app.inject({
     method: "GET",
@@ -291,14 +313,57 @@ test("szz study state is stored per authenticated user and rejects stale writes"
     url: "/api/szz/state",
     headers: { "x-test-user-id": String(secondUser.id) },
   });
-  assert.deepEqual(firstRead.json().state, firstState);
-  assert.deepEqual(secondRead.json().state, secondState);
+  assert.deepEqual(firstRead.json().state, firstStoredState);
+  assert.deepEqual(secondRead.json().state, secondStoredState);
+
+  const accidentalEmptyCounters = await app.inject({
+    method: "PUT",
+    url: "/api/szz/state",
+    headers: { "x-test-user-id": String(firstUser.id) },
+    payload: {
+      state: {
+        ...firstState,
+        ticketCounts: {},
+        updatedAt: accidentalUpdatedAt,
+      },
+    },
+  });
+  assert.equal(accidentalEmptyCounters.statusCode, 200);
+  assert.deepEqual(accidentalEmptyCounters.json().state.ticketCounts, firstState.ticketCounts);
+  assert.deepEqual(
+    accidentalEmptyCounters.json().state.ticketCountUpdates,
+    allTicketCountUpdates(firstUpdatedAt),
+  );
+
+  const intentionalZero = await app.inject({
+    method: "PUT",
+    url: "/api/szz/state",
+    headers: { "x-test-user-id": String(firstUser.id) },
+    payload: {
+      state: {
+        ...firstState,
+        ticketCounts: { "ticket-1-9": 1 },
+        ticketCountUpdates: { "ticket-1-6": intentionalUpdatedAt },
+        updatedAt: intentionalUpdatedAt,
+      },
+    },
+  });
+  assert.equal(intentionalZero.statusCode, 200);
+  assert.deepEqual(intentionalZero.json().state.ticketCounts, { "ticket-1-9": 1 });
+  assert.equal(
+    intentionalZero.json().state.ticketCountUpdates["ticket-1-6"],
+    intentionalUpdatedAt,
+  );
+  assert.equal(
+    intentionalZero.json().state.ticketCountUpdates["ticket-1-9"],
+    intentionalUpdatedAt,
+  );
 
   const invalid = await app.inject({
     method: "PUT",
     url: "/api/szz/state",
     headers: { "x-test-user-id": String(firstUser.id) },
-    payload: { state: { ticketOrder: [], updatedAt: 400 } },
+    payload: { state: { ticketOrder: [], updatedAt: intentionalUpdatedAt } },
   });
   assert.equal(invalid.statusCode, 400);
 
@@ -315,7 +380,7 @@ test("szz study state is stored per authenticated user and rejects stale writes"
           completed: 0,
           rounds: 0,
         },
-        updatedAt: 400,
+        updatedAt: intentionalUpdatedAt,
       },
     },
   });
@@ -329,11 +394,25 @@ test("szz study state is stored per authenticated user and rejects stale writes"
       state: {
         ...firstState,
         ticketCounts: { "ticket-1-6": -1 },
-        updatedAt: 401,
+        updatedAt: intentionalUpdatedAt + 1,
       },
     },
   });
   assert.equal(invalidTicketCounts.statusCode, 400);
+
+  const invalidTicketCountUpdate = await app.inject({
+    method: "PUT",
+    url: "/api/szz/state",
+    headers: { "x-test-user-id": String(firstUser.id) },
+    payload: {
+      state: {
+        ...firstState,
+        ticketCountUpdates: { "ticket-1-6": intentionalUpdatedAt + 2 },
+        updatedAt: intentionalUpdatedAt + 1,
+      },
+    },
+  });
+  assert.equal(invalidTicketCountUpdate.statusCode, 400);
 
   await app.close();
   db.db.close();

@@ -29,7 +29,9 @@ type SzzRouteOptions = {
 
 const MAX_STUDY_STATE_BYTES = 128 * 1024;
 const SZZ_TICKET_ID = /^ticket-1-(?:[1-9]|1[0-9]|2[0-3])$/;
+const SZZ_TICKET_IDS = Array.from({ length: 23 }, (_, index) => `ticket-1-${index + 1}`);
 const MAX_TICKET_COUNT = 1_000_000;
+const TICKET_COUNT_VERSION_EPOCH = 1_786_999_412_280;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
@@ -67,6 +69,27 @@ function normalizedTicketCounts(value: unknown): Record<string, number> | null {
   return result;
 }
 
+function normalizedTicketCountUpdates(
+  value: unknown,
+  stateUpdatedAt: number,
+): Record<string, number> | null {
+  if (!isRecord(value)) return null;
+  const result: Record<string, number> = {};
+  for (const [ticketId, rawUpdatedAt] of Object.entries(value)) {
+    const updatedAt = Number(rawUpdatedAt);
+    if (
+      !SZZ_TICKET_ID.test(ticketId) ||
+      !Number.isSafeInteger(updatedAt) ||
+      updatedAt <= 0 ||
+      updatedAt > stateUpdatedAt
+    ) {
+      return null;
+    }
+    result[ticketId] = updatedAt;
+  }
+  return result;
+}
+
 function normalizedStudyState(value: unknown): { state: Record<string, unknown>; json: string; updatedAt: number } | null {
   if (!isRecord(value)) return null;
   if (!isRecord(value.tickets) || !isRecord(value.reviews) || !isRecord(value.activityDates)) return null;
@@ -84,12 +107,17 @@ function normalizedStudyState(value: unknown): { state: Record<string, unknown>;
     ? undefined
     : normalizedTicketCounts(value.ticketCounts);
   if (value.ticketCounts !== undefined && !ticketCounts) return null;
+  const ticketCountUpdates = value.ticketCountUpdates === undefined
+    ? undefined
+    : normalizedTicketCountUpdates(value.ticketCountUpdates, updatedAt);
+  if (value.ticketCountUpdates !== undefined && !ticketCountUpdates) return null;
   const state = {
     version: 1,
     tickets: value.tickets,
     reviews: value.reviews,
     activityDates: value.activityDates,
     ...(ticketCounts ? { ticketCounts } : {}),
+    ...(ticketCountUpdates ? { ticketCountUpdates } : {}),
     ticketOrder: value.ticketOrder,
     ...(topicGenerator ? { topicGenerator } : {}),
     updatedAt,
@@ -97,6 +125,69 @@ function normalizedStudyState(value: unknown): { state: Record<string, unknown>;
   const json = JSON.stringify(state);
   if (Buffer.byteLength(json, "utf8") > MAX_STUDY_STATE_BYTES) return null;
   return { state, json, updatedAt };
+}
+
+function stateUpdatedAt(state: Record<string, unknown>): number {
+  const updatedAt = Number(state.updatedAt);
+  return Number.isSafeInteger(updatedAt) && updatedAt > 0 ? updatedAt : 0;
+}
+
+function ticketCountInState(state: Record<string, unknown>, ticketId: string): number {
+  if (!isRecord(state.ticketCounts)) return 0;
+  const count = Number(state.ticketCounts[ticketId]);
+  return Number.isSafeInteger(count) && count > 0 ? count : 0;
+}
+
+function ticketCountVersionInState(state: Record<string, unknown>, ticketId: string): number {
+  if (isRecord(state.ticketCountUpdates)) {
+    const explicitVersion = Number(state.ticketCountUpdates[ticketId]);
+    if (Number.isSafeInteger(explicitVersion) && explicitVersion > 0) return explicitVersion;
+  }
+  return ticketCountInState(state, ticketId) > 0 ? stateUpdatedAt(state) : 0;
+}
+
+function withCompleteTicketCountUpdates(state: Record<string, unknown>): Record<string, unknown> {
+  const fallbackUpdatedAt = Math.max(stateUpdatedAt(state), TICKET_COUNT_VERSION_EPOCH);
+  if (!fallbackUpdatedAt) return state;
+  const sourceUpdates = isRecord(state.ticketCountUpdates) ? state.ticketCountUpdates : {};
+  const ticketCountUpdates: Record<string, number> = {};
+  for (const ticketId of SZZ_TICKET_IDS) {
+    const explicitVersion = Number(sourceUpdates[ticketId]);
+    ticketCountUpdates[ticketId] = Number.isSafeInteger(explicitVersion) && explicitVersion > 0
+      ? explicitVersion
+      : fallbackUpdatedAt;
+  }
+  return {
+    ...state,
+    ticketCountUpdates,
+    updatedAt: Math.max(stateUpdatedAt(state), ...Object.values(ticketCountUpdates)),
+  };
+}
+
+function mergeTicketCounters(
+  storedState: Record<string, unknown> | null,
+  incomingState: Record<string, unknown>,
+): Record<string, unknown> {
+  const baselineState = withCompleteTicketCountUpdates(storedState ?? incomingState);
+  const ticketCounts: Record<string, number> = {};
+  const ticketCountUpdates: Record<string, number> = {};
+
+  for (const ticketId of SZZ_TICKET_IDS) {
+    const storedVersion = ticketCountVersionInState(baselineState, ticketId);
+    const incomingVersion = ticketCountVersionInState(incomingState, ticketId);
+    const selectedState = incomingVersion >= storedVersion ? incomingState : baselineState;
+    const selectedVersion = Math.max(storedVersion, incomingVersion);
+    const selectedCount = ticketCountInState(selectedState, ticketId);
+    if (selectedCount > 0) ticketCounts[ticketId] = selectedCount;
+    if (selectedVersion > 0) ticketCountUpdates[ticketId] = selectedVersion;
+  }
+
+  return {
+    ...incomingState,
+    ticketCounts,
+    ticketCountUpdates,
+    updatedAt: Math.max(stateUpdatedAt(incomingState), ...Object.values(ticketCountUpdates)),
+  };
 }
 
 function requestUserId(req: unknown): number | null {
@@ -183,9 +274,10 @@ export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions
       const userId = requestUserId(req);
       if (!userId) return reply.code(401).send({ error: "Не авторизован" });
       const stored = options.db!.getSzzStudyState(userId);
+      const storedState = isRecord(stored?.state) ? stored.state : null;
       return {
         userId,
-        state: stored?.state ?? null,
+        state: storedState ? withCompleteTicketCountUpdates(storedState) : null,
         updatedAt: stored?.updatedAt ?? null,
       };
     });
@@ -196,11 +288,34 @@ export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions
       const body = (req.body as { state?: unknown }) ?? {};
       const normalized = normalizedStudyState(body.state);
       if (!normalized) return reply.code(400).send({ error: "Некорректное состояние билетов" });
-      const result = options.db!.saveSzzStudyState(userId, normalized.json, normalized.updatedAt);
+      const stored = options.db!.getSzzStudyState(userId);
+      const storedState = isRecord(stored?.state) ? stored.state : null;
+      const protectedStoredState = storedState
+        ? withCompleteTicketCountUpdates(storedState)
+        : null;
+      if (
+        stored &&
+        protectedStoredState &&
+        normalized.updatedAt < stateUpdatedAt(protectedStoredState)
+      ) {
+        return {
+          userId,
+          saved: false,
+          state: protectedStoredState,
+          updatedAt: stored.updatedAt,
+        };
+      }
+      const mergedState = mergeTicketCounters(protectedStoredState, normalized.state);
+      const merged = normalizedStudyState(mergedState);
+      if (!merged) return reply.code(400).send({ error: "Некорректное состояние билетов" });
+      const result = options.db!.saveSzzStudyState(userId, merged.json, merged.updatedAt);
+      const savedState = isRecord(result.row?.state) ? result.row.state : null;
       return {
         userId,
         saved: result.saved,
-        state: result.row?.state ?? normalized.state,
+        state: savedState
+          ? withCompleteTicketCountUpdates(savedState)
+          : merged.state,
         updatedAt: result.row?.updatedAt ?? null,
       };
     });
