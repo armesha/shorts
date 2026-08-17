@@ -30,15 +30,17 @@ test("szz routes serve the latest source HTML without restarting", async () => {
   rmSync(dir, { recursive: true, force: true });
 });
 
-test("szz backup routes serve the configured backup without changing the current page", async () => {
+test("szz backup routes serve both configured backups without changing the current page", async () => {
   const dir = mkdtempSync(resolve(tmpdir(), "szz-backup-route-"));
   const htmlPath = resolve(dir, "ticket.html");
   const backupHtmlPath = resolve(dir, "ticket-backup.html");
+  const backup2HtmlPath = resolve(dir, "ticket-backup2.html");
   writeFileSync(htmlPath, "<!doctype html><title>current tickets</title>");
   writeFileSync(backupHtmlPath, "<!doctype html><title>backup tickets</title>");
+  writeFileSync(backup2HtmlPath, "<!doctype html><title>second backup tickets</title>");
 
   const app = Fastify();
-  registerSzzRoutes(app, { htmlPath, backupHtmlPath });
+  registerSzzRoutes(app, { htmlPath, backupHtmlPath, backup2HtmlPath });
 
   const current = await app.inject({ method: "GET", url: "/szz" });
   assert.equal(current.statusCode, 200);
@@ -50,6 +52,15 @@ test("szz backup routes serve the configured backup without changing the current
     assert.match(backup.headers["content-type"] ?? "", /^text\/html/);
     assert.equal(backup.headers["cache-control"], "no-store, max-age=0");
     assert.match(backup.body, /backup tickets/);
+    assert.doesNotMatch(backup.body, /current tickets/);
+  }
+
+  for (const url of ["/szzbackup2", "/szzbackup2/"]) {
+    const backup = await app.inject({ method: "GET", url });
+    assert.equal(backup.statusCode, 200);
+    assert.match(backup.headers["content-type"] ?? "", /^text\/html/);
+    assert.equal(backup.headers["cache-control"], "no-store, max-age=0");
+    assert.match(backup.body, /second backup tickets/);
     assert.doesNotMatch(backup.body, /current tickets/);
   }
 
