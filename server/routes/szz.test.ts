@@ -57,36 +57,6 @@ test("szz report routes serve the current audit HTML", async () => {
   rmSync(dir, { recursive: true, force: true });
 });
 
-test("temporary szz routes serve the formatted page and its text source", async () => {
-  const dir = mkdtempSync(resolve(tmpdir(), "szz-temp-text-route-"));
-  const tempHtmlPath = resolve(dir, "changes.html");
-  const tempTextPath = resolve(dir, "changes.txt");
-  const html = "<!doctype html><title>Formatted SZZ changes</title>";
-  const text = "=== 1.1 ===\nPouze změněný text.\n";
-  writeFileSync(tempHtmlPath, html);
-  writeFileSync(tempTextPath, text);
-
-  const app = Fastify();
-  registerSzzRoutes(app, { tempHtmlPath, tempTextPath });
-
-  for (const url of ["/tempszz", "/tempszz/"]) {
-    const response = await app.inject({ method: "GET", url });
-    assert.equal(response.statusCode, 200);
-    assert.match(response.headers["content-type"] ?? "", /^text\/html/);
-    assert.equal(response.headers["cache-control"], "no-store, max-age=0");
-    assert.equal(response.body, html);
-  }
-
-  const textResponse = await app.inject({ method: "GET", url: "/tempszz.txt" });
-  assert.equal(textResponse.statusCode, 200);
-  assert.match(textResponse.headers["content-type"] ?? "", /^text\/plain/);
-  assert.equal(textResponse.headers["cache-control"], "no-store, max-age=0");
-  assert.equal(textResponse.body, text);
-
-  await app.close();
-  rmSync(dir, { recursive: true, force: true });
-});
-
 test("szz backup routes serve all configured backups without changing the current page", async () => {
   const dir = mkdtempSync(resolve(tmpdir(), "szz-backup-route-"));
   const htmlPath = resolve(dir, "ticket.html");

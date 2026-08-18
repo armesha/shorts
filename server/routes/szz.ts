@@ -5,8 +5,6 @@ import type { Db } from "../db.ts";
 
 const DEFAULT_SZZ_HTML_PATH = "/home/davtian/Documents/db/SZZ_DB_ticket_1_1.html";
 const DEFAULT_SZZ_REPORT_HTML_PATH = "/home/davtian/Documents/db/SZZ_DB_report.html";
-const DEFAULT_SZZ_TEMP_HTML_PATH = "/home/davtian/Documents/db/SZZ_DB_temp_changes.html";
-const DEFAULT_SZZ_TEMP_TEXT_PATH = "/home/davtian/Documents/db/SZZ_DB_temp_changes.txt";
 const DEFAULT_SZZ_BACKUP_HTML_PATH =
   "/home/davtian/Documents/db/backups/2026-08-10_20-46-33_before_full_simplification/SZZ_DB_ticket_1_1.html";
 const DEFAULT_SZZ_BACKUP2_HTML_PATH =
@@ -24,8 +22,6 @@ const SZZ_TICKET_PDF_FILE = /^SZZ_DB_ticket_1_(?:[1-9]|1[0-9]|2[0-3])\.pdf$/;
 type SzzRouteOptions = {
   htmlPath?: string;
   reportHtmlPath?: string;
-  tempHtmlPath?: string;
-  tempTextPath?: string;
   backupHtmlPath?: string;
   backup2HtmlPath?: string;
   backup3HtmlPath?: string;
@@ -215,14 +211,6 @@ function sendSzzPage(reply: FastifyReply, htmlPath: string, downloadFileName?: s
   return reply.send(createReadStream(htmlPath));
 }
 
-function sendSzzText(reply: FastifyReply, textPath: string) {
-  if (!existsSync(textPath)) return reply.code(404).send({ error: "file not found" });
-  reply.header("Cache-Control", "no-store, max-age=0");
-  reply.header("Pragma", "no-cache");
-  reply.type("text/plain; charset=utf-8");
-  return reply.send(createReadStream(textPath));
-}
-
 function sendSzzPdf(reply: FastifyReply, pdfPath: string, fileName: string) {
   if (!existsSync(pdfPath)) return reply.code(404).send({ error: "file not found" });
   reply.header("Cache-Control", "no-store, max-age=0");
@@ -236,12 +224,6 @@ export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions
   const htmlPath = resolve(options.htmlPath ?? process.env.SZZ_HTML_PATH ?? DEFAULT_SZZ_HTML_PATH);
   const reportHtmlPath = resolve(
     options.reportHtmlPath ?? process.env.SZZ_REPORT_HTML_PATH ?? DEFAULT_SZZ_REPORT_HTML_PATH,
-  );
-  const tempHtmlPath = resolve(
-    options.tempHtmlPath ?? process.env.SZZ_TEMP_HTML_PATH ?? DEFAULT_SZZ_TEMP_HTML_PATH,
-  );
-  const tempTextPath = resolve(
-    options.tempTextPath ?? process.env.SZZ_TEMP_TEXT_PATH ?? DEFAULT_SZZ_TEMP_TEXT_PATH,
   );
   const backupHtmlPath = resolve(
     options.backupHtmlPath ??
@@ -279,9 +261,6 @@ export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions
   app.get("/szz/", async (_req, reply) => sendSzzPage(reply, htmlPath));
   app.get("/szzreport", async (_req, reply) => sendSzzPage(reply, reportHtmlPath));
   app.get("/szzreport/", async (_req, reply) => sendSzzPage(reply, reportHtmlPath));
-  app.get("/tempszz", async (_req, reply) => sendSzzPage(reply, tempHtmlPath));
-  app.get("/tempszz/", async (_req, reply) => sendSzzPage(reply, tempHtmlPath));
-  app.get("/tempszz.txt", async (_req, reply) => sendSzzText(reply, tempTextPath));
   app.get("/szzbackup", async (_req, reply) => sendSzzPage(reply, backupHtmlPath));
   app.get("/szzbackup/", async (_req, reply) => sendSzzPage(reply, backupHtmlPath));
   app.get("/szzbackup2", async (_req, reply) => sendSzzPage(reply, backup2HtmlPath));
