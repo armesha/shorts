@@ -63,13 +63,21 @@ test("szz backup routes serve all configured backups without changing the curren
   const backupHtmlPath = resolve(dir, "ticket-backup.html");
   const backup2HtmlPath = resolve(dir, "ticket-backup2.html");
   const backup3HtmlPath = resolve(dir, "ticket-backup3.html");
+  const backup4HtmlPath = resolve(dir, "ticket-backup4.html");
   writeFileSync(htmlPath, "<!doctype html><title>current tickets</title>");
   writeFileSync(backupHtmlPath, "<!doctype html><title>backup tickets</title>");
   writeFileSync(backup2HtmlPath, "<!doctype html><title>second backup tickets</title>");
   writeFileSync(backup3HtmlPath, "<!doctype html><title>third backup tickets</title>");
+  writeFileSync(backup4HtmlPath, "<!doctype html><title>fourth backup tickets</title>");
 
   const app = Fastify();
-  registerSzzRoutes(app, { htmlPath, backupHtmlPath, backup2HtmlPath, backup3HtmlPath });
+  registerSzzRoutes(app, {
+    htmlPath,
+    backupHtmlPath,
+    backup2HtmlPath,
+    backup3HtmlPath,
+    backup4HtmlPath,
+  });
 
   const current = await app.inject({ method: "GET", url: "/szz" });
   assert.equal(current.statusCode, 200);
@@ -99,6 +107,15 @@ test("szz backup routes serve all configured backups without changing the curren
     assert.match(backup.headers["content-type"] ?? "", /^text\/html/);
     assert.equal(backup.headers["cache-control"], "no-store, max-age=0");
     assert.match(backup.body, /third backup tickets/);
+    assert.doesNotMatch(backup.body, /current tickets/);
+  }
+
+  for (const url of ["/szzbackup4", "/szzbackup4/"]) {
+    const backup = await app.inject({ method: "GET", url });
+    assert.equal(backup.statusCode, 200);
+    assert.match(backup.headers["content-type"] ?? "", /^text\/html/);
+    assert.equal(backup.headers["cache-control"], "no-store, max-age=0");
+    assert.match(backup.body, /fourth backup tickets/);
     assert.doesNotMatch(backup.body, /current tickets/);
   }
 

@@ -11,6 +11,8 @@ const DEFAULT_SZZ_BACKUP2_HTML_PATH =
   "/home/davtian/Documents/db/backups/2026-08-17_before_second_thesis_rewrite/SZZ_DB_ticket_1_1.html";
 const DEFAULT_SZZ_BACKUP3_HTML_PATH =
   "/home/davtian/Documents/db/backups/2026-08-17_before_simple_verb_batch/SZZ_DB_ticket_1_1.html";
+const DEFAULT_SZZ_BACKUP4_HTML_PATH =
+  "/home/davtian/Documents/db/backups/2026-08-18_before_report_integration/SZZ_DB_ticket_1_1.html";
 const DEFAULT_SZZ_ANSWERS_PDF_PATH = "/home/davtian/Documents/db/SZZ_DB.pdf";
 const DEFAULT_SZZ_TOPICS_PDF_PATH =
   "/home/davtian/Documents/db/final-verzetoszzbcitb0688a140009113064_DB.pdf";
@@ -23,6 +25,7 @@ type SzzRouteOptions = {
   backupHtmlPath?: string;
   backup2HtmlPath?: string;
   backup3HtmlPath?: string;
+  backup4HtmlPath?: string;
   answersPdfPath?: string;
   topicsPdfPath?: string;
   ticketPdfsPath?: string;
@@ -237,6 +240,11 @@ export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions
       process.env.SZZ_BACKUP3_HTML_PATH ??
       DEFAULT_SZZ_BACKUP3_HTML_PATH,
   );
+  const backup4HtmlPath = resolve(
+    options.backup4HtmlPath ??
+      process.env.SZZ_BACKUP4_HTML_PATH ??
+      DEFAULT_SZZ_BACKUP4_HTML_PATH,
+  );
   const answersPdfPath = resolve(
     options.answersPdfPath ?? process.env.SZZ_ANSWERS_PDF_PATH ?? DEFAULT_SZZ_ANSWERS_PDF_PATH,
   );
@@ -259,6 +267,8 @@ export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions
   app.get("/szzbackup2/", async (_req, reply) => sendSzzPage(reply, backup2HtmlPath));
   app.get("/szzbackup3", async (_req, reply) => sendSzzPage(reply, backup3HtmlPath));
   app.get("/szzbackup3/", async (_req, reply) => sendSzzPage(reply, backup3HtmlPath));
+  app.get("/szzbackup4", async (_req, reply) => sendSzzPage(reply, backup4HtmlPath));
+  app.get("/szzbackup4/", async (_req, reply) => sendSzzPage(reply, backup4HtmlPath));
   app.get("/szz/SZZ_DB_offline.html", async (_req, reply) =>
     sendSzzPage(reply, htmlPath, "SZZ_DB_offline.html"),
   );
