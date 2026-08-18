@@ -36,32 +36,11 @@ test("szz routes serve the latest source HTML without restarting", async () => {
   rmSync(dir, { recursive: true, force: true });
 });
 
-test("szz report routes serve the current audit HTML", async () => {
-  const dir = mkdtempSync(resolve(tmpdir(), "szz-report-route-"));
-  const reportHtmlPath = resolve(dir, "report.html");
-  const html = "<!doctype html><title>SZZ audit report</title>";
-  writeFileSync(reportHtmlPath, html);
-
-  const app = Fastify();
-  registerSzzRoutes(app, { reportHtmlPath });
-
-  for (const url of ["/szzreport", "/szzreport/"]) {
-    const response = await app.inject({ method: "GET", url });
-    assert.equal(response.statusCode, 200);
-    assert.match(response.headers["content-type"] ?? "", /^text\/html/);
-    assert.equal(response.headers["cache-control"], "no-store, max-age=0");
-    assert.equal(response.body, html);
-  }
-
-  await app.close();
-  rmSync(dir, { recursive: true, force: true });
-});
-
 test("retired temporary szz routes return 404 instead of the SPA fallback", async () => {
   const app = Fastify();
   registerSzzRoutes(app);
 
-  for (const url of ["/tempszz", "/tempszz/", "/tempszz.txt"]) {
+  for (const url of ["/szzreport", "/szzreport/", "/tempszz", "/tempszz/", "/tempszz.txt"]) {
     const response = await app.inject({ method: "GET", url });
     assert.equal(response.statusCode, 404);
     assert.deepEqual(response.json(), { error: "not found" });

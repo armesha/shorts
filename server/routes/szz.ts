@@ -7,7 +7,6 @@ import { getCookie, SESSION_COOKIE, type AuthSession } from "../infra/auth-sessi
 const DEFAULT_SZZ_HTML_PATH = "/home/davtian/Documents/db/SZZ_DB_ticket_1_1.html";
 const DEFAULT_SZZ_CARDS_HTML_PATH = "/home/davtian/Documents/db/SZZ_DB_cards.html";
 const DEFAULT_SZZ_CARD_IDS_PATH = "/home/davtian/Documents/db/szz/generated/card-ids.json";
-const DEFAULT_SZZ_REPORT_HTML_PATH = "/home/davtian/Documents/db/SZZ_DB_report.html";
 const DEFAULT_SZZ_BACKUP_HTML_PATH =
   "/home/davtian/Documents/db/archive/backups/2026-08-10_20-46-33_before_full_simplification/SZZ_DB_ticket_1_1.html";
 const DEFAULT_SZZ_BACKUP2_HTML_PATH =
@@ -29,7 +28,6 @@ type SzzRouteOptions = {
   cardsHtmlPath?: string;
   cardIdsPath?: string;
   validFlashcardIds?: readonly string[] | ReadonlySet<string>;
-  reportHtmlPath?: string;
   backupHtmlPath?: string;
   backup2HtmlPath?: string;
   backup3HtmlPath?: string;
@@ -518,9 +516,6 @@ export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions
   const validFlashcardIds = options.db
     ? new Set(options.validFlashcardIds ?? loadFlashcardIds(cardIdsPath))
     : new Set<string>();
-  const reportHtmlPath = resolve(
-    options.reportHtmlPath ?? process.env.SZZ_REPORT_HTML_PATH ?? DEFAULT_SZZ_REPORT_HTML_PATH,
-  );
   const backupHtmlPath = resolve(
     options.backupHtmlPath ??
       process.env.SZZ_BACKUP_HTML_PATH ??
@@ -567,9 +562,7 @@ export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions
       return sendPrivateSzzPage(reply, cardsHtmlPath);
     });
   }
-  app.get("/szzreport", async (_req, reply) => sendSzzPage(reply, reportHtmlPath));
-  app.get("/szzreport/", async (_req, reply) => sendSzzPage(reply, reportHtmlPath));
-  for (const path of ["/tempszz", "/tempszz/", "/tempszz.txt"]) {
+  for (const path of ["/szzreport", "/szzreport/", "/tempszz", "/tempszz/", "/tempszz.txt"]) {
     app.get(path, async (_req, reply) => reply.code(404).send({ error: "not found" }));
   }
   app.get("/szzbackup", async (_req, reply) => sendSzzPage(reply, backupHtmlPath));
