@@ -5,6 +5,7 @@ import type { Db } from "../db.ts";
 
 const DEFAULT_SZZ_HTML_PATH = "/home/davtian/Documents/db/SZZ_DB_ticket_1_1.html";
 const DEFAULT_SZZ_REPORT_HTML_PATH = "/home/davtian/Documents/db/SZZ_DB_report.html";
+const DEFAULT_SZZ_TEMP_HTML_PATH = "/home/davtian/Documents/db/SZZ_DB_temp_changes.html";
 const DEFAULT_SZZ_TEMP_TEXT_PATH = "/home/davtian/Documents/db/SZZ_DB_temp_changes.txt";
 const DEFAULT_SZZ_BACKUP_HTML_PATH =
   "/home/davtian/Documents/db/backups/2026-08-10_20-46-33_before_full_simplification/SZZ_DB_ticket_1_1.html";
@@ -23,6 +24,7 @@ const SZZ_TICKET_PDF_FILE = /^SZZ_DB_ticket_1_(?:[1-9]|1[0-9]|2[0-3])\.pdf$/;
 type SzzRouteOptions = {
   htmlPath?: string;
   reportHtmlPath?: string;
+  tempHtmlPath?: string;
   tempTextPath?: string;
   backupHtmlPath?: string;
   backup2HtmlPath?: string;
@@ -235,6 +237,9 @@ export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions
   const reportHtmlPath = resolve(
     options.reportHtmlPath ?? process.env.SZZ_REPORT_HTML_PATH ?? DEFAULT_SZZ_REPORT_HTML_PATH,
   );
+  const tempHtmlPath = resolve(
+    options.tempHtmlPath ?? process.env.SZZ_TEMP_HTML_PATH ?? DEFAULT_SZZ_TEMP_HTML_PATH,
+  );
   const tempTextPath = resolve(
     options.tempTextPath ?? process.env.SZZ_TEMP_TEXT_PATH ?? DEFAULT_SZZ_TEMP_TEXT_PATH,
   );
@@ -274,8 +279,9 @@ export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions
   app.get("/szz/", async (_req, reply) => sendSzzPage(reply, htmlPath));
   app.get("/szzreport", async (_req, reply) => sendSzzPage(reply, reportHtmlPath));
   app.get("/szzreport/", async (_req, reply) => sendSzzPage(reply, reportHtmlPath));
-  app.get("/tempszz", async (_req, reply) => sendSzzText(reply, tempTextPath));
-  app.get("/tempszz/", async (_req, reply) => sendSzzText(reply, tempTextPath));
+  app.get("/tempszz", async (_req, reply) => sendSzzPage(reply, tempHtmlPath));
+  app.get("/tempszz/", async (_req, reply) => sendSzzPage(reply, tempHtmlPath));
+  app.get("/tempszz.txt", async (_req, reply) => sendSzzText(reply, tempTextPath));
   app.get("/szzbackup", async (_req, reply) => sendSzzPage(reply, backupHtmlPath));
   app.get("/szzbackup/", async (_req, reply) => sendSzzPage(reply, backupHtmlPath));
   app.get("/szzbackup2", async (_req, reply) => sendSzzPage(reply, backup2HtmlPath));
