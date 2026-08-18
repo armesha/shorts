@@ -1,26 +1,34 @@
 import type { FastifyInstance, FastifyReply } from "fastify";
-import { createReadStream, existsSync } from "node:fs";
+import { createReadStream, existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Db } from "../db.ts";
+import { getCookie, SESSION_COOKIE, type AuthSession } from "../infra/auth-session.ts";
 
 const DEFAULT_SZZ_HTML_PATH = "/home/davtian/Documents/db/SZZ_DB_ticket_1_1.html";
+const DEFAULT_SZZ_CARDS_HTML_PATH = "/home/davtian/Documents/db/SZZ_DB_cards.html";
+const DEFAULT_SZZ_CARD_IDS_PATH = "/home/davtian/Documents/db/szz/generated/card-ids.json";
 const DEFAULT_SZZ_REPORT_HTML_PATH = "/home/davtian/Documents/db/SZZ_DB_report.html";
 const DEFAULT_SZZ_BACKUP_HTML_PATH =
-  "/home/davtian/Documents/db/backups/2026-08-10_20-46-33_before_full_simplification/SZZ_DB_ticket_1_1.html";
+  "/home/davtian/Documents/db/archive/backups/2026-08-10_20-46-33_before_full_simplification/SZZ_DB_ticket_1_1.html";
 const DEFAULT_SZZ_BACKUP2_HTML_PATH =
-  "/home/davtian/Documents/db/backups/2026-08-17_before_second_thesis_rewrite/SZZ_DB_ticket_1_1.html";
+  "/home/davtian/Documents/db/archive/backups/2026-08-17_before_second_thesis_rewrite/SZZ_DB_ticket_1_1.html";
 const DEFAULT_SZZ_BACKUP3_HTML_PATH =
-  "/home/davtian/Documents/db/backups/2026-08-17_before_simple_verb_batch/SZZ_DB_ticket_1_1.html";
+  "/home/davtian/Documents/db/archive/backups/2026-08-17_before_simple_verb_batch/SZZ_DB_ticket_1_1.html";
 const DEFAULT_SZZ_BACKUP4_HTML_PATH =
-  "/home/davtian/Documents/db/backups/2026-08-18_before_report_integration/SZZ_DB_ticket_1_1.html";
-const DEFAULT_SZZ_ANSWERS_PDF_PATH = "/home/davtian/Documents/db/SZZ_DB.pdf";
+  "/home/davtian/Documents/db/archive/backups/2026-08-18_before_report_integration/SZZ_DB_ticket_1_1.html";
+const DEFAULT_SZZ_ANSWERS_PDF_PATH =
+  "/home/davtian/Documents/db/reference/legacy/SZZ_DB.pdf";
 const DEFAULT_SZZ_TOPICS_PDF_PATH =
-  "/home/davtian/Documents/db/final-verzetoszzbcitb0688a140009113064_DB.pdf";
-const DEFAULT_SZZ_TICKET_PDFS_PATH = "/home/davtian/Documents/db/SZZ_DB_ticket_pdfs";
+  "/home/davtian/Documents/db/reference/official/SZZ_DB_topics.pdf";
+const DEFAULT_SZZ_TICKET_PDFS_PATH =
+  "/home/davtian/Documents/db/generated/ticket-pdfs";
 const SZZ_TICKET_PDF_FILE = /^SZZ_DB_ticket_1_(?:[1-9]|1[0-9]|2[0-3])\.pdf$/;
 
 type SzzRouteOptions = {
   htmlPath?: string;
+  cardsHtmlPath?: string;
+  cardIdsPath?: string;
+  validFlashcardIds?: readonly string[] | ReadonlySet<string>;
   reportHtmlPath?: string;
   backupHtmlPath?: string;
   backup2HtmlPath?: string;
@@ -30,6 +38,7 @@ type SzzRouteOptions = {
   topicsPdfPath?: string;
   ticketPdfsPath?: string;
   db?: Db;
+  validSessionUser?: AuthSession["validSessionUser"];
 };
 
 const MAX_STUDY_STATE_BYTES = 128 * 1024;
@@ -37,9 +46,274 @@ const SZZ_TICKET_ID = /^ticket-1-(?:[1-9]|1[0-9]|2[0-3])$/;
 const SZZ_TICKET_IDS = Array.from({ length: 23 }, (_, index) => `ticket-1-${index + 1}`);
 const MAX_TICKET_COUNT = 1_000_000;
 const TICKET_COUNT_VERSION_EPOCH = 1_786_999_412_280;
+const MAX_FLASHCARD_STATE_BYTES = 256 * 1024;
+const MAX_FLASHCARD_CARDS = 1_000;
+const MAX_FLASHCARD_HISTORY = 500;
+const MAX_FLASHCARD_COUNTER = 1_000_000;
+const MAX_TIMESTAMP = 8_640_000_000_000_000;
+const FLASHCARD_ID =
+  /^ticket-1-(?:[1-9]|1[0-9]|2[0-3])::[a-z0-9]+(?:-[a-z0-9]+)*::(?:0|[1-9][0-9]{0,2})$/;
+const CONTENT_HASH = /^[0-9a-f]{64}$/;
+const FLASHCARD_SEED =
+  /^[0-9a-f]{64}:(?:(?:learn|connections|review|exam):[1-9][0-9]{0,15}|[1-9][0-9]{0,15}:(?:learn|connections|review|exam))$/;
+const FLASHCARD_MODES = ["learn", "connections", "review", "exam"] as const;
+const FLASHCARD_MODE_SET = new Set<string>(FLASHCARD_MODES);
+const FLASHCARD_STATUSES = new Set(["new", "learning", "review", "mastered"]);
+const FLASHCARD_RESULTS = new Set(["again", "hard", "good", "easy"]);
+const FORBIDDEN_FLASHCARD_FIELDS = new Set([
+  "question",
+  "answer",
+  "html",
+  "sourcetext",
+  "questiontext",
+  "answertext",
+  "questionhtml",
+  "answerhtml",
+]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function hasOnlyKeys(value: Record<string, unknown>, allowed: ReadonlySet<string>): boolean {
+  return Object.keys(value).every((key) => allowed.has(key));
+}
+
+function containsForbiddenFlashcardField(value: unknown): boolean {
+  if (Array.isArray(value)) return value.some(containsForbiddenFlashcardField);
+  if (!isRecord(value)) return false;
+  for (const [key, child] of Object.entries(value)) {
+    const normalizedKey = key.toLowerCase().replace(/[^a-z]/g, "");
+    if (FORBIDDEN_FLASHCARD_FIELDS.has(normalizedKey)) return true;
+    if (containsForbiddenFlashcardField(child)) return true;
+  }
+  return false;
+}
+
+function isSafeTimestamp(value: unknown): value is number {
+  return (
+    typeof value === "number" &&
+    Number.isSafeInteger(value) &&
+    value > 0 &&
+    value <= MAX_TIMESTAMP
+  );
+}
+
+function isSafeCounter(value: unknown): value is number {
+  return (
+    typeof value === "number" &&
+    Number.isSafeInteger(value) &&
+    value >= 0 &&
+    value <= MAX_FLASHCARD_COUNTER
+  );
+}
+
+function normalizedFlashcardMode(
+  value: unknown,
+  validFlashcardIds: ReadonlySet<string>,
+): Record<string, unknown> | null {
+  if (!isRecord(value)) return null;
+  if (!hasOnlyKeys(value, new Set(["order", "index", "currentCardId", "revealed", "seed", "updatedAt"]))) {
+    return null;
+  }
+  if (!Array.isArray(value.order) || value.order.length > MAX_FLASHCARD_CARDS) return null;
+  if (!value.order.every((cardId) =>
+    typeof cardId === "string" && FLASHCARD_ID.test(cardId) && validFlashcardIds.has(cardId)
+  )) return null;
+  if (new Set(value.order).size !== value.order.length) return null;
+  if (
+    typeof value.index !== "number" ||
+    !Number.isSafeInteger(value.index) ||
+    value.index < 0 ||
+    value.index > value.order.length
+  ) {
+    return null;
+  }
+  if (typeof value.revealed !== "boolean" || !isSafeTimestamp(value.updatedAt)) return null;
+  const validSeed =
+    typeof value.seed === "string" && FLASHCARD_SEED.test(value.seed);
+  if (!validSeed) return null;
+
+  const expectedCurrentCardId = value.index < value.order.length ? value.order[value.index] : null;
+  if (value.currentCardId !== expectedCurrentCardId) return null;
+  if (expectedCurrentCardId === null && value.revealed) return null;
+
+  return {
+    order: [...value.order],
+    index: value.index,
+    currentCardId: value.currentCardId,
+    revealed: value.revealed,
+    seed: value.seed,
+    updatedAt: value.updatedAt,
+  };
+}
+
+function normalizedFlashcardProgress(value: unknown): Record<string, unknown> | null {
+  if (!isRecord(value)) return null;
+  const allowed = new Set([
+    "status",
+    "dueAt",
+    "lastReviewedAt",
+    "reviewCount",
+    "correctCount",
+    "incorrectCount",
+    "streak",
+    "intervalDays",
+    "ease",
+    "sourceHash",
+    "questionNeedsReview",
+    "updatedAt",
+  ]);
+  if (!hasOnlyKeys(value, allowed)) return null;
+  if (typeof value.status !== "string" || !FLASHCARD_STATUSES.has(value.status)) return null;
+  if (!isSafeTimestamp(value.updatedAt)) return null;
+
+  for (const key of ["reviewCount", "correctCount", "incorrectCount", "streak"] as const) {
+    if (value[key] !== undefined && !isSafeCounter(value[key])) return null;
+  }
+  for (const key of ["dueAt", "lastReviewedAt"] as const) {
+    if (value[key] !== undefined && value[key] !== null && !isSafeTimestamp(value[key])) return null;
+  }
+  if (
+    value.intervalDays !== undefined &&
+    (typeof value.intervalDays !== "number" || !Number.isFinite(value.intervalDays) || value.intervalDays < 0 || value.intervalDays > 36_500)
+  ) {
+    return null;
+  }
+  if (
+    value.ease !== undefined &&
+    (typeof value.ease !== "number" || !Number.isFinite(value.ease) || value.ease < 1 || value.ease > 5)
+  ) {
+    return null;
+  }
+  if (value.sourceHash !== undefined && (typeof value.sourceHash !== "string" || !CONTENT_HASH.test(value.sourceHash))) {
+    return null;
+  }
+  if (value.questionNeedsReview !== undefined && typeof value.questionNeedsReview !== "boolean") return null;
+
+  const progress: Record<string, unknown> = {
+    status: value.status,
+    updatedAt: value.updatedAt,
+  };
+  for (const key of [
+    "dueAt",
+    "lastReviewedAt",
+    "reviewCount",
+    "correctCount",
+    "incorrectCount",
+    "streak",
+    "intervalDays",
+    "ease",
+    "sourceHash",
+    "questionNeedsReview",
+  ] as const) {
+    if (value[key] !== undefined) progress[key] = value[key];
+  }
+  return progress;
+}
+
+function normalizedFlashcardHistoryEvent(
+  value: unknown,
+  validFlashcardIds: ReadonlySet<string>,
+): Record<string, unknown> | null {
+  if (!isRecord(value)) return null;
+  if (!hasOnlyKeys(value, new Set(["cardId", "mode", "result", "reviewedAt"]))) return null;
+  if (
+    typeof value.cardId !== "string" ||
+    !FLASHCARD_ID.test(value.cardId) ||
+    !validFlashcardIds.has(value.cardId)
+  ) return null;
+  if (typeof value.mode !== "string" || !FLASHCARD_MODE_SET.has(value.mode)) return null;
+  if (typeof value.result !== "string" || !FLASHCARD_RESULTS.has(value.result)) return null;
+  if (!isSafeTimestamp(value.reviewedAt)) return null;
+  return {
+    cardId: value.cardId,
+    mode: value.mode,
+    result: value.result,
+    reviewedAt: value.reviewedAt,
+  };
+}
+
+function normalizedFlashcardState(
+  value: unknown,
+  validFlashcardIds: ReadonlySet<string>,
+): { state: Record<string, unknown>; json: string; updatedAt: number } | null {
+  if (!isRecord(value) || containsForbiddenFlashcardField(value)) return null;
+  if (!hasOnlyKeys(value, new Set(["version", "catalogVersion", "activeMode", "modes", "cards", "history", "updatedAt"]))) {
+    return null;
+  }
+  if (value.version !== 1) return null;
+  if (typeof value.catalogVersion !== "string" || !CONTENT_HASH.test(value.catalogVersion)) return null;
+  if (typeof value.activeMode !== "string" || !FLASHCARD_MODE_SET.has(value.activeMode)) return null;
+  if (!isRecord(value.modes) || !hasOnlyKeys(value.modes, FLASHCARD_MODE_SET)) return null;
+  if (Object.keys(value.modes).length !== FLASHCARD_MODES.length) return null;
+  if (!isRecord(value.cards) || Object.keys(value.cards).length > MAX_FLASHCARD_CARDS) return null;
+  if (!Array.isArray(value.history) || value.history.length > MAX_FLASHCARD_HISTORY) return null;
+  if (!isSafeTimestamp(value.updatedAt)) return null;
+
+  const modes: Record<string, unknown> = {};
+  for (const mode of FLASHCARD_MODES) {
+    const normalized = normalizedFlashcardMode(value.modes[mode], validFlashcardIds);
+    if (!normalized) return null;
+    modes[mode] = normalized;
+  }
+
+  const cards: Record<string, unknown> = {};
+  for (const [cardId, rawProgress] of Object.entries(value.cards)) {
+    if (!FLASHCARD_ID.test(cardId) || !validFlashcardIds.has(cardId)) return null;
+    const progress = normalizedFlashcardProgress(rawProgress);
+    if (!progress) return null;
+    cards[cardId] = progress;
+  }
+
+  const history: Record<string, unknown>[] = [];
+  for (const rawEvent of value.history) {
+    const event = normalizedFlashcardHistoryEvent(rawEvent, validFlashcardIds);
+    if (!event) return null;
+    history.push(event);
+  }
+
+  const state = {
+    version: 1,
+    catalogVersion: value.catalogVersion,
+    activeMode: value.activeMode,
+    modes,
+    cards,
+    history,
+    updatedAt: value.updatedAt,
+  };
+  const json = JSON.stringify(state);
+  if (Buffer.byteLength(json, "utf8") > MAX_FLASHCARD_STATE_BYTES) return null;
+  return { state, json, updatedAt: value.updatedAt };
+}
+
+function payloadFitsFlashcardLimit(value: unknown): boolean {
+  try {
+    return Buffer.byteLength(JSON.stringify(value), "utf8") <= MAX_FLASHCARD_STATE_BYTES;
+  } catch {
+    return false;
+  }
+}
+
+function loadFlashcardIds(path: string): Set<string> {
+  let document: unknown;
+  try {
+    document = JSON.parse(readFileSync(path, "utf8"));
+  } catch (error) {
+    throw new Error(`Cannot read SZZ card-ID manifest at ${path}`, { cause: error });
+  }
+  if (!isRecord(document) || document.schemaVersion !== 1 || !Array.isArray(document.cardIds)) {
+    throw new Error(`Invalid SZZ card-ID manifest at ${path}`);
+  }
+  const cardIds = document.cardIds;
+  if (
+    cardIds.length !== 143 ||
+    !cardIds.every((cardId) => typeof cardId === "string" && FLASHCARD_ID.test(cardId)) ||
+    new Set(cardIds).size !== cardIds.length
+  ) {
+    throw new Error(`SZZ card-ID manifest must contain exactly 143 unique valid IDs: ${path}`);
+  }
+  return new Set(cardIds);
 }
 
 function normalizedTopicGenerator(value: unknown): Record<string, unknown> | null {
@@ -211,6 +485,19 @@ function sendSzzPage(reply: FastifyReply, htmlPath: string, downloadFileName?: s
   return reply.send(createReadStream(htmlPath));
 }
 
+function setPrivateNoStore(reply: FastifyReply) {
+  reply.header("Cache-Control", "private, no-store, max-age=0");
+  reply.header("Pragma", "no-cache");
+  reply.header("Vary", "Cookie");
+}
+
+function sendPrivateSzzPage(reply: FastifyReply, htmlPath: string) {
+  setPrivateNoStore(reply);
+  if (!existsSync(htmlPath)) return reply.code(404).send({ error: "page not found" });
+  reply.type("text/html; charset=utf-8");
+  return reply.send(createReadStream(htmlPath));
+}
+
 function sendSzzPdf(reply: FastifyReply, pdfPath: string, fileName: string) {
   if (!existsSync(pdfPath)) return reply.code(404).send({ error: "file not found" });
   reply.header("Cache-Control", "no-store, max-age=0");
@@ -222,6 +509,15 @@ function sendSzzPdf(reply: FastifyReply, pdfPath: string, fileName: string) {
 
 export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions = {}) {
   const htmlPath = resolve(options.htmlPath ?? process.env.SZZ_HTML_PATH ?? DEFAULT_SZZ_HTML_PATH);
+  const cardsHtmlPath = resolve(
+    options.cardsHtmlPath ?? process.env.SZZ_CARDS_HTML_PATH ?? DEFAULT_SZZ_CARDS_HTML_PATH,
+  );
+  const cardIdsPath = resolve(
+    options.cardIdsPath ?? process.env.SZZ_CARD_IDS_PATH ?? DEFAULT_SZZ_CARD_IDS_PATH,
+  );
+  const validFlashcardIds = options.db
+    ? new Set(options.validFlashcardIds ?? loadFlashcardIds(cardIdsPath))
+    : new Set<string>();
   const reportHtmlPath = resolve(
     options.reportHtmlPath ?? process.env.SZZ_REPORT_HTML_PATH ?? DEFAULT_SZZ_REPORT_HTML_PATH,
   );
@@ -259,6 +555,18 @@ export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions
 
   app.get("/szz", async (_req, reply) => sendSzzPage(reply, htmlPath));
   app.get("/szz/", async (_req, reply) => sendSzzPage(reply, htmlPath));
+  for (const path of ["/szzcards", "/szzcards/"]) {
+    app.get(path, async (req, reply) => {
+      setPrivateNoStore(reply);
+      const sessionUser = options.validSessionUser?.(getCookie(req, SESSION_COOKIE)) ?? null;
+      if (!sessionUser) return reply.code(401).send({ error: "Не авторизован" });
+      const armen = options.db?.getUserByUsername("armen") ?? null;
+      if (!armen || sessionUser.id !== armen.id) {
+        return reply.code(403).send({ error: "Карточки доступны только владельцу" });
+      }
+      return sendPrivateSzzPage(reply, cardsHtmlPath);
+    });
+  }
   app.get("/szzreport", async (_req, reply) => sendSzzPage(reply, reportHtmlPath));
   app.get("/szzreport/", async (_req, reply) => sendSzzPage(reply, reportHtmlPath));
   for (const path of ["/tempszz", "/tempszz/", "/tempszz.txt"]) {
@@ -336,6 +644,74 @@ export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions
         state: savedState
           ? withCompleteTicketCountUpdates(savedState)
           : merged.state,
+        updatedAt: result.row?.updatedAt ?? null,
+      };
+    });
+
+    app.get("/api/szz/cards/state", async (req, reply) => {
+      setPrivateNoStore(reply);
+      const userId = requestUserId(req);
+      if (!userId) return reply.code(401).send({ error: "Не авторизован" });
+      const armen = options.db!.getUserByUsername("armen");
+      if (!armen || armen.id !== userId) {
+        return reply.code(403).send({ error: "Карточки доступны только владельцу" });
+      }
+      const stored = options.db!.getSzzFlashcardState(userId);
+      return {
+        userId,
+        revision: stored?.revision ?? 0,
+        state: stored?.state ?? null,
+        updatedAt: stored?.updatedAt ?? null,
+      };
+    });
+
+    app.put("/api/szz/cards/state", async (req, reply) => {
+      setPrivateNoStore(reply);
+      const userId = requestUserId(req);
+      if (!userId) return reply.code(401).send({ error: "Не авторизован" });
+      const armen = options.db!.getUserByUsername("armen");
+      if (!armen || armen.id !== userId) {
+        return reply.code(403).send({ error: "Карточки доступны только владельцу" });
+      }
+      if (!payloadFitsFlashcardLimit(req.body)) {
+        return reply.code(400).send({ error: "Состояние карточек превышает 256 КиБ" });
+      }
+      const body = isRecord(req.body) ? req.body : null;
+      if (!body || !hasOnlyKeys(body, new Set(["expectedRevision", "state"]))) {
+        return reply.code(400).send({ error: "Некорректное состояние карточек" });
+      }
+      const expectedRevision = body.expectedRevision;
+      if (
+        typeof expectedRevision !== "number" ||
+        !Number.isSafeInteger(expectedRevision) ||
+        expectedRevision < 0
+      ) {
+        return reply.code(400).send({ error: "Некорректная ревизия карточек" });
+      }
+      const normalized = normalizedFlashcardState(body.state, validFlashcardIds);
+      if (!normalized) {
+        return reply.code(400).send({ error: "Некорректное состояние карточек" });
+      }
+      const result = options.db!.saveSzzFlashcardState(
+        userId,
+        normalized.json,
+        normalized.updatedAt,
+        expectedRevision,
+      );
+      if (!result.saved) {
+        return reply.code(409).send({
+          userId,
+          saved: false,
+          revision: result.row?.revision ?? 0,
+          state: result.row?.state ?? null,
+          updatedAt: result.row?.updatedAt ?? null,
+        });
+      }
+      return {
+        userId,
+        saved: true,
+        revision: result.row?.revision ?? expectedRevision + 1,
+        state: result.row?.state ?? normalized.state,
         updatedAt: result.row?.updatedAt ?? null,
       };
     });

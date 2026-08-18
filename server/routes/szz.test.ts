@@ -277,7 +277,7 @@ test("szz study state is stored per authenticated user and rejects stale writes"
     const header = req.headers["x-test-user-id"];
     if (header) (req as typeof req & { userId?: number }).userId = Number(header);
   });
-  registerSzzRoutes(app, { db });
+  registerSzzRoutes(app, { db, validFlashcardIds: [] });
 
   const anonymous = await app.inject({ method: "GET", url: "/api/szz/state" });
   assert.equal(anonymous.statusCode, 401);
