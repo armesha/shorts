@@ -57,6 +57,19 @@ test("szz report routes serve the current audit HTML", async () => {
   rmSync(dir, { recursive: true, force: true });
 });
 
+test("retired temporary szz routes return 404 instead of the SPA fallback", async () => {
+  const app = Fastify();
+  registerSzzRoutes(app);
+
+  for (const url of ["/tempszz", "/tempszz/", "/tempszz.txt"]) {
+    const response = await app.inject({ method: "GET", url });
+    assert.equal(response.statusCode, 404);
+    assert.deepEqual(response.json(), { error: "not found" });
+  }
+
+  await app.close();
+});
+
 test("szz backup routes serve all configured backups without changing the current page", async () => {
   const dir = mkdtempSync(resolve(tmpdir(), "szz-backup-route-"));
   const htmlPath = resolve(dir, "ticket.html");

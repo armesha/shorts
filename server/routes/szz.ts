@@ -261,6 +261,9 @@ export function registerSzzRoutes(app: FastifyInstance, options: SzzRouteOptions
   app.get("/szz/", async (_req, reply) => sendSzzPage(reply, htmlPath));
   app.get("/szzreport", async (_req, reply) => sendSzzPage(reply, reportHtmlPath));
   app.get("/szzreport/", async (_req, reply) => sendSzzPage(reply, reportHtmlPath));
+  for (const path of ["/tempszz", "/tempszz/", "/tempszz.txt"]) {
+    app.get(path, async (_req, reply) => reply.code(404).send({ error: "not found" }));
+  }
   app.get("/szzbackup", async (_req, reply) => sendSzzPage(reply, backupHtmlPath));
   app.get("/szzbackup/", async (_req, reply) => sendSzzPage(reply, backupHtmlPath));
   app.get("/szzbackup2", async (_req, reply) => sendSzzPage(reply, backup2HtmlPath));
