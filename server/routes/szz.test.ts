@@ -57,6 +57,27 @@ test("szz report routes serve the current audit HTML", async () => {
   rmSync(dir, { recursive: true, force: true });
 });
 
+test("temporary szz text routes serve only the configured text file", async () => {
+  const dir = mkdtempSync(resolve(tmpdir(), "szz-temp-text-route-"));
+  const tempTextPath = resolve(dir, "changes.txt");
+  const text = "=== 1.1 ===\nPouze změněný text.\n";
+  writeFileSync(tempTextPath, text);
+
+  const app = Fastify();
+  registerSzzRoutes(app, { tempTextPath });
+
+  for (const url of ["/tempszz", "/tempszz/"]) {
+    const response = await app.inject({ method: "GET", url });
+    assert.equal(response.statusCode, 200);
+    assert.match(response.headers["content-type"] ?? "", /^text\/plain/);
+    assert.equal(response.headers["cache-control"], "no-store, max-age=0");
+    assert.equal(response.body, text);
+  }
+
+  await app.close();
+  rmSync(dir, { recursive: true, force: true });
+});
+
 test("szz backup routes serve all configured backups without changing the current page", async () => {
   const dir = mkdtempSync(resolve(tmpdir(), "szz-backup-route-"));
   const htmlPath = resolve(dir, "ticket.html");
