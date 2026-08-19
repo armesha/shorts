@@ -179,12 +179,6 @@ export function applySchema(db: DatabaseSync): void {
       granted_at TEXT NOT NULL DEFAULT (datetime('now')),
       PRIMARY KEY (user_id, feature)
     );
-    CREATE TABLE IF NOT EXISTS user_szz_study_state (
-      user_id INTEGER PRIMARY KEY,
-      state_json TEXT NOT NULL,
-      state_updated_at INTEGER NOT NULL,
-      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
     CREATE TABLE IF NOT EXISTS car_seat_bookings (
       namespace TEXT NOT NULL,
       car_id TEXT NOT NULL,

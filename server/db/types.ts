@@ -126,13 +126,6 @@ export interface TelegramPreferences {
   statsDigest: TelegramDigestFrequency;
 }
 
-export interface SzzStudyStateRow {
-  userId: number;
-  state: unknown;
-  stateUpdatedAt: number;
-  updatedAt: string;
-}
-
 /** One snapshot of a channel's YouTube totals (subscribers/views/videos) at a point in time. */
 export interface ChannelSnapshot {
   id: number;

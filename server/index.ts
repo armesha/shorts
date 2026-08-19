@@ -381,7 +381,7 @@ registerExamplesRoutes(app, db, deps);
 registerAudioRoutes(app, db, deps);
 registerMemesRoutes(app, deps);
 registerIdeasRoutes(app, db, deps);
-registerSzzRoutes(app, { db });
+registerSzzRoutes(app);
 registerCircleEditorRoutes(app, db);
 
 app
