@@ -36,11 +36,19 @@ test("szz routes serve the latest source HTML without restarting", async () => {
   rmSync(dir, { recursive: true, force: true });
 });
 
-test("retired temporary szz routes return 404 instead of the SPA fallback", async () => {
+test("retired szz routes return 404 instead of the SPA fallback", async () => {
   const app = Fastify();
   registerSzzRoutes(app);
 
-  for (const url of ["/szzreport", "/szzreport/", "/tempszz", "/tempszz/", "/tempszz.txt"]) {
+  for (const url of [
+    "/szzcards",
+    "/szzcards/",
+    "/szzreport",
+    "/szzreport/",
+    "/tempszz",
+    "/tempszz/",
+    "/tempszz.txt",
+  ]) {
     const response = await app.inject({ method: "GET", url });
     assert.equal(response.statusCode, 404);
     assert.deepEqual(response.json(), { error: "not found" });
@@ -256,7 +264,7 @@ test("szz study state is stored per authenticated user and rejects stale writes"
     const header = req.headers["x-test-user-id"];
     if (header) (req as typeof req & { userId?: number }).userId = Number(header);
   });
-  registerSzzRoutes(app, { db, validFlashcardIds: [] });
+  registerSzzRoutes(app, { db });
 
   const anonymous = await app.inject({ method: "GET", url: "/api/szz/state" });
   assert.equal(anonymous.statusCode, 401);

@@ -133,14 +133,6 @@ export interface SzzStudyStateRow {
   updatedAt: string;
 }
 
-export interface SzzFlashcardStateRow {
-  userId: number;
-  revision: number;
-  state: unknown;
-  stateUpdatedAt: number;
-  updatedAt: string;
-}
-
 /** One snapshot of a channel's YouTube totals (subscribers/views/videos) at a point in time. */
 export interface ChannelSnapshot {
   id: number;
