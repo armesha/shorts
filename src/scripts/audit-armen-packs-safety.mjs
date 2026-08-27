@@ -158,7 +158,7 @@ db.exec("PRAGMA query_only = ON");
 
 const deckIds = db
   .prepare(
-    `SELECT DISTINCT deck_id
+    `SELECT DISTINCT json_each.value AS deck_id
        FROM accounts, json_each(accounts.source_decks)
       WHERE accounts.user_id = (SELECT id FROM users WHERE username = 'armen')
       ORDER BY deck_id`,

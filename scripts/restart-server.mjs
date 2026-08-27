@@ -135,6 +135,11 @@ async function serviceActiveState(service = SERVICE) {
   return stdout.trim();
 }
 
+async function serviceUnitFileState(service) {
+  const { stdout } = await tryRun("systemctl", ["show", service, "-p", "UnitFileState", "--value"]);
+  return stdout.trim();
+}
+
 async function stopPids(pids) {
   const unique = [...new Set(pids)].filter((pid) => pid > 1 && pid !== process.pid && pidAlive(pid));
   if (!unique.length) return;
@@ -248,9 +253,13 @@ async function restartSystemd() {
   const hasWorkerService = workerLoadState && workerLoadState !== "not-found";
   const creatorLoadState = await serviceLoadState(CREATOR_SERVICE);
   const hasCreatorService = creatorLoadState && creatorLoadState !== "not-found";
-  if (hasCreatorService) {
+  const creatorUnitFileState = hasCreatorService ? await serviceUnitFileState(CREATOR_SERVICE) : "not-found";
+  const manageCreatorService = hasCreatorService && creatorUnitFileState !== "disabled" && creatorUnitFileState !== "masked";
+  if (manageCreatorService) {
     log(`using systemd creator ${CREATOR_SERVICE}`);
     await tryRun("sudo", ["-n", "systemctl", "stop", CREATOR_SERVICE], { timeout: 45_000 });
+  } else if (hasCreatorService) {
+    log(`leaving ${CREATOR_SERVICE} stopped (${creatorUnitFileState})`);
   }
   if (hasWorkerService) {
     log(`using systemd worker ${WORKER_SERVICE}`);
@@ -259,12 +268,12 @@ async function restartSystemd() {
   await tryRun("sudo", ["-n", "systemctl", "stop", SERVICE], { timeout: 20_000 });
   await waitFor(async () => (await serviceMainPid()) === 0, 12_000);
   if (hasWorkerService) await waitFor(async () => (await serviceMainPid(WORKER_SERVICE)) === 0, 45_000);
-  if (hasCreatorService) await waitFor(async () => (await serviceMainPid(CREATOR_SERVICE)) === 0, 45_000);
+  if (manageCreatorService) await waitFor(async () => (await serviceMainPid(CREATOR_SERVICE)) === 0, 45_000);
   const leftovers = [...new Set([...(await portPids()), ...repoAppPids()])];
   await stopPids(leftovers);
   await tryRun("sudo", ["-n", "systemctl", "reset-failed", SERVICE]);
   if (hasWorkerService) await tryRun("sudo", ["-n", "systemctl", "reset-failed", WORKER_SERVICE]);
-  if (hasCreatorService) await tryRun("sudo", ["-n", "systemctl", "reset-failed", CREATOR_SERVICE]);
+  if (manageCreatorService) await tryRun("sudo", ["-n", "systemctl", "reset-failed", CREATOR_SERVICE]);
   await run("sudo", ["-n", "systemctl", "start", SERVICE], { timeout: 20_000 });
   const healthStartedAt = Date.now();
   log(`waiting up to ${Math.round(HEALTH_WAIT_MS / 1000)}s for ${HEALTH_URL}`);
@@ -291,7 +300,7 @@ async function restartSystemd() {
     log(`${WORKER_SERVICE}: ${workerActive}; pid=${workerPid}`);
     log(`generation worker heartbeat: pid=${heartbeat?.pid ?? "?"}; age=${age == null ? "?" : `${Math.round(age)}ms`}`);
   }
-  if (hasCreatorService) {
+  if (manageCreatorService) {
     await run("sudo", ["-n", "systemctl", "start", CREATOR_SERVICE], { timeout: 20_000 });
     const creatorPid = await serviceMainPid(CREATOR_SERVICE);
     const creatorActive = await serviceActiveState(CREATOR_SERVICE);

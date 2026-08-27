@@ -76,22 +76,8 @@ test("global pack visibility counts slot-only and lang-fallback channel usage", 
   }
 });
 
-test("visual-riddles stays globally hidden even if a stale channel reference appears", () => {
-  const db = openDb(":memory:");
-  try {
-    const visualRiddles = DECKS.find((deck) => deck.id === "visual-riddles");
-    assert.ok(visualRiddles);
-    db.createAccount({
-      userId: 1,
-      lang: "visual-riddles",
-      channelLang: "ru",
-      sourceDecks: ["visual-riddles"],
-      schedule: ["12:00"],
-    });
-    assert.equal(isBuiltInDeckGloballyVisible(db, visualRiddles), false);
-  } finally {
-    db.db.close();
-  }
+test("retired visual-riddles deck is absent from the active registry", () => {
+  assert.equal(DECKS.some((deck) => deck.id === "visual-riddles"), false);
 });
 
 test("global pack visibility applies the same used-or-exception rule to built-in decks", () => {

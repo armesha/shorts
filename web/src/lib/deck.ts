@@ -230,7 +230,28 @@ export const CONTENT_LANGS: { code: string; label: string }[] = [
 ];
 
 /** Built-in content decks selectable as a channel's source (deck id → label shown in the dropdown). */
-export const BUILTIN_DECKS: { id: string; label: string }[] = [
+const RETIRED_UNUSED_PREBUILT_DECKS = new Set([
+  "visual-riddles",
+  "visual-riddles-de",
+  "visual-riddles-en",
+  "visual-riddles-it",
+  "visual-riddles-es",
+  "visual-riddles-fr",
+  "visual-riddles-pt",
+  "illusions-3d-de",
+  "illusions-3d-en",
+  "illusions-en",
+  "illusions-de",
+  "illusions-it",
+  "illusions-es",
+  "illusions-fr",
+  "illusions-pt",
+  "illusions-hi",
+  "illusions-id",
+  "illusions-ar",
+]);
+
+const ALL_BUILTIN_DECKS: { id: string; label: string }[] = [
   { id: "de", label: "Немецкий" },
   { id: "ru", label: "Русский" },
   { id: "it", label: "Итальянский" },
@@ -312,6 +333,8 @@ export const BUILTIN_DECKS: { id: string; label: string }[] = [
   { id: "memes-id", label: "Memes (ID)" },
   { id: "memes-ar", label: "ميمز (AR)" },
 ];
+
+export const BUILTIN_DECKS = ALL_BUILTIN_DECKS.filter((deck) => !RETIRED_UNUSED_PREBUILT_DECKS.has(deck.id));
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Unified deck/pack picker model.

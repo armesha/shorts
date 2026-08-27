@@ -109,7 +109,28 @@ function quoteVideoDeck(input: {
   };
 }
 
-export const DECKS: Deck[] = [
+const RETIRED_UNUSED_PREBUILT_DECKS = new Set([
+  "visual-riddles",
+  "visual-riddles-de",
+  "visual-riddles-en",
+  "visual-riddles-it",
+  "visual-riddles-es",
+  "visual-riddles-fr",
+  "visual-riddles-pt",
+  "illusions-3d-de",
+  "illusions-3d-en",
+  "illusions-en",
+  "illusions-de",
+  "illusions-it",
+  "illusions-es",
+  "illusions-fr",
+  "illusions-pt",
+  "illusions-hi",
+  "illusions-id",
+  "illusions-ar",
+]);
+
+const ALL_DECKS: Deck[] = [
   {
     id: "ru",
     name: "Русские анекдоты",
@@ -1141,6 +1162,8 @@ export const DECKS: Deck[] = [
     liveVideo: true,
   },
 ];
+
+export const DECKS: Deck[] = ALL_DECKS.filter((deck) => !RETIRED_UNUSED_PREBUILT_DECKS.has(deck.id));
 
 export const DEFAULT_DECK = "ru";
 

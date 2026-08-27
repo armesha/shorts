@@ -10,7 +10,7 @@ const deps = {
   isSuperAdminReq: () => false,
 };
 
-test("accountSourceDecks hides globally hidden decks for everyone and forbidden source decks for the super admin owner", () => {
+test("accountSourceDecks drops retired decks for everyone and forbidden source decks for the super admin owner", () => {
   const db = openDb(":memory:");
   const armen = db.createUser({ username: SUPER_ADMIN_USERNAME, passHash: "x", role: "admin", isSuperAdmin: true });
   const user = db.createUser({ username: "regular", passHash: "x", role: "user" });
@@ -32,12 +32,7 @@ test("accountSourceDecks hides globally hidden decks for everyone and forbidden 
   });
 
   assert.deepEqual(access.accountSourceDecks(armenAccount), ["en"]);
-  assert.deepEqual(access.accountSourceDecks(regularAccount), [
-    "en",
-    "illusions-en",
-    "illusions-3d-en",
-    "memes-en",
-  ]);
+  assert.deepEqual(access.accountSourceDecks(regularAccount), ["en", "memes-en"]);
 });
 
 test("exclusive built-in deck is accessible only to its username, even against admin bypass", () => {

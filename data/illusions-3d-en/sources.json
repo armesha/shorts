@@ -1,9 +1,0 @@
-{
-  "deckId": "illusions-3d-en",
-  "rights": "English localization of project-generated 3D ambiguous-shape videos rendered locally from procedural geometry; no external media added.",
-  "tooling": "scripts/illusions-3d/* and local ffmpeg/video render pipeline",
-  "safetyRules": [
-    "Keep titles as visual-perception prompts, not medical claims.",
-    "Avoid flashing/strobe patterns beyond normal short-video safety."
-  ]
-}
