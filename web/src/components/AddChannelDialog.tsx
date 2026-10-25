@@ -2,16 +2,11 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import type { ChannelPlatform } from "../lib/api";
 
-const PLATFORMS: { id: ChannelPlatform; name: string; description: string }[] =
-  [
-    { id: "youtube", name: "YouTube", description: "Подключение через Google" },
-    {
-      id: "instagram",
-      name: "Instagram",
-      description: "Подключение через cookies",
-    },
-    { id: "tiktok", name: "TikTok", description: "Подключение через cookies" },
-  ];
+const PLATFORMS: { id: ChannelPlatform; name: string }[] = [
+  { id: "youtube", name: "YouTube" },
+  { id: "instagram", name: "Instagram" },
+  { id: "tiktok", name: "TikTok" },
+];
 
 type Props = {
   busy: boolean;
@@ -68,10 +63,6 @@ export default function AddChannelDialog({
         </div>
         {!platform ? (
           <>
-            <p className="text-sm text-base-content/75">
-              Выберите площадку. Библиотека роликов, расписание и история будут
-              доступны в общей карточке канала.
-            </p>
             <div className="divide-y divide-base-300 border-y border-base-300">
               {PLATFORMS.map((p) => (
                 <button
@@ -82,9 +73,6 @@ export default function AddChannelDialog({
                 >
                   <span>
                     <span className="block font-semibold">{p.name}</span>
-                    <span className="block mt-1 text-sm text-base-content/75">
-                      {p.description}
-                    </span>
                   </span>
                   <ArrowRight size={18} className="shrink-0" />
                 </button>
@@ -104,11 +92,6 @@ export default function AddChannelDialog({
             </button>
             <div className="space-y-2">
               <h3 className="font-semibold text-lg">{selected?.name}</h3>
-              <p className="text-sm text-base-content/75">
-                {platform === "youtube"
-                  ? "После создания подключите YouTube-канал через Google. Затем выберите контент и расписание."
-                  : "После создания загрузите cookies файлом JSON/TXT или вставьте их текстом. Проверьте вход, затем выберите контент и расписание."}
-              </p>
             </div>
             <label className="form-control gap-2">
               <span className="label-text">Название канала</span>
@@ -121,16 +104,13 @@ export default function AddChannelDialog({
                 placeholder={`Мой ${selected?.name}`}
                 onChange={(event) => setName(event.target.value)}
               />
-              <span className="label-text-alt text-base-content/70">
-                Название можно изменить в настройках канала.
-              </span>
             </label>
             {error && (
               <div className="alert alert-error text-sm" role="alert">
                 {error}
               </div>
             )}
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-wrap justify-end gap-2">
               <button
                 type="button"
                 className="btn btn-ghost"

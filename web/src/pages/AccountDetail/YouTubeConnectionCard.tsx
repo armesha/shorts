@@ -92,7 +92,6 @@ export default function YouTubeConnectionCard({
           </>
         ) : (
           <>
-            <p className="text-sm text-base-content/60">{t("account.connectIntro")}</p>
             {justConnected && <p className="text-success text-sm">{t("account.connectedRefresh")}</p>}
             <div>
               <button className="btn btn-primary btn-sm" onClick={startConnect}>

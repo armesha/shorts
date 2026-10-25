@@ -426,7 +426,6 @@ export const ru: Record<string, string> = {
   "account.connectChannel": "Подключить канал",
   "account.connectFailed": "Не удалось подключить канал:",
   "account.connectFirst": "Сначала подключите канал",
-  "account.connectIntro": "Чтобы ролики загружались автоматически, авторизуй канал через Google — один раз.",
   "account.connectStartFailed": "Не удалось начать привязку канала",
   "account.connectSuccess": "Канал успешно подключён к YouTube",
   "account.connected": "подключён",
@@ -451,7 +450,6 @@ export const ru: Record<string, string> = {
   "account.generateSelected": "Для этого пака",
   "account.generateSelectedTitle": "Поставить выбранное количество в очередь генерации",
   "account.generateToLibrary": "Создать из источников",
-  "account.headerSubtitle": "Настройки генерации и расписания",
   "account.howManyVideosAria": "Сколько роликов сгенерировать",
   "account.invalidTime": "Введите время в 24-часовом формате — например 09:00 или 14:30",
   "account.langMismatchWarn": "Контент {content} не совпадает с языком канала {channel} — смените язык канала или выберите {channel}-пак",
@@ -1649,7 +1647,6 @@ export const ru: Record<string, string> = {
 
   // ── account cockpit ──
   "account.cockpitTitle": "Пульт канала",
-  "account.cockpitSubtitle": "Короткая проверка: можно ли каналу постить по расписанию и насколько хватит готовой библиотеки.",
   "account.cockpitQueued": "готово",
   "account.cockpitPerDay": "постов/день",
   "account.cockpitRunway": "дней запаса",

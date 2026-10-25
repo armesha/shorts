@@ -422,7 +422,6 @@ export const en: Record<string, string> = {
   "account.connectChannel": "Connect channel",
   "account.connectFailed": "Couldn't connect the channel:",
   "account.connectFirst": "Connect the channel first",
-  "account.connectIntro": "To upload videos automatically, authorize the channel via Google — just once.",
   "account.connectStartFailed": "Couldn't start linking the channel",
   "account.connectSuccess": "Channel successfully connected to YouTube",
   "account.connected": "connected",
@@ -447,7 +446,6 @@ export const en: Record<string, string> = {
   "account.generateSelected": "For this pack",
   "account.generateSelectedTitle": "Queue the selected amount for generation",
   "account.generateToLibrary": "Create from sources",
-  "account.headerSubtitle": "Generation and schedule settings",
   "account.howManyVideosAria": "How many videos to generate",
   "account.invalidTime": "Enter the time in 24-hour format — for example 09:00 or 14:30",
   "account.langMismatchWarn": "Content {content} does not match channel language {channel} — change the channel language or pick a {channel} pack",
@@ -1645,7 +1643,6 @@ export const en: Record<string, string> = {
 
   // ── account cockpit ──
   "account.cockpitTitle": "Channel cockpit",
-  "account.cockpitSubtitle": "Quick check: whether the channel can publish by schedule and how long its ready library will last.",
   "account.cockpitQueued": "ready",
   "account.cockpitPerDay": "posts/day",
   "account.cockpitRunway": "days runway",

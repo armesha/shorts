@@ -259,7 +259,7 @@ export default function SocialConnectionCard({
         )}
         <p className="text-sm text-base-content/75">
           Войдите в {platform} в своём браузере, экспортируйте cookies сайта и
-          загрузите их сюда. Для каждого канала cookies сохраняются отдельно.
+          загрузите их сюда.
         </p>
         {(error || connection?.error) && (
           <div className="alert alert-error text-sm" role="alert">

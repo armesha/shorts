@@ -882,7 +882,7 @@ export default function AccountDetail() {
           )}
           <div className="min-w-0">
             <h1 className="text-2xl font-bold truncate">{channelName || t("account.channelFallback")}</h1>
-            <p className="text-base-content/60">{platformName}{account.socialHandle ? ` · @${account.socialHandle}` : ""} · {t("account.headerSubtitle")}</p>
+            <p className="text-base-content/60">{platformName}{account.socialHandle ? ` · @${account.socialHandle}` : ""}</p>
           </div>
         </div>
         {account.authError ? (
@@ -923,7 +923,6 @@ export default function AccountDetail() {
                   <span className={`badge ${readinessBadge}`}>{readinessTitle}</span>
                   <h2 className="card-title text-base">{t("account.cockpitTitle")}</h2>
                 </div>
-                <p className="mt-1 max-w-2xl text-sm text-base-content/60">{t("account.cockpitSubtitle")}</p>
               </div>
               <div className="flex flex-wrap gap-2">
                 {readiness.actions.map((action) =>
