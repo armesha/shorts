@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ExternalLink, Megaphone, Video } from "lucide-react";
+import { ExternalLink, Video } from "lucide-react";
 
 const CIRCLE_EDITOR_URL = "/circle-editor/index.html";
 const CIRCLE_EDITOR_VERSION = "20260727-1";
@@ -40,11 +40,7 @@ export default function CircleEditor() {
             </p>
           </div>
         </div>
-        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap">
-          <a href="/admin/banners" target="_blank" rel="noreferrer" className="btn btn-outline min-h-11 gap-2 sm:btn-sm sm:min-h-0">
-            <Megaphone size={16} />
-            Управлять баннерами
-          </a>
+        <div className="grid w-full gap-2 sm:flex sm:w-auto sm:flex-wrap">
           <a href={editorSrc} target="_blank" rel="noreferrer" className="btn btn-outline min-h-11 gap-2 sm:btn-sm sm:min-h-0">
             <ExternalLink size={16} />
             На весь экран

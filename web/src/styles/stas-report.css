@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Stas Source Serif";
-  src: url("/template-editor/fonts/source-serif-4-400-normal-cyrillic.woff2") format("woff2");
+  src: url("/template-runtime/fonts/source-serif-4-400-normal-cyrillic.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -8,7 +8,7 @@
 
 @font-face {
   font-family: "Stas Raleway";
-  src: url("/template-editor/fonts/raleway-500-normal-cyrillic-ext.woff2") format("woff2");
+  src: url("/template-runtime/fonts/raleway-500-normal-cyrillic-ext.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -16,7 +16,7 @@
 
 @font-face {
   font-family: "Stas Raleway";
-  src: url("/template-editor/fonts/raleway-700-normal-cyrillic-ext.woff2") format("woff2");
+  src: url("/template-runtime/fonts/raleway-700-normal-cyrillic-ext.woff2") format("woff2");
   font-weight: 700 800;
   font-style: normal;
   font-display: swap;
@@ -24,7 +24,7 @@
 
 @font-face {
   font-family: "Stas Source Serif";
-  src: url("/template-editor/fonts/source-serif-4-700-normal-cyrillic-ext.woff2") format("woff2");
+  src: url("/template-runtime/fonts/source-serif-4-700-normal-cyrillic-ext.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;

@@ -13,7 +13,6 @@ import { isAdminLike, isAdminRole } from "./lib/authz";
 const Overview = lazy(pageLoaders.overview);
 const Studio = lazy(pageLoaders.studio);
 const Gallery = lazy(pageLoaders.gallery);
-const Cards = lazy(pageLoaders.cards);
 const Packs = lazy(pageLoaders.packs);
 const QueuePage = lazy(pageLoaders.queue);
 const Accounts = lazy(pageLoaders.accounts);
@@ -27,9 +26,7 @@ const Settings = lazy(pageLoaders.settings);
 const Users = lazy(pageLoaders.users);
 const ClipDemos = lazy(pageLoaders.clipDemos);
 const Examples = lazy(pageLoaders.examples);
-const TemplateEditor = lazy(pageLoaders.templateEditor);
 const CircleEditor = lazy(pageLoaders.circleEditor);
-const BannerLibrary = lazy(pageLoaders.bannerLibrary);
 const Login = lazy(pageLoaders.login);
 const Register = lazy(pageLoaders.register);
 const TelegramMiniApp = lazy(pageLoaders.telegramMiniApp);
@@ -81,7 +78,6 @@ function Gate() {
             <Route path="/signals" element={realAdmin ? <Signals /> : <Navigate to="/channels" replace />} />
             <Route path="/signals/analysis" element={realAdmin ? <SignalsAnalysis /> : <Navigate to="/channels" replace />} />
             <Route path="/gallery" element={realAdmin ? <Gallery /> : <Navigate to="/channels" replace />} />
-            <Route path="/cards" element={<Cards />} />
             <Route path="/library" element={<Packs />} />
             <Route path="/packs" element={<Navigate to="/library" replace />} />
             <Route path="/queue" element={adminVisual ? <QueuePage /> : <Navigate to="/channels" replace />} />
@@ -102,11 +98,8 @@ function Gate() {
             <Route path="/errors" element={realAdmin ? <Errors /> : <Navigate to="/statistics" replace />} />
             <Route path="/system" element={<System />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/editor" element={<TemplateEditor />} />
             <Route path="/circles" element={<CircleEditor />} />
             <Route path="/admin/circles" element={<Navigate to="/circles" replace />} />
-            <Route path="/admin/banners" element={<BannerLibrary />} />
-            <Route path="/banners" element={<Navigate to="/admin/banners" replace />} />
             <Route path="/users" element={realAdmin ? <Users /> : <Navigate to="/statistics" replace />} />
             <Route path="*" element={defaultRoute} />
           </Routes>

@@ -40,7 +40,7 @@ export const TEMPLATE_LIMITS = {
   maxCssValueChars: 3_000_000,
 };
 
-const ALLOWED_LOCAL_IMAGE_PREFIXES = ["assets/template-packs/", "web/public/template-editor/"];
+const ALLOWED_LOCAL_IMAGE_PREFIXES = ["assets/template-packs/", "web/public/template-runtime/"];
 const DATA_IMAGE_RE = /^data:image\/(png|jpe?g|webp);base64,([A-Za-z0-9+/=\s]+)$/i;
 const CSS_URL_RE = /url\(\s*(['"]?)(.*?)\1\s*\)/gis;
 
@@ -118,7 +118,7 @@ export function safeLocalImageRel(src: string, label: string): string {
     badTemplate(`${label}: путь к локальной картинке небезопасен`);
   }
   if (!ALLOWED_LOCAL_IMAGE_PREFIXES.some((prefix) => value.startsWith(prefix))) {
-    badTemplate(`${label}: локальные картинки разрешены только из assets/template-packs/ и web/public/template-editor/`);
+    badTemplate(`${label}: локальные картинки разрешены только из assets/template-packs/ и web/public/template-runtime/`);
   }
   if (!/\.(png|jpe?g|webp|svg)$/i.test(value)) badTemplate(`${label}: неподдерживаемый формат картинки`);
   return value;

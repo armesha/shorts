@@ -268,7 +268,7 @@ export const apiClient = {
   deletePack: (id: string) => send<{ deleted: boolean }>(`/packs/${id}`, "DELETE"),
   setPackLang: (id: string, lang: string) => send<{ ok: boolean; lang: string }>(`/packs/${id}/lang`, "POST", { lang }),
   setPackName: (id: string, name: string) => send<{ ok: boolean; name: string }>(`/packs/${id}/name`, "POST", { name }),
-  // Admin: set a pack's owners (0+; owners edit the pack on /cards). Пусто = без владельца.
+  // Admin: update pack owners; an empty list removes ownership.
   setPackOwners: (id: string, owners: number[]) =>
     send<{ ok: boolean; owners: number[] }>(`/admin/packs/${id}/owners`, "PUT", { owners }),
   packMusic: (id: string) => get<PackMusic>(`/packs/${id}/music`),

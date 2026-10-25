@@ -5,9 +5,9 @@
 //
 // 2 способа подключения:
 //   1) ES-модуль (через http/https):
-//        import { renderTemplate } from "./template-editor/renderer.js";
+//        import { renderTemplate } from "./template-runtime/renderer.js";
 //   2) Глобально (через <script src=... > даже с file://):
-//        <script src="template-editor/renderer.js"></script>
+//        <script src="template-runtime/renderer.js"></script>
 //        <script>renderTemplate(el, tpl, {...});</script>
 //
 // Контент по role:

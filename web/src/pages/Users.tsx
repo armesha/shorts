@@ -789,7 +789,7 @@ function AdminUsers() {
           </div>
         )}
 
-        {/* Владельцы паков: у пака 0+ владельцев — они редактируют пак (имя/язык/карточки) на /cards. */}
+        {/* A pack may have multiple owners. */}
         {canManagePackOwners && packs.length > 0 && (
           <div className="border-t border-base-300 pt-3">
             <p className="text-sm font-medium mb-1 flex items-center gap-2">

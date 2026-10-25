@@ -2,7 +2,6 @@ const routeLoaders = {
   overview: () => import("../pages/Overview"),
   studio: () => import("../pages/Studio"),
   gallery: () => import("../pages/Gallery"),
-  cards: () => import("../pages/Cards"),
   packs: () => import("../pages/Packs"),
   queue: () => import("../pages/Queue"),
   accounts: () => import("../pages/Accounts"),
@@ -16,9 +15,7 @@ const routeLoaders = {
   users: () => import("../pages/Users"),
   clipDemos: () => import("../pages/ClipDemos"),
   examples: () => import("../pages/Examples"),
-  templateEditor: () => import("../pages/TemplateEditor"),
   circleEditor: () => import("../pages/CircleEditor"),
-  bannerLibrary: () => import("../pages/BannerLibrary"),
   login: () => import("../pages/Login"),
   register: () => import("../pages/Register"),
   telegramMiniApp: () => import("../pages/TelegramMiniApp"),
@@ -64,8 +61,6 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
       return "studio";
     case "/gallery":
       return "gallery";
-    case "/cards":
-      return "cards";
     case "/library":
       return "packs";
     case "/packs":
@@ -88,14 +83,9 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
       return "system";
     case "/settings":
       return "settings";
-    case "/editor":
-      return "templateEditor";
     case "/circles":
     case "/admin/circles":
       return "circleEditor";
-    case "/admin/banners":
-    case "/banners":
-      return "bannerLibrary";
     case "/users":
       return "users";
     case "/login":

@@ -117,7 +117,7 @@ function enforceCreatorTemplateAssets(templates: PackTemplate[]): void {
       if (el.type !== "image" || typeof el.src !== "string") continue;
       const src = el.src.trim();
       if (src.startsWith(userAssetPrefix)) continue;
-      if (src.startsWith("assets/template-packs/") || src.startsWith("web/public/template-editor/")) continue;
+      if (src.startsWith("assets/template-packs/") || src.startsWith("web/public/template-runtime/")) continue;
       throw new TemplateValidationError(`templates[${ti}].elements[${ei}].src: creator поддерживает только сервисные assets/template-packs или data:image`);
     }
   }

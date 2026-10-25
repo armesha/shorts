@@ -7,7 +7,7 @@ import { listAllowedRussianJokeBackgrounds } from "./joke-template-pool.ts";
 
 const TEMPLATE = resolve(process.cwd(), "templates/anecdote-russian.html");
 const BG_DIR = resolve(process.cwd(), "assets/backgrounds/russian_jokes");
-const FONT_DIR = resolve(process.cwd(), "web/public/template-editor/fonts");
+const FONT_DIR = resolve(process.cwd(), "web/public/template-runtime/fonts");
 export const RUSSIAN_LONG_TEXT_THRESHOLD = 360;
 export const RUSSIAN_MIN_READABLE_FONT_PX = 26;
 

@@ -23,7 +23,7 @@ import { resolve } from "node:path";
 
 const PACKS_DIR = resolve(process.cwd(), "data/packs");
 
-/** Шаблон в формате редактора (web/public/template-editor). Нас интересуют canvas + elements. */
+/** Шаблон в формате редактора (web/public/template-runtime). Нас интересуют canvas + elements. */
 export interface PackTemplate {
   version?: number;
   name?: string;

@@ -13,8 +13,7 @@ export function useDeck(): [string, (d: string) => void] {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Single source of truth for deck / language DISPLAY data.
-// These tables used to be hand-copied across Studio, AccountDetail, PackDetail,
-// CreatePackForm and Packs (and had already drifted). Import them from here instead.
+// Shared by Studio, AccountDetail and Packs.
 // NOTE: this is content/branding data, NOT UI strings — deck/language names stay in
 // their natural form regardless of the dashboard's UI language.
 // ─────────────────────────────────────────────────────────────────────────────

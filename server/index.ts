@@ -4,6 +4,7 @@
 // then registers every route module with that injected foundation, and finally listens + starts the
 // scheduler + graceful shutdown. All HTTP handlers + domain helpers live in routes/ + services/ + infra/.
 import Fastify from "fastify";
+import { isRetiredPage } from "./infra/retired-pages.ts";
 import cors from "@fastify/cors";
 import fastifyStatic from "@fastify/static";
 import { resolve } from "node:path";
@@ -197,6 +198,9 @@ function accountCreds(account: Account): ClientCreds | null {
 }
 
 const app = Fastify({ logger: true });
+app.addHook("onRequest", async (req, reply) => {
+  if (isRetiredPage(req.url)) return reply.code(404).send({ error: "not found" });
+});
 await app.register(cors, { origin: true });
 await app.register(fastifyStatic, { root: resolve(process.cwd(), "assets/audio"), prefix: "/audio/", decorateReply: false });
 // Pre-built fact videos (preFact deck) — served for the Studio random-preview player.

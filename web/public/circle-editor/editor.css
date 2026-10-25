@@ -1,12 +1,12 @@
 @font-face {
   font-family: Inter;
-  src: url(../template-editor/fonts/inter-400-normal-cyrillic.woff2) format("woff2");
+  src: url(../template-runtime/fonts/inter-400-normal-cyrillic.woff2) format("woff2");
   font-weight: 400;
 }
 
 @font-face {
   font-family: Inter;
-  src: url(../template-editor/fonts/inter-700-normal-cyrillic.woff2) format("woff2");
+  src: url(../template-runtime/fonts/inter-700-normal-cyrillic.woff2) format("woff2");
   font-weight: 700;
 }
 

@@ -1,17 +1,6 @@
-// ============== Серверный рендер шаблонов редактора → PNG 1080×1920 ==============
-//
-// Мост между визуальным редактором (web/public/template-editor/) и реальным рендером.
-// Берёт JSON-шаблон (тот же формат, что экспортирует редактор) + контент (карта role → текст)
-// и рисует готовую карточку через тот же puppeteer + system Chrome, что и основной пайплайн.
-//
-// ВАЖНО (без дрейфа): мы инлайним ТОТ ЖЕ renderer.js, который использует редактор в браузере,
-// и зовём в headless-странице window.renderTemplate(...). Логика раскладки, авто-подгона шрифта
-// и лимитов (fitMin/fitMax/maxChars, обрезка «…») — единственным источником правды.
-//
-// Изолировано: ничего из работающего пайплайна/сервера не импортит этот модуль (кроме chromePath).
-//
-// Валидация недоверенных шаблонов вынесена в ./validate.ts; её символы ре-экспортируются ниже,
-// чтобы внешние импортёры (server/routes/packs-routes.ts и т.п.) не меняли свои import-пути.
+// Shared template-to-image rendering with local fonts and layout rules.
+// Validates template documents and renders PNG output using Puppeteer.
+// Validation exports stay available here for existing server callers.
 
 import { readFile, mkdir, writeFile } from "node:fs/promises";
 import { dirname, extname, resolve } from "node:path";
@@ -43,12 +32,12 @@ export {
 export type { TemplateDoc, TemplateElement, TemplateContent } from "./validate.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-// тот же runtime-рендерер, что и в редакторе
-const RENDERER_JS = resolve(__dirname, "../../web/public/template-editor/renderer.js");
+// Shared renderer used by server-side template output.
+const RENDERER_JS = resolve(__dirname, "../../web/public/template-runtime/renderer.js");
 // Локальные шрифты (см. src/scripts/fetch-template-fonts.mjs) — рендер не зависит от Google Fonts CDN
 // и работает офлайн/на VPS. Манифест family→woff2; в страницу встраиваем base64 ТОЛЬКО нужных семейств.
-const FONTS_DIR = resolve(__dirname, "../../web/public/template-editor/fonts");
-const MANIFEST_PATH = resolve(__dirname, "../../web/public/template-editor/fonts.json");
+const FONTS_DIR = resolve(__dirname, "../../web/public/template-runtime/fonts");
+const MANIFEST_PATH = resolve(__dirname, "../../web/public/template-runtime/fonts.json");
 
 interface FontEntry {
   family: string;

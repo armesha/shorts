@@ -1,13 +1,13 @@
-// Качает woff2 шрифтов редактора локально → web/public/template-editor/fonts/ + fonts.css + fonts.json.
+// Качает woff2 шрифтов редактора локально → web/public/template-runtime/fonts/ + fonts.css + fonts.json.
 // Делает рендер/редактор офлайн-устойчивыми (не зависят от Google Fonts CDN).
 // Запуск: node src/scripts/fetch-template-fonts.mjs
 import { mkdir, writeFile, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 
-const OUT_DIR = resolve("web/public/template-editor/fonts");
-const CSS_OUT = resolve("web/public/template-editor/fonts.css");
-const MANIFEST_OUT = resolve("web/public/template-editor/fonts.json");
+const OUT_DIR = resolve("web/public/template-runtime/fonts");
+const CSS_OUT = resolve("web/public/template-runtime/fonts.css");
+const MANIFEST_OUT = resolve("web/public/template-runtime/fonts.json");
 const KEEP = new Set(["latin", "latin-ext", "cyrillic", "cyrillic-ext"]); // EN + DE/FR/IT + RU
 const UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149 Safari/537.36";
 const CSS_URL =

@@ -1,6 +1,6 @@
 // Single source of truth for the German-psychology card format (the "standard").
 // Used by BOTH the upload validator (src/psych/cards-store.ts) and the UI instruction panel
-// (served verbatim at GET /api/psych/cards/schema → web/src/pages/Cards.tsx). Keep the limits
+// (served verbatim at GET /api/psych/cards/schema). Keep the limits
 // in sync with templates/psych.html auto-fit so anything that validates also renders cleanly.
 
 export interface PatternFieldSpec {

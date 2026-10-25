@@ -8,7 +8,6 @@ import {
   type Account,
   type PackSummary,
 } from "../lib/api";
-import { Link } from "react-router-dom";
 import { useDeck, buildDeckGroups } from "../lib/deck";
 import { FORBIDDEN_SUPER_ADMIN_SOURCE_DECKS } from "../lib/deck";
 import { useAuth } from "../lib/auth";
@@ -317,7 +316,7 @@ export default function Studio() {
     <div className="space-y-6">
       <header className="flex items-center gap-2"><Sparkles className="text-primary"/><h1 className="text-2xl font-bold">{t("studio.title")}</h1></header>
       {err && <div className="alert alert-warning" role="alert">{err}</div>}
-      <section className="py-12 space-y-4"><p className="text-base-content/70">Нет паков.</p><Link to="/cards" className="btn btn-primary">Добавить пак</Link></section>
+      <section className="py-12 space-y-4"><p className="text-base-content/70">Нет паков.</p></section>
     </div>
   );
 

@@ -10,9 +10,9 @@ import { chromePath } from "../render.ts";
 import { buildTemplates } from "./mind-edge-templates.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const RENDERER_JS = resolve(__dirname, "../../web/public/template-editor/renderer.js");
-const FONTS_DIR = resolve(__dirname, "../../web/public/template-editor/fonts");
-const MANIFEST = resolve(__dirname, "../../web/public/template-editor/fonts.json");
+const RENDERER_JS = resolve(__dirname, "../../web/public/template-runtime/renderer.js");
+const FONTS_DIR = resolve(__dirname, "../../web/public/template-runtime/fonts");
+const MANIFEST = resolve(__dirname, "../../web/public/template-runtime/fonts.json");
 
 async function interFaceCss(): Promise<string> {
   const man = JSON.parse(await readFile(MANIFEST, "utf8")) as { family: string; weight: number; style: string; file: string; range: string }[];

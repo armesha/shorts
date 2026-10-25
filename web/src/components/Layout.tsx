@@ -264,7 +264,7 @@ function AdminLayout({
     go();
   }
 
-  if (location.pathname.startsWith("/creator") || location.pathname.startsWith("/editor")) {
+  if (location.pathname.startsWith("/creator")) {
     const showCreatorLanguageToggle = !location.pathname.startsWith("/creator");
     return (
       <div className="creator-shell min-h-screen bg-base-200 text-base-content" onClickCapture={handleRouteClick}>

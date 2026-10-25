@@ -15,7 +15,7 @@ import { useAuth } from "../lib/auth";
 import { isMainAdmin, roleLabelKey } from "../lib/authz";
 import { useT } from "../lib/i18n";
 import { CONTENT_LANGS, DECK_LANG, langTag } from "../lib/deck";
-import { AppIcon, type AppIconName } from "../components/AppIcon";
+import { AppIcon } from "../components/AppIcon";
 
 const fmt = (n: number) => n.toLocaleString("ru-RU");
 const CATALOG_PAGE_SIZE = 12;
@@ -267,12 +267,6 @@ export default function Packs() {
         )}
       </header>
 
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
-        <LibraryLink to="/cards" icon="cards" title={t("packs.libraryCards")} hint={t("packs.libraryCardsHint")} />
-        <LibraryLink to="/editor" icon="skin" title={t("packs.libraryTemplates")} hint={t("packs.libraryTemplatesHint")} />
-        {isAdmin && decks.length > 0 && <LibraryLink to="/gallery" icon="library" title={t("packs.libraryGallery")} hint={t("packs.libraryGalleryHint")} />}
-        <LibraryLink to="/admin/banners" icon="ads" title={t("packs.libraryBanners")} hint={t("packs.libraryBannersHint")} />
-      </div>
 
       {!loading && !catalogLoading && decks.length === 0 && customPacks.length === 0 && <p className="py-8 text-base-content/70">Паков пока нет.</p>}
 
@@ -397,11 +391,6 @@ export default function Packs() {
                         {t("packs.catalogOpenQueue")}
                       </Link>
                     )}
-                    {item.kind === "custom_pack" && (
-                      <Link to="/cards" className="btn btn-xs btn-outline">
-                        {t("packs.catalogEditCards")}
-                      </Link>
-                    )}
                     {item.demoCount > 0 && (
                       <Link to="/clip-demos" className="btn btn-xs btn-outline">
                         {t("packs.catalogOpenDemos")}
@@ -487,16 +476,14 @@ export default function Packs() {
         </div>
       )}
 
-      {/* Кастомные («свои») паки из /cards — показываем в собственном представлении (не при просмотре чужих). */}
+      {/* Custom packs are listed in the owner view. */}
       {viewUser === "" && customPacks.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-bold">{isAdmin ? t("packs.customHeading") : t("packs.myHeading")}</h2>
             <span className="badge badge-ghost badge-sm">{customPacks.length}</span>
             <span className="text-xs text-base-content/50 ml-1">{t("packs.customHint")}</span>
-            <Link to="/cards" className="link link-primary text-sm ml-auto">
-              {t("packs.manageInCards")}
-            </Link>
+
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {customPageItems.map((p) => {
@@ -682,22 +669,6 @@ export default function Packs() {
         </div>
       )}
     </div>
-  );
-}
-
-function LibraryLink({ to, icon, title, hint }: { to: string; icon: AppIconName; title: string; hint: string }) {
-  return (
-    <Link to={to} className="rounded-lg border border-base-300 bg-base-100 p-3 transition-colors hover:border-primary/50 hover:bg-base-200/60">
-      <div className="flex items-start gap-3">
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-primary/10 text-primary">
-          <AppIcon name={icon} size={18} />
-        </span>
-        <span className="min-w-0">
-          <span className="block text-sm font-semibold">{title}</span>
-          <span className="block truncate text-xs text-base-content/55">{hint}</span>
-        </span>
-      </div>
-    </Link>
   );
 }
 
