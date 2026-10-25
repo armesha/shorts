@@ -2055,3 +2055,10 @@ hypnotic tunnel, kinetic depth dots, aperture bars, neon ladder, ray afterimage 
 - Звук берётся только из Telegram-кружка. Gameplay и баннер в итоговом миксе без звука.
 
 Проверка: `npm run typecheck`, `npm run web:build`, затем авторизованный GET `/api/circle-editor` и тестовый POST `/api/circle-editor/render`.
+
+## Общий баннер Shortrobot
+
+Пользователь предоставил `shortrobot-banner-alpha.mov` (MOV с прозрачностью).
+Он загружен без перекодирования как `shortrobot-banner` в общую библиотеку
+баннеров Telegram-кружочков и доступен всем вошедшим пользователям.
+Источник — пользовательский файл Shortrobot; исходный alpha-канал сохранён.

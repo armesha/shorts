@@ -12,6 +12,8 @@ import { isAdminLike, isAdminRole } from "./lib/authz";
 
 const Overview = lazy(pageLoaders.overview);
 const Studio = lazy(pageLoaders.studio);
+const MapStudio = lazy(pageLoaders.mapStudio);
+const MontageStudio = lazy(pageLoaders.montageStudio);
 const Gallery = lazy(pageLoaders.gallery);
 const Packs = lazy(pageLoaders.packs);
 const QueuePage = lazy(pageLoaders.queue);
@@ -74,6 +76,8 @@ function Gate() {
             <Route path="/social" element={<Navigate to="/channels" replace />} />
             <Route path="/overview" element={realAdmin ? <Overview /> : <Navigate to="/statistics" replace />} />
             <Route path="/studio" element={<Studio />} />
+            <Route path="/templates/maps" element={<MapStudio />} />
+            <Route path="/templates/montage" element={<MontageStudio />} />
             <Route path="/ideas" element={realAdmin ? <Ideas /> : <Navigate to="/statistics" replace />} />
             <Route path="/signals" element={realAdmin ? <Signals /> : <Navigate to="/channels" replace />} />
             <Route path="/signals/analysis" element={realAdmin ? <SignalsAnalysis /> : <Navigate to="/channels" replace />} />

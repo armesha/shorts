@@ -10,6 +10,7 @@ import { mkdirSync, chmodSync } from "node:fs";
 import { dirname } from "node:path";
 
 import { applySchema } from "./db/schema.ts";
+import { channelGroupMethods } from "./db/channel-groups.ts";
 import { accountMethods } from "./db/accounts.ts";
 import { videoMethods } from "./db/videos.ts";
 import { historyMethods } from "./db/history.ts";
@@ -53,6 +54,7 @@ export function openDb(path: string) {
   const store = {
     db,
     ...accountMethods(db),
+    ...channelGroupMethods(db),
     ...videoMethods(db),
     ...historyMethods(db),
     ...userMethods(db),

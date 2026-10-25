@@ -43,6 +43,13 @@ export function applySchema(db: DatabaseSync): void {
     CREATE INDEX IF NOT EXISTS social_jobs_due ON social_jobs(state,run_at);
     CREATE INDEX IF NOT EXISTS social_jobs_owner ON social_jobs(user_id,id);
 
+    CREATE TABLE IF NOT EXISTS channel_groups (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      name TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE(user_id,name COLLATE NOCASE)
+    );
     CREATE TABLE IF NOT EXISTS accounts (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       channel_name TEXT NOT NULL DEFAULT 'Новый канал',
@@ -337,6 +344,7 @@ export function applySchema(db: DatabaseSync): void {
   };
   addColumn("accounts", "platform TEXT NOT NULL DEFAULT 'youtube'");
   addColumn("accounts", "social_handle TEXT");
+  addColumn("accounts", "group_id INTEGER");
   addColumn("history", "platform TEXT NOT NULL DEFAULT 'youtube'");
   addColumn("history", "platform_url TEXT");
   addColumn("social_jobs", "account_id INTEGER");
@@ -417,6 +425,7 @@ export function applySchema(db: DatabaseSync): void {
     CREATE INDEX IF NOT EXISTS idx_videos_video_rel ON videos(video_rel);
     CREATE INDEX IF NOT EXISTS idx_videos_image_rel ON videos(image_rel);
     CREATE INDEX IF NOT EXISTS idx_accounts_user ON accounts(user_id, id);
+    CREATE INDEX IF NOT EXISTS idx_accounts_group ON accounts(group_id,user_id);
     CREATE INDEX IF NOT EXISTS idx_channel_stats_account_taken ON channel_stats(account_id, taken_at);
     CREATE INDEX IF NOT EXISTS idx_channel_stats_account_id ON channel_stats(account_id, id DESC);
     CREATE INDEX IF NOT EXISTS idx_channel_analytics_daily_date ON channel_analytics_daily(date);

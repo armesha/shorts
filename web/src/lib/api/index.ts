@@ -4,7 +4,7 @@ export * from "./types";
 export { ApiError } from "./http";
 import { get, send, sendBinary } from "./http";
 import type {
-  Account, ChannelPlatform, SocialConnection, HistoryPage, AppStatus, AppSettings, OAuthClientsResponse, AddOAuthClientResponse,
+  ChannelGroup, Account, ChannelPlatform, SocialConnection, HistoryPage, AppStatus, AppSettings, OAuthClientsResponse, AddOAuthClientResponse,
   AdminUser, DeckInfo, UserDeckRow, AdminLimits, PackUsageItem, MyDecks, LowDeckRow, ManualVideoLimits, ReadinessLimits,
   AuthUser, Generator, GeneratedPreview, GeneratedVideo, VideoItem, GenJobStatus, GenQueueResponse, GenWorkerStatus,
   PsychSchema, PsychCardList, PackSummary, PackFull, PackMusic, PackMusicUploadFile,
@@ -30,6 +30,10 @@ function browserTimeZone(): string {
 }
 
 export const apiClient = {
+  channelGroups: (accountId?:number) => get<ChannelGroup[]>(`/channel-groups${accountId?`?accountId=${accountId}`:""}`),
+  createChannelGroup: (name:string,accountIds?:number[]) => send<ChannelGroup>("/channel-groups","POST",{name,accountIds}),
+  renameChannelGroup: (id:number,name:string,accountIds?:number[]) => send<ChannelGroup>(`/channel-groups/${id}`,"PUT",{name,accountIds}),
+  deleteChannelGroup: (id:number) => send<{ok:boolean}>(`/channel-groups/${id}`,"DELETE"),
   me: () => get<AuthUser>("/auth/me"),
   login: (username: string, password: string) =>
     send<AuthUser>("/auth/login", "POST", { username, password }),
@@ -184,7 +188,7 @@ export const apiClient = {
   accounts: (scope?: "all") => get<Account[]>(`/accounts${scope === "all" ? "?scope=all" : ""}`),
   account: (id: number | string) => get<Account>(`/accounts/${id}`),
   accountReadiness: (id: number | string) => get<AccountReadiness>(`/accounts/${id}/readiness`),
-  createAccount: (data: {platform?: ChannelPlatform; channelName?: string} = {}) =>
+  createAccount: (data: {platform?: ChannelPlatform; channelName?: string; groupId?:number|null} = {}) =>
     send<Account>("/accounts", "POST", { timezone: browserTimeZone(), ...data }),
   socialConnection: (id: number | string) => get<{connection: SocialConnection}>(`/accounts/${id}/social`),
   importSocialCookies: (id: number | string, cookies: string) => send<{connection: SocialConnection}>(`/accounts/${id}/social/cookies`, "POST", {cookies}),

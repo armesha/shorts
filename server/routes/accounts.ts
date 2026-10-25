@@ -30,6 +30,10 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
   });
   app.post("/api/accounts", async (req, reply) => {
     const body = (req.body as Partial<Account>) ?? {};
+    if (body.groupId != null) {
+      const group = Number.isSafeInteger(body.groupId) ? db.getChannelGroup(body.groupId) : null;
+      if (!group || group.userId !== uid(req)) return reply.code(400).send({error:"Группа недоступна."});
+    }
     const platform = body.platform ?? "youtube";
     if (!["youtube", "instagram", "tiktok"].includes(platform)) return reply.code(400).send({error:"Выберите YouTube, Instagram или TikTok."});
     if (rejectScheduleLimit(req, reply, body.schedule, null, undefined, body.channelLang ?? body.lang ?? null)) return;
@@ -69,6 +73,10 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
     const acc = accessibleAccount(req, reply, id);
     if (!acc) return;
     const body = (req.body as Partial<Account>) ?? {};
+    if (Object.prototype.hasOwnProperty.call(body,"groupId") && body.groupId != null) {
+      const group = Number.isSafeInteger(body.groupId) ? db.getChannelGroup(body.groupId) : null;
+      if (!group || group.userId !== acc.userId) return reply.code(400).send({error:"Группа недоступна."});
+    }
     delete body.avatar;
     delete body.avatarSource;
     if (body.platform != null && body.platform !== acc.platform) return reply.code(400).send({error:"Площадку существующего канала менять нельзя. Добавьте новый канал."});

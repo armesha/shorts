@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowLeft, ArrowRight, X } from "lucide-react";
-import type { ChannelPlatform } from "../lib/api";
+import type { ChannelPlatform,ChannelGroup } from "../lib/api";
 
 const PLATFORMS: { id: ChannelPlatform; name: string }[] = [
   { id: "youtube", name: "YouTube" },
@@ -11,7 +11,9 @@ const PLATFORMS: { id: ChannelPlatform; name: string }[] = [
 type Props = {
   busy: boolean;
   onClose: () => void;
-  onCreate: (platform: ChannelPlatform, name: string) => Promise<void>;
+  onCreate: (platform: ChannelPlatform, name: string,groupId:number|null) => Promise<void>;
+  groups?: ChannelGroup[];
+  initialGroupId?: number|null;
   error: string;
 };
 
@@ -20,10 +22,13 @@ export default function AddChannelDialog({
   onClose,
   onCreate,
   error,
+  groups=[],
+  initialGroupId=null,
 }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [platform, setPlatform] = useState<ChannelPlatform | null>(null);
   const [name, setName] = useState("");
+  const [groupId,setGroupId]=useState<number|null>(initialGroupId);
   useEffect(() => {
     const element = dialog.current;
     element?.showModal();
@@ -34,7 +39,7 @@ export default function AddChannelDialog({
   const selected = PLATFORMS.find((p) => p.id === platform);
   async function submit(event: FormEvent) {
     event.preventDefault();
-    if (platform && !busy) await onCreate(platform, name.trim());
+    if (platform && !busy) await onCreate(platform, name.trim(),groupId);
   }
   return (
     <dialog
@@ -105,6 +110,7 @@ export default function AddChannelDialog({
                 onChange={(event) => setName(event.target.value)}
               />
             </label>
+            {groups.length>0&&<label className="form-control gap-2"><span className="label-text">Группа</span><select className="select select-bordered w-full" value={groupId??""} disabled={busy} onChange={e=>setGroupId(e.target.value?Number(e.target.value):null)}><option value="">Без группы</option>{groups.map(g=><option key={g.id} value={g.id}>{g.name}</option>)}</select></label>}
             {error && (
               <div className="alert alert-error text-sm" role="alert">
                 {error}

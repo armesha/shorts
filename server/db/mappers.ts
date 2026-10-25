@@ -57,6 +57,7 @@ export function defaultClientLabel(projectId: string | null, index: number): str
 }
 
 export const rowToAccount = (r: Row): Account => ({
+  groupId: r.group_id ?? null,
   platform: r.platform === "instagram" || r.platform === "tiktok" ? r.platform : "youtube",
   socialHandle: r.social_handle ?? null,
   id: r.id,

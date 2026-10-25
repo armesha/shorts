@@ -72,3 +72,18 @@ Heaviest piece is Chrome, and it only runs for the ~1–2s render, a few times/d
 - [ ] YouTube OAuth (multi-channel) + resumable upload + scheduled publish
 - [ ] SQLite store (accounts, tokens, history) + scheduler (node-cron)
 - [ ] Fastify dashboard (accounts, per-account theme/timings, logs)
+
+## Channel groups and video templates
+
+Channel groups are owned by users (`channel_groups`, `accounts.group_id`). Removing a group
+keeps its channels and clears their group assignment. Group membership is checked against
+the channel owner and updated in one transaction.
+
+The Library contains Montage, Maps and Telegram Circles templates, plus a shared MOV banner
+library. The Maps preview is built from `/home/davtian/Documents/map` using `npm run map:build`
+into ignored `data/map-studio/`. `/map-studio/*` requires an active Shorts session; finished video
+files and the old public video catalog are not served. `MAP_STUDIO_SOURCE` overrides the source
+project path. No changes to the source Map project or the existing tunnel are needed.
+
+Montage accepts the current user's uploaded source and joins up to ten selected fragments into
+a private 1080×1920 MP4 (up to 60 seconds), retaining original audio when present.

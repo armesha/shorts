@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Layers, AlertTriangle, Trash2, Loader2 } from "lucide-react";
+import BannerLibraryDialog from "../components/BannerLibraryDialog";
+import VideoTemplateTiles from "../components/VideoTemplateTiles";
+import { Megaphone, Layers, AlertTriangle, Trash2, Loader2 } from "lucide-react";
 import {
   apiClient,
   type MyDecks,
@@ -34,6 +36,7 @@ export default function Packs() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const canManageAllPacks = isMainAdmin(user);
+  const [bannersOpen,setBannersOpen]=useState(false);
   const [actionErr, setActionErr] = useState("");
   const [data, setData] = useState<MyDecks | null>(null);
   const [loading, setLoading] = useState(true);
@@ -239,15 +242,16 @@ export default function Packs() {
 
   return (
     <div className="space-y-6">
-      <header className="flex items-start justify-between gap-2 flex-wrap">
+      {bannersOpen&&<BannerLibraryDialog onClose={()=>setBannersOpen(false)}/>}
+      <header className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">
           <Layers className="text-primary" />
           <div>
             <h1 className="text-2xl font-bold">{t("packs.title")}</h1>
-            <p className="text-base-content/60">{t("packs.subtitle")}</p>
           </div>
         </div>
-        {canManageAllPacks && (
+        <div className="flex items-center gap-3"><button className="btn btn-outline gap-2" onClick={()=>setBannersOpen(true)}><Megaphone size={18}/>Баннеры</button>
+        {canManageAllPacks && (decks.length>0 || customPacks.length>0) && (
           <select
             className="select select-bordered select-sm"
             aria-label={t("packs.whoseAria")}
@@ -265,10 +269,12 @@ export default function Packs() {
               ))}
           </select>
         )}
+        </div>
       </header>
+      <VideoTemplateTiles/>
 
 
-      {!loading && !catalogLoading && decks.length === 0 && customPacks.length === 0 && <p className="py-8 text-base-content/70">Паков пока нет.</p>}
+
 
       {actionErr && (
         <div className="alert alert-error text-sm" role="alert">

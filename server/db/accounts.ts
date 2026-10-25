@@ -70,7 +70,7 @@ export function accountMethods(db: DatabaseSync) {
         : [input.lang ?? "de"];
       const info = db
         .prepare(
-          "INSERT INTO accounts (user_id, channel_name, lang, source_decks, channel_lang, timezone, schedule, template, status, avatar, avatar_source, platform, social_handle) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+          "INSERT INTO accounts (user_id, channel_name, lang, source_decks, channel_lang, timezone, schedule, template, status, avatar, avatar_source, platform, social_handle, group_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         )
         .run(
           input.userId ?? null,
@@ -86,6 +86,7 @@ export function accountMethods(db: DatabaseSync) {
           avatarSource,
           input.platform ?? "youtube",
           input.socialHandle ?? null,
+          input.groupId ?? null,
         );
       invalidateReadCache();
       return this.getAccount(Number(info.lastInsertRowid))!;
@@ -96,7 +97,7 @@ export function accountMethods(db: DatabaseSync) {
       const hasAvatar = Object.prototype.hasOwnProperty.call(input, "avatar");
       const hasTimezone = Object.prototype.hasOwnProperty.call(input, "timezone");
       db.prepare(
-        "UPDATE accounts SET channel_name=?, lang=?, source_decks=?, channel_lang=?, timezone=?, schedule=?, template=?, enabled=?, slot_videos=?, slot_decks=?, avatar=?, avatar_source=? WHERE id=?",
+        "UPDATE accounts SET channel_name=?, lang=?, source_decks=?, channel_lang=?, timezone=?, schedule=?, template=?, enabled=?, slot_videos=?, slot_decks=?, avatar=?, avatar_source=?, group_id=? WHERE id=?",
       ).run(
         input.channelName ?? cur.channelName,
         input.lang ?? cur.lang,
@@ -110,6 +111,7 @@ export function accountMethods(db: DatabaseSync) {
         JSON.stringify(input.slotDecks ?? cur.slotDecks),
         input.avatar ?? cur.avatar,
         hasAvatar ? (input.avatarSource ?? "manual") : cur.avatarSource,
+        Object.prototype.hasOwnProperty.call(input,"groupId") ? input.groupId ?? null : cur.groupId,
         id,
       );
       invalidateReadCache();

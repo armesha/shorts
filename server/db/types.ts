@@ -8,7 +8,10 @@ export const DEFAULT_CHANNEL_NAME = "Новый канал";
 
 export type ChannelPlatform = "youtube" | "instagram" | "tiktok";
 
+export interface ChannelGroup {id:number;userId:number;name:string;createdAt:string;channelCount:number;}
+
 export interface Account {
+  groupId: number | null;
   platform: ChannelPlatform;
   socialHandle: string | null;
   id: number;

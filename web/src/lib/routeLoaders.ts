@@ -1,4 +1,6 @@
 const routeLoaders = {
+  montageStudio: () => import("../pages/MontageStudio"),
+  mapStudio: () => import("../pages/MapStudio"),
   overview: () => import("../pages/Overview"),
   studio: () => import("../pages/Studio"),
   gallery: () => import("../pages/Gallery"),
@@ -57,6 +59,10 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
   switch (pathname) {
     case "/overview":
       return "overview";
+    case "/templates/montage":
+      return "montageStudio";
+    case "/templates/maps":
+      return "mapStudio";
     case "/studio":
       return "studio";
     case "/gallery":

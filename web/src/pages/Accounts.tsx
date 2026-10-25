@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { apiClient, type Account, type AppStatus, type ContentCatalogItem, type OAuthClient, type ChannelPlatform } from "../lib/api";
+import { apiClient, type Account, type AppStatus, type ContentCatalogItem, type OAuthClient, type ChannelPlatform, type ChannelGroup } from "../lib/api";
 import { AppIcon } from "../components/AppIcon";
 import { BrandIcon } from "../components/BrandIcon";
 import { useT } from "../lib/i18n";
@@ -9,9 +9,12 @@ import { useAuth } from "../lib/auth";
 import { isMainAdmin } from "../lib/authz";
 import { langTag } from "../lib/deck";
 import { isMgsLegacyUser } from "../lib/accountLimits";
+import {FolderPlus,Plus,Pencil,Trash2} from "lucide-react";
+import {confirmDialog} from "../lib/confirm";
+import ChannelGroupDialog from "../components/ChannelGroupDialog";
 import AddChannelDialog from "../components/AddChannelDialog";
 
-const ACCOUNTS_CACHE_KEY = "sf.accounts.v3";
+const ACCOUNTS_CACHE_KEY = "sf.accounts.v4";
 const PLATFORM_NAMES = {youtube: "YouTube", instagram: "Instagram", tiktok: "TikTok"};
 const isYouTubeAccount = (account: Account) => !account.platform || account.platform === "youtube";
 function accountProfileUrl(account: Account): string | null {
@@ -55,6 +58,11 @@ function AccountsList() {
   const [cacheSavedAt, setCacheSavedAt] = useState(cached?.savedAt ?? "");
   const [creating, setCreating] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [groups,setGroups]=useState<ChannelGroup[]>([]);
+  const [groupEditor,setGroupEditor]=useState<ChannelGroup|null|undefined>(undefined);
+  const [groupBusy,setGroupBusy]=useState(false);
+  const [groupError,setGroupError]=useState("");
+  const [targetGroupId,setTargetGroupId]=useState<number|null>(null);
   const [addError, setAddError] = useState("");
   const [actionErr, setActionErr] = useState("");
   const [queue, setQueue] = useState<Record<number, number>>(cached?.value.queue ?? {});
@@ -113,6 +121,7 @@ function AccountsList() {
   }, []);
 
   useEffect(() => {
+    apiClient.channelGroups().then(setGroups).catch(()=>setActionErr("Не удалось загрузить группы."));
     apiClient.youtubeClients().then((r) => setClients(r.clients)).catch(() => {});
     apiClient.contentCatalog().then((r) => setCatalog(r.items)).catch(() => {});
   }, []);
@@ -123,11 +132,11 @@ function AccountsList() {
     setCacheSavedAt(new Date().toISOString());
   }, [accounts, status, queue, queueByDeck]);
 
-  function startAddAccount() {setAddError("");setAdding(true);}
-  async function addAccount(platform: ChannelPlatform, channelName: string) {
+  function startAddAccount(groupId:number|null=null) {setTargetGroupId(groupId);setAddError("");setAdding(true);}
+  async function addAccount(platform: ChannelPlatform, channelName: string,groupId:number|null) {
     setCreating(true);setAddError("");
     try {
-      const a = await apiClient.createAccount({platform, channelName: channelName || `Мой ${PLATFORM_NAMES[platform]}`});
+      const a = await apiClient.createAccount({platform,groupId, channelName: channelName || `Мой ${PLATFORM_NAMES[platform]}`});
       navigate(`/accounts/${a.id}`);
     } catch (e) {
       setAddError(t("accounts.createFailed") + " " + String(e));
@@ -136,6 +145,10 @@ function AccountsList() {
     }
   }
 
+  async function refreshChannels(){const [nextAccounts,nextGroups]=await Promise.all([apiClient.accounts(),apiClient.channelGroups()]);setAccounts(nextAccounts);setGroups(nextGroups);}
+  async function saveGroup(name:string,ids:number[]){setGroupBusy(true);setGroupError("");try{if(groupEditor)await apiClient.renameChannelGroup(groupEditor.id,name,ids);else await apiClient.createChannelGroup(name,ids);await refreshChannels();setGroupEditor(undefined);}catch(e){setGroupError(e instanceof Error?e.message:"Не удалось сохранить группу.");}finally{setGroupBusy(false);}}
+  async function deleteGroup(group:ChannelGroup){if(!await confirmDialog("Каналы останутся без группы.",{title:`Удалить группу «${group.name}»?`,confirmText:"Удалить группу",danger:true}))return;try{await apiClient.deleteChannelGroup(group.id);await refreshChannels();}catch(e){setActionErr(e instanceof Error?e.message:"Не удалось удалить группу.");}}
+  async function moveChannel(account:Account,groupId:number|null){try{await apiClient.updateAccount(account.id,{groupId});await refreshChannels();}catch(e){setActionErr(e instanceof Error?e.message:"Не удалось переместить канал.");}}
   const uploadsToday = accounts.reduce((s, a) => s + a.uploadsToday, 0);
   // Posts per day (00:00–24:00) = sum of schedule slots across the user's ENABLED channels.
   const perDay = accounts.filter((a) => a.enabled).reduce((s, a) => s + a.schedule.length, 0);
@@ -267,6 +280,14 @@ function AccountsList() {
     return sortDir === "asc" ? ra - rb : rb - ra;
   });
 
+  const groupSections: {id:number|null;name:string;items:Account[]}[] = groups.map(group => ({
+    id:group.id,
+    name:group.name,
+    items:shownAccounts.filter(account=>account.groupId===group.id),
+  }));
+  const ungrouped = shownAccounts.filter(account=>!account.groupId || !groups.some(group=>group.id===account.groupId));
+  if(ungrouped.length) groupSections.push({id:null,name:"Без группы",items:ungrouped});
+
   // Google-key grouping — only surfaced when the user actually has more than one key.
   const multiKey = clients.length > 1 && accounts.some(isYouTubeAccount);
   const clientById = new Map(clients.map((c) => [c.id, c] as const));
@@ -297,7 +318,9 @@ function AccountsList() {
 
   return (
     <div className="space-y-6">
-      {adding && <AddChannelDialog busy={creating} error={addError} onClose={() => setAdding(false)} onCreate={addAccount}/>}
+      {groupEditor!==undefined&&<ChannelGroupDialog group={groupEditor} accounts={accounts} busy={groupBusy} error={groupError} onClose={()=>setGroupEditor(undefined)} onSave={saveGroup}/>}
+      <div className="flex justify-end"><button className="btn btn-outline gap-2" onClick={()=>{setGroupError("");setGroupEditor(null);}}><FolderPlus size={18}/>Создать группу</button></div>
+      {adding && <AddChannelDialog groups={groups} initialGroupId={targetGroupId} busy={creating} error={addError} onClose={() => setAdding(false)} onCreate={addAccount}/>}
       {accounts.some(isYouTubeAccount) && <GoogleKeyNotice status={status} loadError={loadError} />}
 
       {disconnectedChannels.length > 0 && (
@@ -418,14 +441,14 @@ function AccountsList() {
         </div>
       )}
 
-      {accounts.length === 0 ? (
+      {accounts.length === 0 && groups.length===0 ? (
         <div className="card bg-base-100 border border-base-300 border-dashed">
           <div className="card-body items-center text-center py-16">
             <AppIcon name="accounts" className="text-base-content/30" size={40} />
             <p className="text-base-content/60">
               {t("accounts.emptyState")}
             </p>
-            <button className="btn btn-primary btn-sm gap-2 mt-2" onClick={startAddAccount} disabled={creating}>
+            <button className="btn btn-primary btn-sm gap-2 mt-2" onClick={()=>startAddAccount()} disabled={creating}>
               <AppIcon name="plus" size={16} /> {t("accounts.addChannel")}
             </button>
           </div>
@@ -448,14 +471,17 @@ function AccountsList() {
                 <AppIcon name="chevron-right" size={16} className={sortDir === "asc" ? "-rotate-90" : "rotate-90"} />
               </button>
             </div>
-            <button className="btn btn-primary gap-2 w-full sm:w-auto" onClick={startAddAccount} disabled={creating}>
+            <button className="btn btn-primary gap-2 w-full sm:w-auto" onClick={()=>startAddAccount()} disabled={creating}>
               {creating ? <span className="loading loading-spinner loading-sm" /> : <AppIcon name="plus" size={18} />}
               {t("accounts.addChannel")}
             </button>
           </div>
 
+          {groupSections.map(group=><section key={group.id??"ungrouped"} className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-lg font-semibold">{group.name}<span className="ml-2 text-sm font-normal text-base-content/70">{group.items.length}</span></h2>{group.id!==null&&<div className="flex flex-wrap gap-1"><button className="btn btn-ghost btn-sm gap-1" onClick={()=>startAddAccount(group.id)}><Plus size={15}/>Добавить канал</button><button className="btn btn-ghost btn-sm gap-1" onClick={()=>{setGroupError("");setGroupEditor(groups.find(g=>g.id===group.id));}}><Pencil size={15}/>Изменить</button><button className="btn btn-ghost btn-sm text-error gap-1" onClick={()=>void deleteGroup(groups.find(g=>g.id===group.id)!)}><Trash2 size={15}/>Удалить группу</button></div>}</div>
+          {!group.items.length&&<p className="text-sm text-base-content/70">В группе пока нет каналов.</p>}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {shownAccounts.map((a) => (
+            {group.items.map((a) => (
             <div
               key={a.id}
               className="card bg-base-100 border border-base-300 hover:border-primary/45 hover:bg-base-100/90 transition-colors relative"
@@ -523,6 +549,7 @@ function AccountsList() {
                   {t("accounts.schedule")}{" "}
                   <span className="font-medium text-base-content">{a.schedule.join(", ")}</span>
                 </div>
+                {groups.length>0&&<label className="form-control gap-1 mt-3 pointer-events-auto relative z-20"><span className="label-text">Группа</span><select aria-label={`Группа канала ${a.channelName}`} className="select select-bordered select-sm w-full" value={a.groupId??""} onChange={e=>void moveChannel(a,e.target.value?Number(e.target.value):null)}><option value="">Без группы</option>{groups.map(g=><option key={g.id} value={g.id}>{g.name}</option>)}</select></label>}
                 <QueueInfo count={effectiveQueuedVideos(a) ?? queue[a.id]} runwayDays={runwayDays(a)} schedule={a.schedule} enabled={a.enabled} />
                 <SourceInfo sources={accountSourceStats(a)} />
                 {isYouTubeAccount(a) && multiKey && a.oauthClientId && clientById.get(a.oauthClientId) && (
@@ -552,6 +579,7 @@ function AccountsList() {
             </div>
             ))}
           </div>
+          </section>)}
         </div>
       )}
     </div>
