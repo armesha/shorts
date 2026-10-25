@@ -50,10 +50,11 @@
     "e2e:account-ui": "node --experimental-sqlite --import tsx src/scripts/account-ui-e2e.ts",
     "ru:audit": "tsx src/scripts/ru-render-audit.ts",
     "ru:rerender": "node --experimental-sqlite --import tsx src/scripts/ru-rerender-broken.ts",
-    "test": "node --import tsx --experimental-sqlite --test 'src/**/*.test.ts' 'server/**/*.test.ts' 'scripts/lib/*.test.mjs'",
+    "test": "node --import tsx --experimental-sqlite --test server/services/video-cutting-channels.test.ts server/routes/video-cutting-channel.test.ts scripts/lib/cutting-restart-guard.test.mjs",
     "map:build": "node scripts/build-map-studio.mjs",
     "cutting:setup": "bash scripts/setup-video-cutting.sh",
-    "cutting:check": "node scripts/check-video-cutting.mjs"
+    "cutting:check": "node scripts/check-video-cutting.mjs",
+    "test:all": "node --import tsx --experimental-sqlite --test 'src/**/*.test.ts' 'server/**/*.test.ts' 'scripts/lib/*.test.mjs'"
   },
   "keywords": [
     "youtube",
