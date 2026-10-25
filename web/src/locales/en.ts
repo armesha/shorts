@@ -45,6 +45,7 @@ export const en: Record<string, string> = {
 
   // ── sidebar / shell ───────────────────────────────────────────────────────
   "nav.overview": "Overview",
+  "nav.social": "Instagram & TikTok",
   "nav.channels": "Channels",
   "nav.studio": "Studio",
   "nav.queue": "Queue",

@@ -380,6 +380,11 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
     const token = String((req.query as { token?: string })?.token ?? "");
     const link = token ? db.getTelegramLink(token) : null;
     if (!link || link.purpose !== "login") return { status: "notfound" };
+    reply.header("Cache-Control", "no-store");
+    if (ageSec(link.createdAt) > LINK_TTL_MIN * 60) {
+      db.deleteTelegramLink(token);
+      return { status: "expired" };
+    }
     if (link.status === "nomatch") return { status: "nomatch" };
     if (link.status === "ready" && link.userId) {
       const user = db.getUserById(link.userId);
@@ -389,7 +394,6 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
       issueSession(reply, user.id);
       return { status: "ok", user: authUser(user) };
     }
-    if (ageSec(link.createdAt) > LINK_TTL_MIN * 60) return { status: "expired" };
     return { status: "pending" };
   });
 
@@ -398,6 +402,11 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
     const token = String((req.query as { token?: string })?.token ?? "");
     const link = token ? db.getTelegramLink(token) : null;
     if (!link || link.purpose !== "register") return { status: "notfound" };
+    reply.header("Cache-Control", "no-store");
+    if (ageSec(link.createdAt) > LINK_TTL_MIN * 60) {
+      db.deleteTelegramLink(token);
+      return { status: "expired" };
+    }
     if (link.status === "conflict") return { status: "conflict" };
     if (link.status === "ready" && link.userId) {
       const user = db.getUserById(link.userId);
@@ -407,7 +416,6 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
       issueSession(reply, user.id);
       return { status: "ok", user: authUser(user) };
     }
-    if (ageSec(link.createdAt) > LINK_TTL_MIN * 60) return { status: "expired" };
     return { status: "pending" };
   });
 
@@ -488,7 +496,7 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
 
     // ---- /start <token>: site-minted handshake for account binding / login (unchanged) ----
     const link = db.getTelegramLink(token);
-    if (!link || !tgId || link.status === "consumed" || ageSec(link.createdAt) > LINK_TTL_MIN * 60) {
+    if (!link || !tgId || link.status !== "pending" || msg.chat?.type !== "private" || ageSec(link.createdAt) > LINK_TTL_MIN * 60) {
       await dm("Ссылка устарела или недействительна. Вернитесь на сайт и начните заново.");
       return;
     }

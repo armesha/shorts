@@ -64,6 +64,10 @@ import { registerSzzRoutes } from "./routes/szz.ts";
 import { registerCircleEditorRoutes } from "./routes/circle-editor.ts";
 import { registerSignalsRoutes } from "./routes/signals.ts";
 
+import { registerSocialRoutes } from "./routes/social.ts";
+import { createSocialService } from "./services/social/store.ts";
+import { createSocialBrowser } from "./services/social/browser.ts";
+
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
 const embeddedGenQueueRunner = process.env.GEN_QUEUE_RUNNER !== "0" && process.env.GEN_QUEUE_RUNNER !== "external";
@@ -381,6 +385,8 @@ registerExamplesRoutes(app, db, deps);
 registerAudioRoutes(app, db, deps);
 registerMemesRoutes(app, deps);
 registerIdeasRoutes(app, db, deps);
+const socialService = createSocialService(db, resolve(process.cwd(), "data/social-private"), resolve(process.cwd(), base.outputDir), createSocialBrowser(base.chromePath));
+registerSocialRoutes(app, socialService);
 registerSzzRoutes(app);
 registerCircleEditorRoutes(app, db);
 
@@ -388,6 +394,7 @@ app
   .listen({ port: base.port, host: "0.0.0.0" })
   .then(() => {
     app.log.info(`Shorts Factory API on :${base.port}`);
+    const socialRunner = socialService.start();
     const scheduler = startScheduler({
       db,
       outputDir: resolve(process.cwd(), base.outputDir),
@@ -417,11 +424,12 @@ app
         await gracefulShutdown({
           log: (m) => app.log.info("[shutdown] " + m),
           stopScheduler: () => {
+            socialRunner.stop();
             scheduler.stop();
             telegramDigestScheduler.stop();
             geminiTtsLocalJobs.stop();
           },
-          drainQueue: () => genDrainQueue(),
+          drainQueue: async () => { await Promise.all([genDrainQueue(), socialRunner.drain()]); },
           activeCounts: () => metrics.activeCounts(),
           closeServer: () => app.close(),
           closeDb: () => {

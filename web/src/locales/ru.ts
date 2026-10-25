@@ -49,6 +49,7 @@ export const ru: Record<string, string> = {
 
   // ── sidebar / shell ───────────────────────────────────────────────────────
   "nav.overview": "Обзор",
+  "nav.social": "Instagram и TikTok",
   "nav.channels": "Каналы",
   "nav.studio": "Студия",
   "nav.queue": "Очередь",

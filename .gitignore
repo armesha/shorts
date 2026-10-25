@@ -94,3 +94,6 @@ __pycache__/
 
 # standalone design mockup (not part of the shorts pipeline) — kept local, not committed
 /example-design/
+
+# Private social sessions and queued media
+/data/social-private/

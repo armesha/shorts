@@ -286,6 +286,7 @@ function AccountsList() {
 
   return (
     <div className="space-y-6">
+      <Link to="/social" className="btn btn-outline btn-sm">Instagram и TikTok · Подключить аккаунт</Link>
       <GoogleKeyNotice status={status} loadError={loadError} />
 
       {disconnectedChannels.length > 0 && (

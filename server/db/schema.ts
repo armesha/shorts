@@ -7,6 +7,32 @@ import { parseCredMeta, defaultClientLabel, type Row } from "./mappers.ts";
 
 export function applySchema(db: DatabaseSync): void {
   db.exec(`
+    CREATE TABLE IF NOT EXISTS social_connections (
+      user_id INTEGER NOT NULL,
+      platform TEXT NOT NULL CHECK(platform IN ('instagram','tiktok')),
+      status TEXT NOT NULL DEFAULT 'unchecked',
+      handle TEXT,
+      profile_id TEXT,
+      checked_at TEXT,
+      error TEXT,
+      PRIMARY KEY(user_id,platform)
+    );
+    CREATE TABLE IF NOT EXISTS social_jobs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      platform TEXT NOT NULL CHECK(platform IN ('instagram','tiktok')),
+      video_id INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      caption TEXT NOT NULL,
+      run_at TEXT NOT NULL,
+      state TEXT NOT NULL,
+      url TEXT,
+      error TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS social_jobs_due ON social_jobs(state,run_at);
+    CREATE INDEX IF NOT EXISTS social_jobs_owner ON social_jobs(user_id,id);
+
     CREATE TABLE IF NOT EXISTS accounts (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       channel_name TEXT NOT NULL DEFAULT 'Новый канал',
