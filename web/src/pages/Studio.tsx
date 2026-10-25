@@ -8,6 +8,7 @@ import {
   type Account,
   type PackSummary,
 } from "../lib/api";
+import { Link } from "react-router-dom";
 import { useDeck, buildDeckGroups } from "../lib/deck";
 import { FORBIDDEN_SUPER_ADMIN_SOURCE_DECKS } from "../lib/deck";
 import { useAuth } from "../lib/auth";
@@ -37,6 +38,7 @@ const packKindLabel = (t: ReturnType<typeof useT>["t"], item: { video?: boolean 
 
 export default function Studio() {
   const { t } = useT();
+  const [sourcesLoaded, setSourcesLoaded] = useState(false);
   const [gens, setGens] = useState<Generator[]>([]);
   const [packs, setPacks] = useState<PackSummary[]>([]);
   const [packIdx, setPackIdx] = useState(0);
@@ -108,8 +110,12 @@ export default function Studio() {
       .catch(() => {});
 
   useEffect(() => {
-    apiClient.generators().then(setGens).catch(() => {});
-    apiClient.packs().then(setPacks).catch(() => {});
+    Promise.allSettled([apiClient.generators(), apiClient.packs()]).then(([generators,packs]) => {
+      if(generators.status === "fulfilled") setGens(generators.value);
+      if(packs.status === "fulfilled") setPacks(packs.value);
+      if(generators.status === "rejected" || packs.status === "rejected") setErr("Не удалось загрузить паки. Обновите страницу.");
+      setSourcesLoaded(true);
+    });
     apiClient.backgrounds().then(setBgs).catch(() => {});
     apiClient.music().then(setMusicList).catch(() => {});
     apiClient.accounts().then(setAccounts).catch(() => {});
@@ -137,12 +143,10 @@ export default function Studio() {
   }, [deck, deckGroups, forbiddenSourceIds, setDeck]);
 
   useEffect(() => {
-    if (!gens.length || isPack || gens.some((item) => item.id === deck)) return;
-    const replacement = deck === "telegram-circles"
-      ? gens.find((item) => item.liveVideo)?.id
-      : deckGroups[0]?.items[0]?.id;
-    if (replacement) setDeck(replacement);
-  }, [deck, deckGroups, gens, isPack, setDeck]);
+    if (!sourcesLoaded || deckGroups.some(group => group.items.some(item => item.id === deck))) return;
+    const replacement = deckGroups[0]?.items[0]?.id;
+    if (replacement) {setDeck(replacement);setPreview(null);setVideo(null);setText("");}
+  }, [deck, deckGroups, sourcesLoaded, setDeck]);
 
   // Keep the save-target channel matching the selected pack's language (hard language guard).
   useEffect(() => {
@@ -309,6 +313,14 @@ export default function Studio() {
     setLiveQueue((state) => ({ ...state, running: false }));
   }
 
+  if (sourcesLoaded && !deckGroups.length) return (
+    <div className="space-y-6">
+      <header className="flex items-center gap-2"><Sparkles className="text-primary"/><h1 className="text-2xl font-bold">{t("studio.title")}</h1></header>
+      {err && <div className="alert alert-warning" role="alert">{err}</div>}
+      <section className="py-12 space-y-4"><p className="text-base-content/70">Нет паков.</p><Link to="/cards" className="btn btn-primary">Добавить пак</Link></section>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       <header className="flex items-center gap-2">
@@ -369,7 +381,7 @@ export default function Studio() {
                     )
                   )}
                 </div>
-                <button className="btn btn-primary gap-2" onClick={() => gen("new")} disabled={loading || liveQueue.running}>
+                <button className="btn btn-primary gap-2" onClick={() => gen("new")} disabled={loading || liveQueue.running || !sourcesLoaded || !deckGroups.length}>
                   {loading ? <Loader2 className="animate-spin" size={18} /> : <Wand2 size={18} />}
                   {t("common.generate")}
                 </button>
@@ -428,7 +440,7 @@ export default function Studio() {
                 </div>
               )}
 
-              <div className="flex flex-wrap gap-2 items-center">
+              {!selectedIsVideo && <div className="flex flex-wrap gap-2 items-center">
                 <button
                   className="btn btn-outline btn-sm gap-2"
                   onClick={() => gen("bg")}
@@ -461,9 +473,9 @@ export default function Studio() {
                     ))}
                   </select>
                 )}
-              </div>
+              </div>}
 
-              {!isPack && g && (
+              {!isPack && g && !selectedIsVideo && (
                 <div className="border-t border-base-300 pt-3 flex flex-wrap gap-2 items-center">
                   {g.readyPacks.map((p) => (
                     <span key={p.n} className="badge badge-success badge-sm gap-1">

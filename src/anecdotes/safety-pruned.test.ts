@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
 
 import { deckCards } from "./library.ts";
 
@@ -33,32 +33,9 @@ test("super-admin joke decks filter protected-class race slurs from generation p
     assert.deepEqual(hits, []);
   }
 
-  const customPacks = [
-    "data/packs/chistes-es-public-domain.json",
-    "data/packs/motivation-de-superadmin.json",
-    "data/packs/motivation-en-superadmin.json",
-    "data/packs/motivation-ru-superadmin.json",
-    "data/packs/new-memes-de-superadmin.json",
-    "data/packs/new-memes-en-superadmin.json",
-    "data/packs/new-memes-es-superadmin.json",
-    "data/packs/new-memes-fr-superadmin.json",
-    "data/packs/new-memes-it-superadmin.json",
-    "data/packs/new-memes-pt-superadmin.json",
-    "data/packs/new-memes-ru-superadmin.json",
-    "data/packs/new-memes-ar-superadmin.json",
-    "data/packs/psychology-de-superadmin.json",
-    "data/packs/psychology-en-superadmin.json",
-    "data/packs/psychology-es-superadmin.json",
-    "data/packs/psychology-fr-superadmin.json",
-    "data/packs/psychology-it-superadmin.json",
-    "data/packs/psychology-pt-superadmin.json",
-    "data/packs/psychology-ru-superadmin.json",
-    "data/packs/soviet-posters-ru.json",
-    "data/packs/static-facts-de-superadmin.json",
-    "data/packs/static-facts-en-superadmin.json",
-    "data/packs/static-facts-es-superadmin.json",
-    "data/packs/static-facts-ru-superadmin.json",
-  ];
+  const customPacks = existsSync("data/packs")
+    ? readdirSync("data/packs").filter(file=>file.endsWith(".json")).map(file=>`data/packs/${file}`)
+    : [];
   const customHits = customPacks.flatMap((file) => packHits(file, risky));
   assert.deepEqual(customHits, []);
 });

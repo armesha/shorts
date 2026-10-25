@@ -418,7 +418,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const targetIsSuperAdmin = isSuperAdminUser(target);
     const items: { id: string; name: string; pack: boolean; total: number; used: number; available: number }[] = [];
     // Встроенные деки: видимые юзеру ИЛИ уже использованные (чтобы ничего сбрасываемого не пряталось).
-    for (const d of DECKS) {
+    for (const d of filterGloballyVisibleBuiltInDecks(db, DECKS)) {
       if (!isBuiltInDeckGloballyVisible(db, d)) continue;
       const visible = isAdminRole(target.role) || builtinDeckVisibleForUser(id, d);
       const s = libraryStats(d.id, usedKeys);

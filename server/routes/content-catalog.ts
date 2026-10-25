@@ -148,7 +148,7 @@ export function registerContentCatalogRoutes(app: FastifyInstance, db: Db, deps:
       seen.add(deckId);
     }
 
-    items.push({
+    if ((queued.get(MANUAL_VIDEO_DECK) ?? 0) > 0 || accountsUsingDeck(accounts, deps, MANUAL_VIDEO_DECK).length > 0) items.push({
       id: MANUAL_VIDEO_DECK,
       kind: "manual",
       title: "Manual videos",

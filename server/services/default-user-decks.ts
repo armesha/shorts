@@ -2,6 +2,8 @@ import type { Db } from "../db.ts";
 import { DECKS, deckLang, type Deck } from "../../src/anecdotes/decks.ts";
 import { listAllPacks, setGrant, type PackSummary } from "../../src/packs/store.ts";
 
+import { BUILTIN_PACKS_ENABLED_SETTING } from "./global-pack-visibility.ts";
+
 const RUSSIAN_JOKE_RE = /(анекдот|шутк|shutk|jokes?\b|witze\b|barzellette\b|chistes?\b)/i;
 
 export interface DefaultRegisteredUserGrantIds {
@@ -12,7 +14,7 @@ export interface DefaultRegisteredUserGrantIds {
 type GrantDb = Pick<
   Db,
   "grantedDecksFor" | "setGrantedDecks"
->;
+> & {getSetting?: (key: string) => string | null};
 
 function unique(ids: string[]): string[] {
   return [...new Set(ids.map((id) => String(id || "").trim()).filter(Boolean))];
@@ -54,6 +56,7 @@ export function registeredUserDefaultGrantIds(): DefaultRegisteredUserGrantIds {
 
 export function grantDefaultRegisteredUserDecks(db: GrantDb, userId: number): DefaultRegisteredUserGrantIds {
   const defaults = registeredUserDefaultGrantIds();
+  if (db.getSetting?.(BUILTIN_PACKS_ENABLED_SETTING) === "0") defaults.deckIds = [];
   if (defaults.deckIds.length) {
     db.setGrantedDecks(userId, unique([...db.grantedDecksFor(userId), ...defaults.deckIds]));
   }

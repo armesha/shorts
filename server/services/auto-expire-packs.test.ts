@@ -1,17 +1,23 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { openDb } from "../db.ts";
-import { getPack } from "../../src/packs/store.ts";
-import {
-  cleanupDrainedAutoExpireDecksForAccount,
-  isAutoExpireDeckDrainedForAccount,
-  isAutoExpiredSourceGroup,
-} from "./auto-expire-packs.ts";
-import { packCardClaimKey, packCardKey } from "./pack-gen.ts";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
 
 const POSTERS_DECK = "pack:soviet-posters-ru";
 
-test("per-account auto-expire source is removed only after its channel library is drained", () => {
+test("per-account auto-expire source is removed only after its channel library is drained", async () => {
+  const originalCwd = process.cwd();
+  const fixtureDir = mkdtempSync(join(tmpdir(),"shorts-auto-expire-"));
+  mkdirSync(join(fixtureDir,"data/packs"),{recursive:true});
+  writeFileSync(join(fixtureDir,"data/packs/soviet-posters-ru.json"),JSON.stringify({id:"soviet-posters-ru",name:"Fixture",lang:"ru",owners:[1],createdBy:1,templates:[],cards:[{values:{text:"Fixture"},addedAt:"2026-01-01"}],createdAt:"2026-01-01",autoExpireMode:"per_account"}));
+  process.chdir(fixtureDir);
+  const {packCardClaimKey,packCardKey}=await import("./pack-gen.ts");
+  const {getPack}=await import("../../src/packs/store.ts");
+  const {cleanupDrainedAutoExpireDecksForAccount,isAutoExpireDeckDrainedForAccount,isAutoExpiredSourceGroup}=await import("./auto-expire-packs.ts");
+  try {
   const db = openDb(":memory:");
   const account = db.createAccount({
     userId: 1,
@@ -52,4 +58,6 @@ test("per-account auto-expire source is removed only after its channel library i
   assert.ok(!updated.sourceDecks.includes(POSTERS_DECK));
   assert.ok(!Object.values(updated.slotDecks).includes(POSTERS_DECK));
   assert.equal(isAutoExpiredSourceGroup(db, "russian", "soviet_posters"), true);
+  db.db.close();
+  } finally {process.chdir(originalCwd);rmSync(fixtureDir,{recursive:true,force:true});}
 });

@@ -270,9 +270,11 @@ export default function Packs() {
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
         <LibraryLink to="/cards" icon="cards" title={t("packs.libraryCards")} hint={t("packs.libraryCardsHint")} />
         <LibraryLink to="/editor" icon="skin" title={t("packs.libraryTemplates")} hint={t("packs.libraryTemplatesHint")} />
-        {isAdmin && <LibraryLink to="/gallery" icon="library" title={t("packs.libraryGallery")} hint={t("packs.libraryGalleryHint")} />}
+        {isAdmin && decks.length > 0 && <LibraryLink to="/gallery" icon="library" title={t("packs.libraryGallery")} hint={t("packs.libraryGalleryHint")} />}
         <LibraryLink to="/admin/banners" icon="ads" title={t("packs.libraryBanners")} hint={t("packs.libraryBannersHint")} />
       </div>
+
+      {!loading && !catalogLoading && decks.length === 0 && customPacks.length === 0 && <p className="py-8 text-base-content/70">Паков пока нет.</p>}
 
       {actionErr && (
         <div className="alert alert-error text-sm" role="alert">
@@ -284,13 +286,13 @@ export default function Packs() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {decks.length > 0 && <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Stat label={t("packs.statBuiltin")} value={fmt(decks.length)} />
         <Stat label={t("packs.statRemaining")} value={fmt(totals.available)} />
         <Stat label={t("packs.statSpent")} value={fmt(totals.used)} />
-      </div>
+      </div>}
 
-      <section className="card bg-base-100 border border-base-300">
+      {(catalogLoading || catalog.length > 0) && <section className="card bg-base-100 border border-base-300">
         <div className="card-body gap-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
             <div>
@@ -422,7 +424,7 @@ export default function Packs() {
             />
           )}
         </div>
-      </section>
+      </section>}
 
       {!loading && decks.length > 0 && (
         <div className="flex items-center gap-2 flex-wrap">
@@ -438,18 +440,7 @@ export default function Packs() {
         <div className="py-16 text-center">
           <span className="loading loading-spinner loading-lg text-primary" />
         </div>
-      ) : decks.length === 0 ? (
-        <div className="card bg-base-100 border border-base-300 border-dashed">
-          <div className="card-body items-center text-center py-16">
-            <Layers className="text-base-content/30" size={40} />
-            <p className="text-base-content/60 max-w-md">
-              {isAdmin && viewUser !== ""
-                ? t("packs.emptyForUser")
-                : t("packs.emptyForSelf")}
-            </p>
-          </div>
-        </div>
-      ) : (
+      ) : decks.length === 0 ? null : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {builtinPageItems.map((d) => {
             const low = d.total > 0 && d.available < threshold;
@@ -591,7 +582,7 @@ export default function Packs() {
       {/* Admin: cross-user "running low" report — packs below the editable threshold (default 100),
           across everyone (incl. admin). The threshold input lives in this card's header; the same
           threshold also drives the red "low" highlight on the pack cards above. */}
-      {canManageAllPacks && (
+      {canManageAllPacks && (decks.length > 0 || customPacks.length > 0) && (
         <div className="card bg-base-100 border border-base-300">
           <div className="card-body gap-2">
             <div className="flex items-center gap-2 flex-wrap">

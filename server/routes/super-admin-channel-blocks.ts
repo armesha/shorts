@@ -31,6 +31,7 @@ import {
   usedKeysForOwner,
   type DeckAvailabilityContext,
 } from "../services/deck-availability.ts";
+import { builtInPacksEnabled } from "../services/global-pack-visibility.ts";
 import { cachedRead } from "../services/read-cache.ts";
 
 const BLOCK_LANGS = [
@@ -1104,6 +1105,7 @@ export function thematicBlockDeckSequenceForGeneration(
 }
 
 function buildPayload(db: Db, deps: RouteDeps) {
+  if (!builtInPacksEnabled(db)) return { languages: [], blocks: [], unassignedAccounts: [] };
   const ownerId = superAdminOwnerId(db);
   if (ownerId == null) return { languages: [], blocks: [], unassignedAccounts: [] };
   normalizeSourceWeightSettings(db);

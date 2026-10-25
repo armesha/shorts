@@ -1,16 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import {isDefaultRegisteredUserPack,registeredUserDefaultGrantIds} from "./default-user-decks.ts";
 
-import { registeredUserDefaultGrantIds } from "./default-user-decks.ts";
-
-test("registered user defaults include Russian joke packs only", () => {
-  const defaults = registeredUserDefaultGrantIds();
-
-  assert.deepEqual(defaults.deckIds, []);
-  assert.ok(defaults.packDeckIds.includes("pack:mgs-ru-shutki-eigen"));
-  assert.ok(defaults.packDeckIds.includes("pack:анекдоты-ру-впн-mqe5ovw1"));
-
-  assert.equal(defaults.packDeckIds.includes("pack:new-memes-ru-superadmin"), false);
-  assert.equal(defaults.packDeckIds.includes("pack:static-facts-ru-superadmin"), false);
-  assert.equal(defaults.packDeckIds.includes("pack:chistes-es-public-domain"), false);
+test("registered user defaults classify Russian joke packs without installed content fixtures",()=>{
+  assert.equal(isDefaultRegisteredUserPack({id:"custom-jokes-ru",name:"Russian jokes",lang:"ru",templateType:"jokes"}),true);
+  assert.equal(isDefaultRegisteredUserPack({id:"custom-jokes-en",name:"English jokes",lang:"en",templateType:"jokes"}),false);
+  assert.equal(isDefaultRegisteredUserPack({id:"custom-facts-ru",name:"Facts",lang:"ru",templateType:"facts"}),false);
+  assert.equal(isDefaultRegisteredUserPack({id:"custom-memes-ru",name:"Memes",lang:"ru",templateType:"memes"}),false);
+  assert.deepEqual(registeredUserDefaultGrantIds().deckIds,[]);
 });

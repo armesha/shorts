@@ -6,6 +6,8 @@ import { resolve } from "node:path";
 import { DECKS, deckLang, getDeck, type Deck } from "../../src/anecdotes/decks.ts";
 import { filterSafetyPrunedItems, packItemKey, withStableItemKeys, type PackItem } from "../../src/anecdotes/library.ts";
 
+import { builtInPacksEnabled } from "./global-pack-visibility.ts";
+
 type SourceRead = { path: string; body: string };
 
 const deckDir = (deckId: string): string => resolve(process.cwd(), getDeck(deckId).dir);
@@ -120,7 +122,7 @@ export function syncContentLibraryIndex(db: DatabaseSync): { decks: number; item
 
   db.exec("BEGIN");
   try {
-    for (const deck of DECKS) {
+    for (const deck of builtInPacksEnabled({db}) ? DECKS : []) {
       const { items, hash } = loadDeckItems(deck);
       seen.add(deck.id);
       delItems.run(deck.id);

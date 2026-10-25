@@ -9,6 +9,13 @@ type PackLike = Pick<PackSummary, "id" | "name" | "templateType"> | Pick<Pack, "
 const JOKE_OR_MEME_RE =
   /(анекдот|анекдоты|шутк|юмор|мем|мемы|meme|memes|joke|jokes|anecdote|anecdotes|witz|witze|barzellette|chistes|blague|blagues|piada|piadas|dowcip|dowcipy|żart|zart|żarty|zarty|kawał|kawal|humor|humour|lucu|نوادر|طرائف|ضحك|हास्य|चुटकुले)/i;
 
+export const BUILTIN_PACKS_ENABLED_SETTING = "content.builtinPacks.enabled";
+
+export function builtInPacksEnabled(db: DbWithHandle): boolean {
+  const setting = db.db.prepare("SELECT value FROM settings WHERE key = ?").get(BUILTIN_PACKS_ENABLED_SETTING) as {value: string} | undefined;
+  return setting?.value !== "0";
+}
+
 const FORCE_HIDDEN_BUILT_IN_DECKS = new Set([
   "visual-riddles",
   "visual-riddles-de",
@@ -57,11 +64,13 @@ export function isJokeOrMemeCustomPack(pack: PackLike): boolean {
 }
 
 export function isBuiltInDeckGloballyVisible(db: DbWithHandle, deck: Deck, used = deckIdsUsedByAnyChannel(db)): boolean {
+  if (!builtInPacksEnabled(db)) return false;
   if (FORCE_HIDDEN_BUILT_IN_DECKS.has(deck.id)) return false;
   return used.has(deck.id) || !!deck.liveVideo || isJokeOrMemeBuiltInDeck(deck);
 }
 
 export function filterGloballyVisibleBuiltInDecks<T extends Deck>(db: DbWithHandle, decks: T[]): T[] {
+  if (!builtInPacksEnabled(db)) return [];
   const used = deckIdsUsedByAnyChannel(db);
   return decks.filter((deck) => isBuiltInDeckGloballyVisible(db, deck, used));
 }

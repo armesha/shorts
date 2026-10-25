@@ -102,3 +102,24 @@ test("global pack visibility applies the same used-or-exception rule to built-in
     db.db.close();
   }
 });
+
+test("disabled builtin catalog stays empty for every user even with channel references", () => {
+  const db = openDb(":memory:");
+  try {
+    db.setSetting("content.builtinPacks.enabled", "0");
+    db.createAccount({userId:1,lang:"de",sourceDecks:["de","shortrobot1"],schedule:[]});
+    for (const deck of DECKS) assert.equal(isBuiltInDeckGloballyVisible(db,deck),false,deck.id);
+    assert.equal(isCustomPackGloballyVisible(db,{id:"custom-jokes",name:"Custom jokes"}),true);
+  } finally {db.db.close();}
+});
+
+test("startup does not restore a removed builtin catalog", async () => {
+  const {syncContentLibraryIndex} = await import('./content-library-index.ts');
+  const db = openDb(":memory:");
+  try {
+    db.setSetting('content.builtinPacks.enabled','0');
+    db.db.prepare("INSERT INTO content_decks(deck_id,name,kind,lang,pre_fact,long_video,total,source_hash,synced_at) VALUES('de','Legacy','builtin','de',0,0,1,'old','old')").run();
+    assert.deepEqual(syncContentLibraryIndex(db.db),{decks:0,items:0});
+    assert.equal((db.db.prepare("SELECT count(*) AS n FROM content_decks WHERE kind='builtin'").get() as {n:number}).n,0);
+  } finally {db.db.close();}
+});
