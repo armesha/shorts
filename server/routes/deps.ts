@@ -155,7 +155,7 @@ export function makeRouteDeps(input: {
   ): boolean {
     if (!Array.isArray(schedule)) return false;
     if (schedule.length > 0 && (!acc || acc.status !== "connected")) {
-      reply.code(400).send({ error: "Подключите канал к YouTube — расписание можно задавать только у подключённого канала." });
+      reply.code(400).send({ error: "Сначала подключите канал к выбранной площадке, затем настройте расписание." });
       return true;
     }
     const otherSlots = acc?.oauthClientId != null ? db.scheduleSlotsForKey(acc.oauthClientId, excludeAccountId) : 0;
@@ -167,7 +167,7 @@ export function makeRouteDeps(input: {
     const isAdminOwner = owner?.role === "admin";
     const isSuperAdminOwner = isSuperAdminUser(owner);
     const isMgsOwner = isMgsUser(owner);
-    if (isSuperAdminOwner) {
+    if (isSuperAdminOwner && (!acc?.platform || acc.platform === "youtube")) {
       const scheduleLang = channelLang ?? acc?.channelLang ?? acc?.lang ?? null;
       const forbiddenTimes = forbiddenSuperAdminScheduleTimes(schedule, scheduleLang, owner?.timezone ?? acc?.timezone);
       if (forbiddenTimes.length) {
@@ -177,7 +177,7 @@ export function makeRouteDeps(input: {
         return true;
       }
     }
-    const limitError = dailyScheduleLimitError(schedule.length, otherSlots, isAdminOwner, isSuperAdminOwner, isMgsOwner);
+    const limitError = dailyScheduleLimitError(schedule.length, otherSlots, isAdminOwner, isSuperAdminOwner, isMgsOwner, acc?.platform ?? "youtube");
     if (!limitError) return false;
     reply.code(400).send({ error: limitError });
     return true;
@@ -186,7 +186,7 @@ export function makeRouteDeps(input: {
   // Option B: a channel must be connected to YouTube before videos can be prepared/queued for it.
   function rejectIfNotConnected(reply: Replyish, acc: Account): boolean {
     if (acc.status === "connected") return false;
-    reply.code(400).send({ error: "Сначала подключите канал к YouTube — до подключения нельзя готовить видео в очередь." });
+    reply.code(400).send({ error: "Сначала подключите канал к выбранной площадке — до подключения нельзя готовить видео в очередь." });
     return true;
   }
 

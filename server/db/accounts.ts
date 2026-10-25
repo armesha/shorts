@@ -64,13 +64,13 @@ export function accountMethods(db: DatabaseSync) {
       return { ...rowToAccount(r), uploadsToday: countUploadsToday(r.id) };
     },
     createAccount(input: Partial<Account>): Account {
-      const avatarSource = input.avatarSource ?? "youtube";
+      const avatarSource = input.avatarSource ?? (input.platform && input.platform !== "youtube" ? "manual" : "youtube");
       const sourceDecks = Array.isArray(input.sourceDecks)
         ? input.sourceDecks
         : [input.lang ?? "de"];
       const info = db
         .prepare(
-          "INSERT INTO accounts (user_id, channel_name, lang, source_decks, channel_lang, timezone, schedule, template, status, avatar, avatar_source) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+          "INSERT INTO accounts (user_id, channel_name, lang, source_decks, channel_lang, timezone, schedule, template, status, avatar, avatar_source, platform, social_handle) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
         )
         .run(
           input.userId ?? null,
@@ -84,6 +84,8 @@ export function accountMethods(db: DatabaseSync) {
           input.status ?? "needs_auth",
           input.avatar ?? null,
           avatarSource,
+          input.platform ?? "youtube",
+          input.socialHandle ?? null,
         );
       invalidateReadCache();
       return this.getAccount(Number(info.lastInsertRowid))!;

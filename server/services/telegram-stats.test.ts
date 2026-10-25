@@ -124,3 +124,37 @@ test("Telegram bot menu exposes clear circle navigation and back actions", async
     else process.env.PUBLIC_BASE_URL = previousBaseUrl;
   }
 });
+
+test("Telegram social channel cards show platform setup and never query YouTube", async () => {
+  const originalFetch = globalThis.fetch;
+  const requests: BotRequest[] = [];
+  let googleReads = 0;
+  const account = {
+    id: 9, userId: user.id, platform: "instagram", socialHandle: "sample",
+    status: "connected", channelName: "Sample Instagram", schedule: ["12:00"], enabled: true,
+  } as import("../db.ts").Account;
+  globalThis.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
+    requests.push({ url: String(input), body: init?.body ? JSON.parse(String(init.body)) : {} });
+    return new Response(JSON.stringify({ ok: true, result: { message_id: 1 } }), { headers: { "content-type": "application/json" } });
+  }) as typeof fetch;
+  const db = {
+    getUserByTelegramId: () => user,
+    listAccountsByUser: () => [account],
+    getAccount: () => account,
+    getRefreshToken: () => { googleReads++; throw new Error("Google credentials must not be accessed"); },
+    twoLatestSnapshots: () => { throw new Error("Social accounts have no YouTube metrics"); },
+  } as unknown as Db;
+  const bot = makeBotStats({ db, botToken: () => "synthetic-test", accountCreds: () => { googleReads++; return null; }, redirectUri: "", analyticsRange: () => ({ from: "2026-06-24", to: "2026-07-24" }), summarizeStored: () => emptyAnalytics, formatStatsError: () => "Ошибка", refreshHooks: {} });
+  try {
+    await bot.callback({ id: "social-card", data: "s:ch:9:mine:30:a", from: { id: 100 }, message: { chat: { id: 100 }, message_id: 55 } });
+    const card = requests.find(r => r.url.endsWith("/editMessageText"));
+    assert.match(card?.body.text ?? "", /Instagram/);
+    assert.match(card?.body.text ?? "", /12:00/);
+    assert.match(card?.body.text ?? "", /пока недоступна/);
+    const buttons = card?.body.reply_markup?.inline_keyboard.flat() ?? [];
+    assert.ok(buttons.some(b => b.url === "https://www.instagram.com/sample/"));
+    assert.ok(buttons.every(b => !b.url?.includes("youtube.com") && !b.callback_data?.startsWith("s:rf:")));
+    await bot.callback({ id: "social-refresh", data: "s:rf:9:mine:30:a", from: { id: 100 }, message: { chat: { id: 100 }, message_id: 55 } });
+    assert.equal(googleReads, 0);
+  } finally { globalThis.fetch = originalFetch; }
+});

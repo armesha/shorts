@@ -17,7 +17,6 @@ const Cards = lazy(pageLoaders.cards);
 const Packs = lazy(pageLoaders.packs);
 const QueuePage = lazy(pageLoaders.queue);
 const Accounts = lazy(pageLoaders.accounts);
-const Social = lazy(pageLoaders.social);
 const AccountDetail = lazy(pageLoaders.accountDetail);
 const History = lazy(pageLoaders.history);
 const Notifications = lazy(pageLoaders.notifications);
@@ -75,7 +74,7 @@ function Gate() {
           <Routes>
             <Route path="/" element={defaultRoute} />
             <Route path="/channels" element={<Accounts />} />
-            <Route path="/social" element={<Social />} />
+            <Route path="/social" element={<Navigate to="/channels" replace />} />
             <Route path="/overview" element={realAdmin ? <Overview /> : <Navigate to="/statistics" replace />} />
             <Route path="/studio" element={<Studio />} />
             <Route path="/ideas" element={realAdmin ? <Ideas /> : <Navigate to="/statistics" replace />} />

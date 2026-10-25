@@ -7,6 +7,16 @@ import { parseCredMeta, defaultClientLabel, type Row } from "./mappers.ts";
 
 export function applySchema(db: DatabaseSync): void {
   db.exec(`
+    CREATE TABLE IF NOT EXISTS social_channel_connections (
+      account_id INTEGER PRIMARY KEY,
+      user_id INTEGER NOT NULL,
+      platform TEXT NOT NULL CHECK(platform IN ('instagram','tiktok')),
+      status TEXT NOT NULL DEFAULT 'unchecked',
+      handle TEXT,
+      profile_id TEXT,
+      checked_at TEXT,
+      error TEXT
+    );
     CREATE TABLE IF NOT EXISTS social_connections (
       user_id INTEGER NOT NULL,
       platform TEXT NOT NULL CHECK(platform IN ('instagram','tiktok')),
@@ -325,6 +335,11 @@ export function applySchema(db: DatabaseSync): void {
       if (!/duplicate column name/i.test(String((e as Error)?.message ?? e))) throw e;
     }
   };
+  addColumn("accounts", "platform TEXT NOT NULL DEFAULT 'youtube'");
+  addColumn("accounts", "social_handle TEXT");
+  addColumn("history", "platform TEXT NOT NULL DEFAULT 'youtube'");
+  addColumn("history", "platform_url TEXT");
+  addColumn("social_jobs", "account_id INTEGER");
   for (const col of ["yt_refresh_token", "yt_channel_id", "yt_channel_title"]) addColumn("accounts", `${col} TEXT`);
   addColumn("accounts", "slot_videos TEXT DEFAULT '{}'");
   addColumn("accounts", "slot_decks TEXT DEFAULT '{}'");

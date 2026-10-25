@@ -315,12 +315,14 @@ export function dailyScheduleLimitError(
   isAdminOwner = true,
   isSuperAdminOwner = false,
   isMgsOwner = false,
+  platform: "youtube" | "instagram" | "tiktok" = "youtube",
 ): string | null {
   const perChannel = accountDailyScheduleCap(isAdminOwner, isMgsOwner);
-  const perKey = googleKeyDailyScheduleCap(isSuperAdminOwner, isMgsOwner);
   if (scheduleCount > perChannel) {
     return `Максимум ${perChannel} видео в сутки на один канал.`;
   }
+  if (platform !== "youtube") return null;
+  const perKey = googleKeyDailyScheduleCap(isSuperAdminOwner, isMgsOwner);
   if (otherSlots + scheduleCount > perKey) {
     return `Лимит ${perKey} публикаций в сутки на один Google-ключ (проект). На других каналах этого ключа уже ${otherSlots}, этому каналу доступно ${Math.max(0, perKey - otherSlots)}.`;
   }

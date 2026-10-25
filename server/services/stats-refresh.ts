@@ -68,6 +68,7 @@ export interface RefreshAccountOpts {
  */
 export async function refreshAccountStats(opts: RefreshAccountOpts): Promise<{ error: string | null }> {
   const { db, account: a, creds, refreshToken: token, redirectUri, analyticsRange, summarizeStored, formatStatsError, hooks } = opts;
+  if (a.platform && a.platform !== "youtube") return { error: "Статистика этой площадки пока недоступна." };
   if (!creds) return { error: "Нет Google-ключа у владельца канала" };
   if (!token) return { error: "Канал не подключён к YouTube" };
 

@@ -1,4 +1,16 @@
+export type ChannelPlatform = "youtube" | "instagram" | "tiktok";
+
+export interface SocialConnection {
+  platform: "instagram" | "tiktok";
+  status: string;
+  handle: string | null;
+  checkedAt: string | null;
+  error: string | null;
+}
+
 export interface Account {
+  platform: ChannelPlatform;
+  socialHandle: string | null;
   id: number;
   userId?: number | null; // owner (present on admin scope=all listings)
   channelName: string;
@@ -26,6 +38,8 @@ export interface Account {
 }
 
 export interface HistoryItem {
+  platform?: ChannelPlatform;
+  platformUrl?: string | null;
   id: number;
   accountId: number;
   title: string;
@@ -396,6 +410,7 @@ export interface BulkPostNowResponse {
   total: number;
   attempted: number;
   published: number;
+  queued?: number;
   skipped: number;
   failed: number;
   items: BulkPostNowItem[];
@@ -1276,6 +1291,7 @@ export interface ChannelThemeBlockScheduleResult {
 export type AccountReadinessStatus = "ready" | "warning" | "blocked";
 
 export interface AccountReadiness {
+  platform?: ChannelPlatform;
   status: AccountReadinessStatus;
   blockers: string[];
   warnings: string[];

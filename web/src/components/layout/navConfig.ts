@@ -26,7 +26,6 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
   {
     labelKey: "layout.groupWork",
     items: [
-      { to: "/social", labelKey: "nav.social", icon: "accounts", end: false },
       { to: "/channels", labelKey: "nav.channels", icon: "accounts", end: false, userOnly: true },
       { to: "/channels", labelKey: "nav.channels", icon: "accounts", end: false, staffOnly: true },
       { to: "/overview", labelKey: "nav.overview", icon: "home", end: false, adminOnly: true, adminBadge: true },

@@ -12,13 +12,16 @@ const PAGE_SIZE = 25;
 // Колоризуем статус: «провал/ошибка» — красный, «опубликовано/готово» — зелёный, иначе — нейтральный.
 function statusClass(s: string): string {
   const t = (s || "").toLowerCase();
+  if (t === "needs_review") return "badge-warning";
   if (/fail|error|ошиб|отклон|skip|пропущ/.test(t)) return "badge-error";
   if (/publish|posted|success|\bok\b|выложен|опубликов|готов/.test(t)) return "badge-success";
   return "badge-ghost";
 }
 
 // «Посмотреть»: опубликованные → YouTube (Shorts), иначе локальный файл (если ещё не удалён).
+const HISTORY_STATES: Record<string, string> = {published:"Опубликовано",scheduled:"Запланировано",failed:"Ошибка",needs_review:"Проверьте профиль",pending:"В очереди",cancelled:"Отменено"};
 function watchUrl(h: HistoryItem): string | null {
+  if (h.platformUrl) return h.platformUrl;
   if (h.youtubeId) return `https://www.youtube.com/shorts/${h.youtubeId}`;
   if (h.videoRel) return `/files/${h.videoRel}`;
   return null;
@@ -67,7 +70,7 @@ export default function History() {
   const youtubeUrlMap = useMemo(
     () =>
       Object.fromEntries(
-        allAccounts.map((a) => [a.id, a.ytChannelId ? `https://www.youtube.com/channel/${a.ytChannelId}` : null]),
+        allAccounts.map((a) => [a.id, a.platform === "instagram" && a.socialHandle ? `https://www.instagram.com/${a.socialHandle}/` : a.platform === "tiktok" && a.socialHandle ? `https://www.tiktok.com/@${a.socialHandle}` : a.ytChannelId ? `https://www.youtube.com/channel/${a.ytChannelId}` : null]),
       ) as Record<number, string | null>,
     [allAccounts],
   );
@@ -292,8 +295,8 @@ export default function History() {
                                     href={youtubeUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    title={t("stats.openOnYoutube")}
-                                    aria-label={t("stats.openOnYoutube")}
+                                    title="Открыть профиль канала"
+                                    aria-label="Открыть профиль канала"
                                     className="shrink-0 rounded-full transition hover:opacity-80"
                                   >
                                     <img
@@ -310,7 +313,7 @@ export default function History() {
                                   />
                                 )
                               )}
-                              <span className="truncate">{h.channelName || `#${h.accountId}`}</span>
+                              <span className="truncate">{h.channelName || `#${h.accountId}`}<span className="block text-xs text-base-content/70">{h.platform === "instagram" ? "Instagram" : h.platform === "tiktok" ? "TikTok" : "YouTube"}</span></span>
                             </span>
                           </td>
                           {showOwner && (
@@ -321,7 +324,7 @@ export default function History() {
                             {formatDateTime(h.publishedAt ?? h.createdAt)}
                           </td>
                           <td>
-                            <span className={`badge badge-sm ${statusClass(h.status)}`}>{h.status}</span>
+                            <span className={`badge badge-sm ${statusClass(h.status)}`}>{HISTORY_STATES[h.status] || h.status}</span>
                             {h.error && (
                               <div
                                 className="text-xs text-error/80 mt-1 max-w-[22rem] whitespace-pre-wrap break-words"

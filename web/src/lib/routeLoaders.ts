@@ -1,5 +1,4 @@
 const routeLoaders = {
-  social: () => import("../pages/Social"),
   overview: () => import("../pages/Overview"),
   studio: () => import("../pages/Studio"),
   gallery: () => import("../pages/Gallery"),
@@ -53,7 +52,7 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
   if (pathname === "/" || pathname === "/channels" || pathname === "/accounts") return "accounts";
   if (pathname.startsWith("/accounts/")) return "accountDetail";
   if (pathname === "/admin/analytics") return "statistics";
-  if (pathname === "/social") return "social";
+  if (pathname === "/social") return "accounts";
   if (pathname === "/tg") return "telegramMiniApp";
   if (pathname === "/signals/analysis") return "signalsAnalysis";
   if (pathname === "/stas") return "stasReport";

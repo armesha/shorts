@@ -1,4 +1,5 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import type { RouteDeps } from "./deps.ts";
 import { uid } from "../infra/auth-session.ts";
 import type { SocialService } from "../services/social/store.ts";
 import { SocialError, platformValue } from "../services/social/cookies.ts";
@@ -6,6 +7,7 @@ import { SocialError, platformValue } from "../services/social/cookies.ts";
 export function registerSocialRoutes(
   app: FastifyInstance,
   service: SocialService,
+  deps?: Pick<RouteDeps, "accessibleAccount">,
 ) {
   app.register(async (routes) => {
     routes.addHook("onRequest", async (req, reply) => {
@@ -29,6 +31,105 @@ export function registerSocialRoutes(
         .code(500)
         .send({ error: "Не удалось выполнить действие. Повторите позже." });
     });
+    const channelAction =
+      (
+        action: (
+          ownerId: number,
+          accountId: number,
+          req: FastifyRequest,
+        ) => unknown,
+      ) =>
+      async (req: FastifyRequest, reply: FastifyReply) => {
+        const accountId = Number((req.params as { id: string }).id);
+        if (deps) {
+          const account = deps.accessibleAccount(req, reply, accountId);
+          if (!account) return;
+          return action(account.userId ?? uid(req), accountId, req);
+        }
+        return action(uid(req), accountId, req);
+      };
+    routes.get(
+      "/api/accounts/:id/social",
+      channelAction((ownerId, accountId) => ({
+        connection: service.listForAccount(ownerId, accountId),
+        jobs: service.jobsForAccount(ownerId, accountId),
+      })),
+    );
+    routes.post(
+      "/api/accounts/:id/social/cookies",
+      { bodyLimit: 520_000 },
+      channelAction((ownerId, accountId, req) => ({
+        connection: service.importForAccount(
+          ownerId,
+          accountId,
+          (req.body as { cookies?: unknown } | null)?.cookies,
+        ),
+      })),
+    );
+    routes.post(
+      "/api/accounts/:id/social/verify",
+      channelAction(async (ownerId, accountId) => ({
+        connection: await service.verifyForAccount(ownerId, accountId),
+      })),
+    );
+    routes.delete(
+      "/api/accounts/:id/social",
+      channelAction((ownerId, accountId) => ({
+        connection: service.disconnectForAccount(ownerId, accountId),
+      })),
+    );
+    routes.get(
+      "/api/accounts/:id/social/jobs",
+      channelAction((ownerId, accountId) => ({
+        jobs: service.jobsForAccount(ownerId, accountId),
+      })),
+    );
+    routes.post(
+      "/api/accounts/:id/social/jobs",
+      channelAction((ownerId, accountId, req) => {
+        const body = req.body as {
+          videoId?: unknown;
+          caption?: unknown;
+          runAt?: unknown;
+        } | null;
+        if (
+          !body ||
+          typeof body.videoId !== "number" ||
+          typeof body.caption !== "string" ||
+          typeof body.runAt !== "string"
+        )
+          throw new SocialError("Выберите ролик, подпись и время.");
+        return {
+          jobs: service.enqueueForAccount(
+            ownerId,
+            accountId,
+            body.videoId,
+            body.caption,
+            body.runAt,
+          ),
+        };
+      }),
+    );
+    routes.delete(
+      "/api/accounts/:id/social/jobs/:jobId",
+      channelAction((ownerId, accountId, req) => ({
+        jobs: service.cancelForAccount(
+          ownerId,
+          accountId,
+          Number((req.params as { jobId: string }).jobId),
+        ),
+      })),
+    );
+    routes.post(
+      "/api/accounts/:id/social/jobs/:jobId/not-published",
+      channelAction((ownerId, accountId, req) => ({
+        jobs: service.confirmNotPublishedForAccount(
+          ownerId,
+          accountId,
+          Number((req.params as { jobId: string }).jobId),
+        ),
+      })),
+    );
     routes.get("/api/social", async (req) => ({
       connections: service.list(uid(req)),
       jobs: service.jobs(uid(req)),

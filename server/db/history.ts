@@ -2,7 +2,7 @@
 import type { DatabaseSync } from "node:sqlite";
 import { randomUUID } from "node:crypto";
 import type { Row } from "./mappers.ts";
-import type { HistoryItem } from "./types.ts";
+import type { ChannelPlatform, HistoryItem } from "./types.ts";
 
 export type UploadQuotaReservation =
   | { ok: true; token: string }
@@ -12,6 +12,8 @@ export function historyMethods(db: DatabaseSync) {
   return {
     addHistory(h: {
       accountId: number;
+      platform?: ChannelPlatform;
+      platformUrl?: string | null;
       title: string;
       description?: string | null;
       tags?: string[] | null;
@@ -24,7 +26,7 @@ export function historyMethods(db: DatabaseSync) {
       oauthClientId?: number | null;
     }): void {
       db.prepare(
-        "INSERT INTO history (account_id, title, description, tags, status, youtube_id, video_path, published_at, error, deck, oauth_client_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+        "INSERT INTO history (account_id, title, description, tags, status, youtube_id, video_path, published_at, error, deck, oauth_client_id, platform, platform_url) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
       ).run(
         h.accountId,
         h.title,
@@ -37,6 +39,8 @@ export function historyMethods(db: DatabaseSync) {
         h.error ?? null,
         h.deck ?? null,
         h.oauthClientId ?? null,
+        h.platform ?? "youtube",
+        h.platformUrl ?? null,
       );
     },
     listHistory(): HistoryItem[] {
@@ -49,6 +53,8 @@ export function historyMethods(db: DatabaseSync) {
           publishedAt: r.published_at,
           createdAt: r.created_at,
           error: r.error ?? null,
+          platform: r.platform ?? "youtube",
+          platformUrl: r.platform_url ?? null,
         }),
       );
     },
@@ -68,6 +74,8 @@ export function historyMethods(db: DatabaseSync) {
         publishedAt: r.published_at,
         createdAt: r.created_at,
         error: r.error ?? null,
+          platform: r.platform ?? "youtube",
+          platformUrl: r.platform_url ?? null,
       }));
     },
     // Enriched + filterable history for the admin "all users" view (and the own view).
@@ -101,6 +109,8 @@ export function historyMethods(db: DatabaseSync) {
         publishedAt: r.published_at,
         createdAt: r.created_at,
         error: r.error ?? null,
+          platform: r.platform ?? "youtube",
+          platformUrl: r.platform_url ?? null,
         channelName: r.yt_channel_title || r.channel_name,
         ownerUsername: r.owner_username ?? null,
         youtubeId: r.youtube_id ?? null,
@@ -146,7 +156,7 @@ export function historyMethods(db: DatabaseSync) {
       const r = db
         .prepare(
           `SELECT COUNT(*) AS n FROM history h JOIN accounts a ON a.id = h.account_id
-            WHERE COALESCE(h.oauth_client_id, a.oauth_client_id) = ? AND h.status IN ('published','scheduled')
+            WHERE h.platform = 'youtube' AND COALESCE(h.oauth_client_id, a.oauth_client_id) = ? AND h.status IN ('published','scheduled')
               AND date(h.created_at) = date('now')`,
         )
         .get(oauthClientId) as Row;
@@ -191,7 +201,7 @@ export function historyMethods(db: DatabaseSync) {
             .prepare(
               `SELECT
                  (SELECT COUNT(*) FROM history h JOIN accounts a ON a.id = h.account_id
-                   WHERE COALESCE(h.oauth_client_id, a.oauth_client_id) = ? AND h.status IN ('published','scheduled') AND date(h.created_at) = date('now')) +
+                   WHERE h.platform = 'youtube' AND COALESCE(h.oauth_client_id, a.oauth_client_id) = ? AND h.status IN ('published','scheduled') AND date(h.created_at) = date('now')) +
                  (SELECT COUNT(*) FROM upload_quota_reservations
                    WHERE oauth_client_id = ? AND date(created_at) = date('now')) AS n`,
             )

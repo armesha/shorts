@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { apiClient, type Account, type AppStatus, type ContentCatalogItem, type OAuthClient } from "../lib/api";
+import { apiClient, type Account, type AppStatus, type ContentCatalogItem, type OAuthClient, type ChannelPlatform } from "../lib/api";
 import { AppIcon } from "../components/AppIcon";
 import { BrandIcon } from "../components/BrandIcon";
 import { useT } from "../lib/i18n";
@@ -9,8 +9,16 @@ import { useAuth } from "../lib/auth";
 import { isMainAdmin } from "../lib/authz";
 import { langTag } from "../lib/deck";
 import { isMgsLegacyUser } from "../lib/accountLimits";
+import AddChannelDialog from "../components/AddChannelDialog";
 
-const ACCOUNTS_CACHE_KEY = "sf.accounts.v2";
+const ACCOUNTS_CACHE_KEY = "sf.accounts.v3";
+const PLATFORM_NAMES = {youtube: "YouTube", instagram: "Instagram", tiktok: "TikTok"};
+const isYouTubeAccount = (account: Account) => !account.platform || account.platform === "youtube";
+function accountProfileUrl(account: Account): string | null {
+  if (isYouTubeAccount(account)) return account.ytChannelId ? `https://www.youtube.com/channel/${account.ytChannelId}` : null;
+  if (!account.socialHandle) return null;
+  return account.platform === "instagram" ? `https://www.instagram.com/${encodeURIComponent(account.socialHandle)}/` : `https://www.tiktok.com/@${encodeURIComponent(account.socialHandle)}`;
+}
 const DEFAULT_DAILY_KEY_CAP = 50; // Regular users.
 const MGS_DAILY_KEY_CAP = 92; // Legacy profile for mgs.
 const SUPER_ADMIN_DAILY_KEY_CAP = 100; // Main admin uses the full YouTube project quota.
@@ -46,6 +54,8 @@ function AccountsList() {
   const [loadError, setLoadError] = useState(false);
   const [cacheSavedAt, setCacheSavedAt] = useState(cached?.savedAt ?? "");
   const [creating, setCreating] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [addError, setAddError] = useState("");
   const [actionErr, setActionErr] = useState("");
   const [queue, setQueue] = useState<Record<number, number>>(cached?.value.queue ?? {});
   const [queueByDeck, setQueueByDeck] = useState<Record<number, Record<string, number>>>(cached?.value.queueByDeck ?? {});
@@ -113,13 +123,14 @@ function AccountsList() {
     setCacheSavedAt(new Date().toISOString());
   }, [accounts, status, queue, queueByDeck]);
 
-  async function addAccount() {
-    setCreating(true);
+  function startAddAccount() {setAddError("");setAdding(true);}
+  async function addAccount(platform: ChannelPlatform, channelName: string) {
+    setCreating(true);setAddError("");
     try {
-      const a = await apiClient.createAccount();
+      const a = await apiClient.createAccount({platform, channelName: channelName || `Мой ${PLATFORM_NAMES[platform]}`});
       navigate(`/accounts/${a.id}`);
     } catch (e) {
-      setActionErr(t("accounts.createFailed") + " " + String(e));
+      setAddError(t("accounts.createFailed") + " " + String(e));
     } finally {
       setCreating(false);
     }
@@ -257,11 +268,11 @@ function AccountsList() {
   });
 
   // Google-key grouping — only surfaced when the user actually has more than one key.
-  const multiKey = clients.length > 1;
+  const multiKey = clients.length > 1 && accounts.some(isYouTubeAccount);
   const clientById = new Map(clients.map((c) => [c.id, c] as const));
   const perKeyStats = multiKey
     ? clients.map((c) => {
-        const chans = accounts.filter((a) => a.oauthClientId === c.id);
+        const chans = accounts.filter((a) => isYouTubeAccount(a) && a.oauthClientId === c.id);
         return {
           id: c.id,
           label: c.label,
@@ -271,7 +282,7 @@ function AccountsList() {
         };
       })
     : [];
-  const noKeyChannels = multiKey ? accounts.filter((a) => !a.oauthClientId).length : 0;
+  const noKeyChannels = multiKey ? accounts.filter((a) => isYouTubeAccount(a) && !a.oauthClientId).length : 0;
   const keyTileCount = perKeyStats.length + (noKeyChannels > 0 ? 1 : 0);
   const keyGridClass =
     keyTileCount <= 1
@@ -286,14 +297,14 @@ function AccountsList() {
 
   return (
     <div className="space-y-6">
-      <Link to="/social" className="btn btn-outline btn-sm">Instagram и TikTok · Подключить аккаунт</Link>
-      <GoogleKeyNotice status={status} loadError={loadError} />
+      {adding && <AddChannelDialog busy={creating} error={addError} onClose={() => setAdding(false)} onCreate={addAccount}/>}
+      {accounts.some(isYouTubeAccount) && <GoogleKeyNotice status={status} loadError={loadError} />}
 
       {disconnectedChannels.length > 0 && (
         <div className="alert alert-error shadow-sm flex items-start gap-2 py-2.5" role="alert">
           <AppIcon name="warning" size={18} className="shrink-0 mt-0.5" />
           <div className="flex-1 text-sm leading-snug">
-            <span className="font-semibold">{t("accounts.authErrorTitle")}</span> {t("accounts.authErrorLead")}{" "}
+            <span className="font-semibold">Проверьте подключение каналов</span> Не удалось подтвердить вход:{" "}
             {disconnectedChannels.map((a, i) => (
               <span key={a.id}>
                 {i > 0 && ", "}
@@ -302,7 +313,7 @@ function AccountsList() {
                 </Link>
               </span>
             ))}
-            . {t("accounts.authErrorHint")}
+            . Откройте канал и обновите подключение.
           </div>
         </div>
       )}
@@ -414,7 +425,7 @@ function AccountsList() {
             <p className="text-base-content/60">
               {t("accounts.emptyState")}
             </p>
-            <button className="btn btn-primary btn-sm gap-2 mt-2" onClick={addAccount} disabled={creating}>
+            <button className="btn btn-primary btn-sm gap-2 mt-2" onClick={startAddAccount} disabled={creating}>
               <AppIcon name="plus" size={16} /> {t("accounts.addChannel")}
             </button>
           </div>
@@ -437,7 +448,7 @@ function AccountsList() {
                 <AppIcon name="chevron-right" size={16} className={sortDir === "asc" ? "-rotate-90" : "rotate-90"} />
               </button>
             </div>
-            <button className="btn btn-primary gap-2 w-full sm:w-auto" onClick={addAccount} disabled={creating}>
+            <button className="btn btn-primary gap-2 w-full sm:w-auto" onClick={startAddAccount} disabled={creating}>
               {creating ? <span className="loading loading-spinner loading-sm" /> : <AppIcon name="plus" size={18} />}
               {t("accounts.addChannel")}
             </button>
@@ -459,14 +470,14 @@ function AccountsList() {
               <div className="card-body relative z-10 pointer-events-none">
                 <div className="flex items-center gap-3">
                   {a.avatar ? (
-                    a.ytChannelId ? (
+                    accountProfileUrl(a) ? (
                       <a
-                        href={`https://www.youtube.com/channel/${a.ytChannelId}`}
+                        href={accountProfileUrl(a)!}
                         target="_blank"
                         rel="noreferrer"
                         className="pointer-events-auto shrink-0 rounded-full"
-                        aria-label={t("account.openYouTubeChannel")}
-                        title={t("account.openYouTubeChannel")}
+                        aria-label={`Открыть ${PLATFORM_NAMES[a.platform || "youtube"]}`}
+                        title={`Открыть ${PLATFORM_NAMES[a.platform || "youtube"]}`}
                       >
                         <img
                           src={a.avatar}
@@ -489,7 +500,7 @@ function AccountsList() {
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold truncate">{a.channelName}</div>
                     <div className="text-sm text-base-content/60">
-                      {a.lang.toUpperCase()}
+                      {PLATFORM_NAMES[a.platform || "youtube"]}{a.socialHandle ? ` · @${a.socialHandle}` : ""}{a.lang ? ` · ${a.lang.toUpperCase()}` : ""}
                     </div>
                   </div>
                   {a.authError ? (
@@ -514,7 +525,7 @@ function AccountsList() {
                 </div>
                 <QueueInfo count={effectiveQueuedVideos(a) ?? queue[a.id]} runwayDays={runwayDays(a)} schedule={a.schedule} enabled={a.enabled} />
                 <SourceInfo sources={accountSourceStats(a)} />
-                {multiKey && a.oauthClientId && clientById.get(a.oauthClientId) && (
+                {isYouTubeAccount(a) && multiKey && a.oauthClientId && clientById.get(a.oauthClientId) && (
                   <div className="mt-2 text-xs text-base-content/45 flex items-center gap-1.5">
                     <BrandIcon name="youtube" size={12} className="shrink-0" />
                     <span className="truncate">
@@ -523,17 +534,17 @@ function AccountsList() {
                     </span>
                   </div>
                 )}
-                {a.ytChannelId && (
+                {accountProfileUrl(a) && (
                   <a
-                    href={`https://www.youtube.com/channel/${a.ytChannelId}`}
+                    href={accountProfileUrl(a)!}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
                     className="btn btn-ghost btn-xs gap-1 mt-2 w-fit text-error pointer-events-auto relative z-20"
-                    title={t("accounts.openOnYouTubeTitle")}
+                    title={`Открыть ${PLATFORM_NAMES[a.platform || "youtube"]}`}
                   >
-                    <BrandIcon name="youtube" size={14} />
-                    {t("accounts.openOnYouTube")}
+                    {isYouTubeAccount(a) && <BrandIcon name="youtube" size={14} />}
+                    Открыть {PLATFORM_NAMES[a.platform || "youtube"]}
                     <AppIcon name="external" size={13} />
                   </a>
                 )}

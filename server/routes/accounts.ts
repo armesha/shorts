@@ -5,10 +5,11 @@ import type { FastifyInstance, FastifyRequest } from "fastify";
 import type { Db, Account } from "../db.ts";
 import { MANUAL_VIDEO_DECK } from "../../src/anecdotes/decks.ts";
 import { uid } from "../infra/auth-session.ts";
+import type { SocialService } from "../services/social/store.ts";
 import type { RouteDeps } from "./deps.ts";
 import { thematicBlockSlotDecksForAccount } from "./super-admin-channel-blocks.ts";
 
-export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
+export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: RouteDeps, social?: SocialService) {
   const {
     accessibleAccount,
     rejectScheduleLimit,
@@ -29,6 +30,8 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
   });
   app.post("/api/accounts", async (req, reply) => {
     const body = (req.body as Partial<Account>) ?? {};
+    const platform = body.platform ?? "youtube";
+    if (!["youtube", "instagram", "tiktok"].includes(platform)) return reply.code(400).send({error:"Выберите YouTube, Instagram или TikTok."});
     if (rejectScheduleLimit(req, reply, body.schedule, null, undefined, body.channelLang ?? body.lang ?? null)) return;
     const owner = db.getUserById(uid(req));
     const requestedLang = typeof body.lang === "string" ? body.lang.trim() : "";
@@ -42,12 +45,16 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
     return db.createAccount({
       ...body,
       userId: uid(req),
+      platform,
+      socialHandle: null,
+      status: "needs_auth",
+      ...(platform !== "youtube" ? {schedule: [], avatarSource: "manual" as const} : {}),
       lang,
       sourceDecks,
       channelLang: requestedChannelLang || (lang ? deckContentLang(req, lang) || "" : ""),
       timezone: owner?.timezone ?? body.timezone,
       avatar: null,
-      avatarSource: "youtube",
+      avatarSource: platform === "youtube" ? "youtube" : "manual",
     });
   });
   // Legacy endpoint kept for old clients; the UI now always uses the real YouTube channel avatar.
@@ -64,6 +71,7 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
     const body = (req.body as Partial<Account>) ?? {};
     delete body.avatar;
     delete body.avatarSource;
+    if (body.platform != null && body.platform !== acc.platform) return reply.code(400).send({error:"Площадку существующего канала менять нельзя. Добавьте новый канал."});
     const requestedSources = cleanDeckIds((body as { sourceDecks?: unknown }).sourceDecks);
     const hasExplicitSourceDecks = Array.isArray((body as { sourceDecks?: unknown }).sourceDecks);
     if (requestedSources.length) {
@@ -136,7 +144,9 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
   });
   app.delete("/api/accounts/:id", async (req, reply) => {
     const id = Number((req.params as { id: string }).id);
-    if (!accessibleAccount(req, reply, id)) return;
+    const account=accessibleAccount(req, reply, id);
+    if (!account) return;
+    if (account.platform !== "youtube" && social) await social.cleanupAccount(account.userId ?? uid(req), id);
     db.deleteAccount(id);
     return { ok: true };
   });

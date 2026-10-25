@@ -25,7 +25,7 @@ export function registerStatsRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const isAdmin = isAdminLikeReq(req);
     // Admins may view all channels; regular users are always limited to their own channels.
     return visibleAccounts(req, q.scope, true).map((a) => {
-      const row = statRow(a, null, days);
+      const row = statRow(a, a.platform && a.platform !== "youtube" ? "Статистика этой площадки пока недоступна." : null, days);
       if (!isAdmin && a.userId !== me) row.ownerUsername = null;
       return row;
     });
@@ -38,7 +38,7 @@ export function registerStatsRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   app.get("/api/stats/totals", async (req) => {
     const scope = (req.query as { scope?: string }).scope;
     const all = scope === "all" && isAdminLikeReq(req);
-    const accounts = visibleAccounts(req, scope, true);
+    const accounts = visibleAccounts(req, scope, true).filter((a) => !a.platform || a.platform === "youtube");
     let subscribers = 0;
     let views = 0;
     let videos = 0;
@@ -78,7 +78,7 @@ export function registerStatsRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const analyticsRange = youtubeAnalyticsRange();
     await Promise.all(
       accounts.map(async (a) => {
-        if (a.status !== "connected") return;
+        if (a.status !== "connected" || (a.platform && a.platform !== "youtube")) return;
         // Shared with the Telegram bot — see refreshAccountStats() in stats-refresh.ts. The creds/token
         // null-checks, 15-min/6-h TTL caching, snapshot write and error/notification side-effects all
         // live there now; statsRefreshHooks replays exactly the log+error_log+notification this route did.
@@ -96,7 +96,7 @@ export function registerStatsRoutes(app: FastifyInstance, db: Db, deps: RouteDep
         if (error) errors.set(a.id, error);
       }),
     );
-    return accounts.map((a) => statRow(a, errors.get(a.id)));
+    return accounts.map((a) => statRow(a, a.platform && a.platform !== "youtube" ? "Статистика этой площадки пока недоступна." : errors.get(a.id)));
   });
 
   app.post("/api/stats/refresh-data-only", async (req, reply) => {
@@ -110,7 +110,7 @@ export function registerStatsRoutes(app: FastifyInstance, db: Db, deps: RouteDep
 
     const all = visibleAccounts(req, q.scope);
     const accounts = all.filter((a) => {
-      if (a.status !== "connected") return false;
+      if (a.status !== "connected" || (a.platform && a.platform !== "youtube")) return false;
       if (requested.size) return requested.has(a.id);
       return true;
     });
@@ -171,7 +171,7 @@ export function registerStatsRoutes(app: FastifyInstance, db: Db, deps: RouteDep
         }
       }),
     );
-    return accounts.map((a) => statRow(a, errors.get(a.id)));
+    return accounts.map((a) => statRow(a, a.platform && a.platform !== "youtube" ? "Статистика этой площадки пока недоступна." : errors.get(a.id)));
   });
 
   app.get("/api/stats/:id/history", async (req, reply) => {

@@ -4,7 +4,7 @@ export * from "./types";
 export { ApiError } from "./http";
 import { get, send, sendBinary } from "./http";
 import type {
-  Account, HistoryPage, AppStatus, AppSettings, OAuthClientsResponse, AddOAuthClientResponse,
+  Account, ChannelPlatform, SocialConnection, HistoryPage, AppStatus, AppSettings, OAuthClientsResponse, AddOAuthClientResponse,
   AdminUser, DeckInfo, UserDeckRow, AdminLimits, PackUsageItem, MyDecks, LowDeckRow, ManualVideoLimits, ReadinessLimits,
   AuthUser, Generator, GeneratedPreview, GeneratedVideo, VideoItem, GenJobStatus, GenQueueResponse, GenWorkerStatus,
   PsychSchema, PsychCardList, PackSummary, PackFull, PackMusic, PackMusicUploadFile,
@@ -184,7 +184,12 @@ export const apiClient = {
   accounts: (scope?: "all") => get<Account[]>(`/accounts${scope === "all" ? "?scope=all" : ""}`),
   account: (id: number | string) => get<Account>(`/accounts/${id}`),
   accountReadiness: (id: number | string) => get<AccountReadiness>(`/accounts/${id}/readiness`),
-  createAccount: () => send<Account>("/accounts", "POST", { timezone: browserTimeZone() }),
+  createAccount: (data: {platform?: ChannelPlatform; channelName?: string} = {}) =>
+    send<Account>("/accounts", "POST", { timezone: browserTimeZone(), ...data }),
+  socialConnection: (id: number | string) => get<{connection: SocialConnection}>(`/accounts/${id}/social`),
+  importSocialCookies: (id: number | string, cookies: string) => send<{connection: SocialConnection}>(`/accounts/${id}/social/cookies`, "POST", {cookies}),
+  verifySocialConnection: (id: number | string) => send<{connection: SocialConnection}>(`/accounts/${id}/social/verify`, "POST", {}),
+  disconnectSocial: (id: number | string) => send<{connection: SocialConnection}>(`/accounts/${id}/social`, "DELETE"),
   updateAccount: (id: number | string, data: Partial<Account>) =>
     send<Account>(`/accounts/${id}`, "PUT", data),
   deleteAccount: (id: number | string) => send<{ ok: boolean }>(`/accounts/${id}`, "DELETE"),
@@ -316,7 +321,7 @@ export const apiClient = {
   cancelGen: (jobId: string) => send<{ ok: boolean }>(`/gen-queue/${jobId}/cancel`, "POST", {}),
   queueOverview: (scope?: "all") => get<QueueOverview>(`/queue${scope === "all" ? "?scope=all" : ""}`),
   postVideoNow: (id: number | string, publishAt?: string) =>
-    send<{ ok: boolean; youtubeId?: string; url?: string; scheduled?: boolean; removed?: boolean }>(
+    send<{ ok: boolean; youtubeId?: string; url?: string | null; scheduled?: boolean; removed?: boolean; queued?: boolean }>(
       `/videos/${id}/post-now`,
       "POST",
       { publishAt },

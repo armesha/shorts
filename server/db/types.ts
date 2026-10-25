@@ -6,7 +6,11 @@
 // YouTube title" check in setYouTube stay in sync — if they drift, auto-naming silently stops firing.
 export const DEFAULT_CHANNEL_NAME = "Новый канал";
 
+export type ChannelPlatform = "youtube" | "instagram" | "tiktok";
+
 export interface Account {
+  platform: ChannelPlatform;
+  socialHandle: string | null;
   id: number;
   userId: number | null;
   channelName: string;
@@ -51,6 +55,8 @@ export interface OAuthClientRow {
 }
 
 export interface HistoryItem {
+  platform?: ChannelPlatform;
+  platformUrl?: string | null;
   id: number;
   accountId: number;
   title: string;

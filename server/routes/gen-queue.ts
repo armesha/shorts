@@ -66,7 +66,7 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
     const requester = db.getUserById(uid(req));
     const requesterIsSuperAdmin = isSuperAdminUser(requester);
     if (acc.status !== "connected" && !requesterIsSuperAdmin) {
-      return reply.code(400).send({ error: "Сначала подключите канал к YouTube — до подключения нельзя готовить видео в очередь." });
+      return reply.code(400).send({ error: "Сначала подключите канал к выбранной площадке — до подключения нельзя готовить видео в очередь." });
     }
     const ownerId = accountOwnerId(req, acc);
     const requestedDecks = cleanDeckIds(body.deckIds);

@@ -21,6 +21,8 @@ const FOREIGN_EN_SOURCES = [
 
 function account(id: number): Account {
   return {
+    platform: "youtube",
+    socialHandle: null,
     id,
     userId: 1,
     channelName: `Channel ${id}`,

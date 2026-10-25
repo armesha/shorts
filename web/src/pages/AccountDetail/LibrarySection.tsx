@@ -119,6 +119,10 @@ export default function LibrarySection({
   setPage,
   t,
 }: LibrarySectionProps) {
+  const isYouTube = !account.platform || account.platform === "youtube";
+  const platformName = account.platform === "instagram" ? "Instagram" : "TikTok";
+  const connectHint = isYouTube ? t("account.connectFirstHint") : `Сначала подтвердите вход в ${platformName} через cookies — после этого будут доступны расписание, отправка и подготовка видео.`;
+  const preparationHint = isYouTube ? t(canPrepareLibrary ? "account.superAdminLibraryPrepHint" : "account.connectFirstHint") : canPrepareLibrary ? `Канал ещё не подключён к ${platformName}. Библиотеку можно готовить, а для отправки нужно подтвердить вход.` : connectHint;
   const manualUploadButtonText =
     manualUploading && manualUploadProgress && manualUploadProgress.total > 1
       ? t("account.manualUploadingProgress", { current: manualUploadProgress.current, total: manualUploadProgress.total })
@@ -206,7 +210,7 @@ export default function LibrarySection({
             <div className="font-medium text-sm mb-2">{t("account.generateToLibrary")}</div>
             {!isConnected && (
               <div className="text-xs text-warning mb-2 flex items-center gap-1.5">
-                <AppIcon name="warning" size={13} /> {t(canPrepareLibrary ? "account.superAdminLibraryPrepHint" : "account.connectFirstHint")}
+                <AppIcon name="warning" size={13} /> {preparationHint}
               </div>
             )}
             <div className="flex flex-wrap items-center gap-2">
@@ -267,7 +271,7 @@ export default function LibrarySection({
             <div className="font-medium text-sm mb-2">{t("account.manualUploadTitle")}</div>
             {!isConnected && (
               <div className="text-xs text-warning mb-2 flex items-center gap-1.5">
-                <AppIcon name="warning" size={13} /> {t("account.connectFirstHint")}
+                <AppIcon name="warning" size={13} /> {connectHint}
               </div>
             )}
             <p className="text-xs text-base-content/60 mb-3 leading-snug">

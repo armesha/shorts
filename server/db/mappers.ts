@@ -57,6 +57,8 @@ export function defaultClientLabel(projectId: string | null, index: number): str
 }
 
 export const rowToAccount = (r: Row): Account => ({
+  platform: r.platform === "instagram" || r.platform === "tiktok" ? r.platform : "youtube",
+  socialHandle: r.social_handle ?? null,
   id: r.id,
   userId: r.user_id ?? null,
   channelName: r.yt_channel_title || r.channel_name,
@@ -66,7 +68,7 @@ export const rowToAccount = (r: Row): Account => ({
   timezone: normalizeTimeZone(r.timezone),
   schedule: JSON.parse(r.schedule),
   template: r.template,
-  status: r.auth_error ? "needs_auth" : r.yt_refresh_token ? "connected" : r.status || "needs_auth",
+  status: r.auth_error ? "needs_auth" : (!r.platform || r.platform === "youtube") && r.yt_refresh_token ? "connected" : r.status || "needs_auth",
   enabled: !!r.enabled,
   uploadsToday: 0, // wired to history once the pipeline runs
   createdAt: r.created_at,

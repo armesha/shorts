@@ -264,6 +264,7 @@ export function makeBotStats(deps: BotStatsDeps) {
     let views = 0;
     let videos = 0;
     for (const a of accounts) {
+      if (a.platform && a.platform !== "youtube") continue;
       const s = db.latestSnapshot(a.id);
       if (!s) continue;
       subscribers += s.subscribers;
@@ -278,6 +279,7 @@ export function makeBotStats(deps: BotStatsDeps) {
   // block (public lifetime counters), each in its own blockquote.
   function summaryView(user: UserAuth, scope: Scope, days: number, note?: string): { text: string; keyboard: InlineKeyboard } {
     const accounts = visibleAccounts(user, scope);
+    const youtubeAccounts = accounts.filter((a) => !a.platform || a.platform === "youtube");
     const isAdmin = user.role === "admin";
     const scopeLabel = scope === "all" ? "Все каналы" : "Мои каналы";
     const homeBtn: InlineKeyboardButton = { text: "🏠 Меню", callback_data: "s:home" };
@@ -294,7 +296,7 @@ export function makeBotStats(deps: BotStatsDeps) {
     // Analytics: sum the stored per-day rows over the chosen window across the scope's channels.
     const range = analyticsRange(days);
     const an = { views: 0, watchMinutes: 0, gained: 0, lost: 0 };
-    for (const a of accounts) {
+    for (const a of youtubeAccounts) {
       const s = summarizeStored(a.id, range.from, range.to);
       an.views += s.views;
       an.watchMinutes += s.watchMinutes;
@@ -323,6 +325,7 @@ export function makeBotStats(deps: BotStatsDeps) {
         `Просмотры: ${bold(intFmt(t.views))}`,
         `Видео: ${intFmt(t.videos)}`,
       ]);
+    if (youtubeAccounts.length !== accounts.length) text += "\n\nМетрики показаны только для YouTube. Статистика Instagram и TikTok пока недоступна.";
     if (note) text += `\n\n${esc(note)}`;
 
     const rows: InlineKeyboardButton[][] = [
@@ -330,7 +333,7 @@ export function makeBotStats(deps: BotStatsDeps) {
       [{ text: "📋 Список каналов", callback_data: `s:list:${scope}:0` }],
     ];
     const controls: InlineKeyboardButton[] = [];
-    if (accounts.some((a) => a.status === "connected"))
+    if (youtubeAccounts.some((a) => a.status === "connected"))
       controls.push({ text: "🔄 Обновить все", callback_data: `s:rfall:${scope}:${days}` });
     if (toggle) controls.push(toggle);
     if (controls.length) rows.push(controls);
@@ -380,6 +383,11 @@ export function makeBotStats(deps: BotStatsDeps) {
   // Channel-card keyboard. Top row = source tabs (Analytics | Data API), like the tabs on the
   // website's /statistics; the period row only makes sense on the Analytics tab.
   function cardKeyboard(a: Account, scope: Scope, days: number, src: Src, canRefresh: boolean): InlineKeyboard {
+    if (a.platform && a.platform !== "youtube") {
+      const actions: InlineKeyboardButton[] = [{ text: "Настроить канал", url: siteUrl(`/accounts/${a.id}`) }];
+      if (a.socialHandle) actions.push({ text: a.platform === "instagram" ? "Instagram" : "TikTok", url: a.platform === "instagram" ? `https://www.instagram.com/${encodeURIComponent(a.socialHandle)}/` : `https://www.tiktok.com/@${encodeURIComponent(a.socialHandle)}` });
+      return { inline_keyboard: [actions, [{ text: "◀ Каналы", callback_data: `s:list:${scope}:0` }, { text: "🏠 Меню", callback_data: "s:home" }]] };
+    }
     const rows: InlineKeyboardButton[][] = [
       [
         { text: src === "an" ? "• 📈 Analytics" : "📈 Analytics", callback_data: `s:ch:${a.id}:${scope}:${days}:a` },
@@ -410,6 +418,17 @@ export function makeBotStats(deps: BotStatsDeps) {
       if (owner) lines.push(cap(`Владелец: ${owner.username}`));
     }
     if (note) lines.push(`\n⚠️ ${esc(note)}`);
+
+    if (a.platform && a.platform !== "youtube") {
+      lines.push(cap(a.platform === "instagram" ? "Instagram" : "TikTok"));
+      if (a.socialHandle) lines.push(`Аккаунт: ${esc(`@${a.socialHandle}`)}`);
+      lines.push(a.status === "connected" ? "Подключён" : "Нужно подключить канал через cookies на сайте.");
+      lines.push(`Автопостинг: ${a.enabled ? "включён" : "выключен"}`);
+      lines.push(`Слотов в день: ${a.schedule.length}`);
+      if (a.schedule.length) lines.push(`Время: ${esc(a.schedule.join(", "))}`);
+      lines.push("\nСтатистика этой площадки пока недоступна. Библиотека, расписание и история доступны на сайте.");
+      return { text: lines.join("\n"), keyboard: cardKeyboard(a,scope,days,src,false) };
+    }
 
     if (a.status !== "connected") {
       lines.push(`\n🚫 Канал не подключён к YouTube.`);
@@ -467,6 +486,7 @@ export function makeBotStats(deps: BotStatsDeps) {
   }
 
   async function refreshOne(a: Account): Promise<string | undefined> {
+    if (a.platform && a.platform !== "youtube") return "Статистика этой площадки пока недоступна.";
     if (a.status !== "connected") return undefined;
     const res = await refreshAccountStats({
       db,
@@ -643,7 +663,7 @@ export function makeBotStats(deps: BotStatsDeps) {
       if (action === "rfall") {
         const scope = normScope(user, parts[2]);
         const days = clampDays(parts[3]);
-        const targets = visibleAccounts(user, scope).filter((a) => a.status === "connected");
+        const targets = visibleAccounts(user, scope).filter((a) => a.status === "connected" && (!a.platform || a.platform === "youtube"));
         await ack(targets.length ? `Обновляю ${targets.length}…` : "Нет подключённых каналов");
         if (targets.length) {
           const failed = (await Promise.all(targets.map(refreshOne))).filter(Boolean).length;

@@ -42,6 +42,7 @@ import {
 import VideoPreviewModal from "./VideoPreviewModal";
 import NoticeToast from "./NoticeToast";
 import YouTubeConnectionCard from "./YouTubeConnectionCard";
+import SocialConnectionCard from "./SocialConnectionCard";
 import LibrarySection from "./LibrarySection";
 import SlotDeckAssignments from "./SlotDeckAssignments";
 
@@ -89,6 +90,8 @@ export default function AccountDetail() {
   const justConnected = params.get("connected") === "1";
   const connectError = params.get("error");
   const [account, setAccount] = useState<Account | null>(null);
+  const isYouTube = !account?.platform || account.platform === "youtube";
+  const platformName = account?.platform === "instagram" ? "Instagram" : account?.platform === "tiktok" ? "TikTok" : "YouTube";
   const [accountLoading, setAccountLoading] = useState(true);
   const [accountLoadError, setAccountLoadError] = useState<string | null>(null);
   const [channelName, setChannelName] = useState("");
@@ -167,9 +170,9 @@ export default function AccountDetail() {
   const ownerIsAdmin = ownerRole === "admin";
   const ownerIsSuperAdminAccount = account?.ownerIsSuperAdmin ?? (user?.isSuperAdmin === true && ownedByMeForLimits);
   const ownerTimeZone = ownedByMeForLimits ? user?.timezone || account?.timezone || "Europe/Prague" : account?.timezone || "Europe/Prague";
-  const scheduleWindow = ownerIsSuperAdminAccount ? shortsScheduleWindowsForLanguage(channelLang, new Date(), ownerTimeZone) : undefined;
+  const scheduleWindow = isYouTube && ownerIsSuperAdminAccount ? shortsScheduleWindowsForLanguage(channelLang, new Date(), ownerTimeZone) : undefined;
   const perChannelCap = accountDailySlotCap(ownerIsAdmin, ownerIsMgs);
-  const perGoogleKeyCap = googleKeyDailySlotCap(ownerIsSuperAdminAccount, ownerIsMgs);
+  const perGoogleKeyCap = isYouTube ? googleKeyDailySlotCap(ownerIsSuperAdminAccount, ownerIsMgs) : perChannelCap;
   const libraryCap = ownerIsAdmin || ownerIsMgs ? null : USER_CHANNEL_LIBRARY_CAP;
   const selectedSources = (sourceDecks.length ? sourceDecks : [lang]).filter(Boolean);
   // Остаток = СВОБОДНЫЕ (неиспользованные) карточки. Для пака — available (cards − used), не общее число.
@@ -203,8 +206,9 @@ export default function AccountDetail() {
 
   // Load the user's Google keys so a connected channel can show which key/project it posts under.
   useEffect(() => {
+    if (!account || !isYouTube) {setClients([]);return;}
     apiClient.youtubeClients().then((r) => setClients(r.clients)).catch(() => {});
-  }, []);
+  }, [account?.id, isYouTube]);
 
   useEffect(() => {
     let alive = true;
@@ -212,6 +216,7 @@ export default function AccountDetail() {
     if (slotDeckSaveTimer.current) clearTimeout(slotDeckSaveTimer.current);
     setSlotDeckSaveStatus("idle");
     setAccount(null);
+    setLastPosted(null);
     setAccountLoading(true);
     setAccountLoadError(null);
     apiClient
@@ -255,12 +260,13 @@ export default function AccountDetail() {
     apiClient
       .accounts()
       .then((accs) => {
-        const myKey = accs.find((a) => a.id === Number(id))?.oauthClientId ?? null;
+        const current = accs.find((a) => a.id === Number(id));
+        const myKey = current?.oauthClientId ?? null;
         const others = accs.filter((a) => a.id !== Number(id));
         // Per-key daily cap: only channels sharing THIS channel's Google key count toward its daily cap.
-        const sameKey = myKey == null ? [] : others.filter((a) => (a.oauthClientId ?? null) === myKey);
+        const sameKey = (current?.platform && current.platform !== "youtube") || myKey == null ? [] : others.filter((a) => (!a.platform || a.platform === "youtube") && (a.oauthClientId ?? null) === myKey);
         setOtherSlots(sameKey.reduce((s, a) => s + (a.schedule?.length ?? 0), 0));
-        setOtherTimes(others.flatMap((a) => a.schedule ?? []));
+        setOtherTimes(others.filter(a => (a.platform || "youtube") === (current?.platform || "youtube")).flatMap((a) => a.schedule ?? []));
       })
       .catch(() => {});
     return () => {
@@ -277,6 +283,24 @@ export default function AccountDetail() {
     void reloadVideos(page, sort, { skipReadiness: !isNewAccount });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, page, sort]);
+
+  useEffect(() => {
+    if (isYouTube || !account?.id) return;
+    let alive = true;
+    const timer = window.setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      void Promise.all([
+        apiClient.videosPage(id!, {kind: "regular", page, pageSize: LIBRARY_PAGE_SIZE, sort}),
+        apiClient.accountReadiness(id!),
+        apiClient.account(id!),
+      ]).then(([library, freshReadiness, freshAccount]) => {
+        if (!alive) return;
+        setVideoPage(library);setVideos(library.items);setReadiness(freshReadiness);setAccount(freshAccount);
+        if (library.page !== page) setPage(library.page);
+      }).catch(() => {});
+    }, 15_000);
+    return () => {alive = false;window.clearInterval(timer);};
+  }, [account?.id, id, isYouTube, page, sort]);
 
   // Когда фоновая генерация (глобальная очередь) завершилась для ЭТОГО канала — обновить библиотеку.
   // Остатки свободных карточек (деки/паки) перечитываем всегда — они per-user, не per-channel, и
@@ -352,7 +376,7 @@ export default function AccountDetail() {
       const cleanSources = [...new Set((latestSources.length ? latestSources : [lang]).filter(Boolean))];
       const sourceLangs = [...new Set(cleanSources.map(contentLang).filter(Boolean))];
       const effectiveChannelLang = sourceLangs.length === 1 ? sourceLangs[0] : channelLangRef.current || channelLang;
-      const effectiveTimes = ownerIsSuperAdminAccount ? cleanSuperAdminScheduleTimes(times, effectiveChannelLang, ownerTimeZone) : times;
+      const effectiveTimes = isYouTube && ownerIsSuperAdminAccount ? cleanSuperAdminScheduleTimes(times, effectiveChannelLang, ownerTimeZone) : times;
       if (effectiveTimes.length !== times.length) {
         setTimes(effectiveTimes);
         notify(`Для каналов главного админа используются языковые Shorts-окна: ${describeShortsSchedulePolicy(effectiveChannelLang)}.`, "info", t("account.scheduleLimitToastTitle"));
@@ -424,6 +448,7 @@ export default function AccountDetail() {
 
   // Decide how to connect: 0 keys → prompt; 1 key → use it; >1 → let the user pick which Google key.
   async function startConnect() {
+    if (!isYouTube) { document.getElementById("channel-connection")?.scrollIntoView({behavior: "smooth", block: "start"});return; }
     if (!ownedByMe) {
       connect(); // admin connecting someone else's channel — let the server resolve the owner's key
       return;
@@ -445,6 +470,7 @@ export default function AccountDetail() {
   }
 
   async function connect(clientId?: number) {
+    if (!isYouTube) return;
     setKeyChoices(null);
     console.log("[привязка] старт: запрашиваю ссылку авторизации Google", { accountId: id, clientId });
     notify(t("account.openingGoogleAuth"), "info");
@@ -463,7 +489,8 @@ export default function AccountDetail() {
     try {
       const v = videos.find((x) => x.id === vid);
       const r = await apiClient.postVideoNow(vid);
-      if (r.url) setLastPosted({ title: v?.title ?? t("account.videoFallbackTitle"), url: r.url });
+      if (r.queued) notify("Ролик добавлен в очередь отправки. Результат появится в истории канала.", "success");
+      else if (r.url) setLastPosted({ title: v?.title ?? t("account.videoFallbackTitle"), url: r.url });
       await reloadVideos(); // posted video is removed server-side → disappears from the list
     } catch (e) {
       notify(t("account.postFailed") + " " + String(e), "error");
@@ -755,9 +782,13 @@ export default function AccountDetail() {
       : readiness?.status === "warning"
         ? t("account.readinessWarning")
         : t("account.readinessBlocked");
-  const readinessReason = (code: string) => t(`account.readinessReason.${code}`);
+  const readinessReason = (code: string) => {
+    if (!isYouTube && (code === "not_connected" || code === "youtube_not_connected")) return `Подключите ${platformName}`;
+    if (code === "social_not_connected") return `Подключите ${platformName}`;
+    return t(`account.readinessReason.${code}`);
+  };
   const readinessAction = (action: string) => {
-    if (action === "connect_youtube") return t("account.readinessActionConnect");
+    if (action === "connect_youtube" || action === "connect_social") return `Подключить ${platformName}`;
     if (action === "set_schedule") return t("account.readinessActionSchedule");
     if (action === "fix_sources") return t("account.readinessActionSources");
     if (action === "generate_or_upload") return t("account.readinessActionContent");
@@ -810,7 +841,7 @@ export default function AccountDetail() {
       </div>
     );
   }
-  const youtubeChannelUrl = account.ytChannelId ? `https://www.youtube.com/channel/${account.ytChannelId}` : null;
+  const channelProfileUrl = isYouTube ? account.ytChannelId ? `https://www.youtube.com/channel/${account.ytChannelId}` : null : account.socialHandle ? account.platform === "instagram" ? `https://www.instagram.com/${encodeURIComponent(account.socialHandle)}/` : `https://www.tiktok.com/@${encodeURIComponent(account.socialHandle)}` : null;
   const avatarNode = account.avatar ? (
     <img
       src={account.avatar}
@@ -832,18 +863,18 @@ export default function AccountDetail() {
 
       <header className="flex items-start justify-between">
         <div className="flex items-center gap-3 min-w-0">
-          {youtubeChannelUrl ? (
+          {channelProfileUrl ? (
             <a
-              href={youtubeChannelUrl}
+              href={channelProfileUrl}
               target="_blank"
               rel="noreferrer"
-              title={t("account.openYouTubeChannel")}
-              aria-label={t("account.openYouTubeChannel")}
+              title={`Открыть ${platformName}`}
+              aria-label={`Открыть ${platformName}`}
               className="relative group shrink-0 rounded-full"
             >
               {avatarNode}
               <span className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/45 flex items-center justify-center text-white text-[10px] font-medium opacity-0 group-hover:opacity-100 transition">
-                YouTube
+                {platformName}
               </span>
             </a>
           ) : (
@@ -851,7 +882,7 @@ export default function AccountDetail() {
           )}
           <div className="min-w-0">
             <h1 className="text-2xl font-bold truncate">{channelName || t("account.channelFallback")}</h1>
-            <p className="text-base-content/60">{t("account.headerSubtitle")}</p>
+            <p className="text-base-content/60">{platformName}{account.socialHandle ? ` · @${account.socialHandle}` : ""} · {t("account.headerSubtitle")}</p>
           </div>
         </div>
         {account.authError ? (
@@ -864,6 +895,24 @@ export default function AccountDetail() {
           <span className="badge badge-warning">{t("account.needsAuth")}</span>
         )}
       </header>
+
+      <div id="channel-connection" className="scroll-mt-20">
+        {isYouTube ? <YouTubeConnectionCard
+          account={account}
+          clients={clients}
+          boundClient={boundClient}
+          keyChoices={keyChoices}
+          justConnected={justConnected}
+          startConnect={startConnect}
+          connect={connect}
+          setKeyChoices={setKeyChoices}
+          t={t}
+        /> : <SocialConnectionCard key={account.id} account={account} onChange={async () => {
+          const updated = await apiClient.account(id!);
+          setAccount(updated);setChannelName(current => current === account.channelName ? updated.channelName : current);
+          await reloadVideos();
+        }} notify={notify}/>}
+      </div>
 
       {readiness && (
         <section className="card bg-base-100 border border-base-300">
@@ -878,7 +927,7 @@ export default function AccountDetail() {
               </div>
               <div className="flex flex-wrap gap-2">
                 {readiness.actions.map((action) =>
-                  action === "connect_youtube" ? (
+                  action === "connect_youtube" || action === "connect_social" ? (
                     <button key={action} className="btn btn-sm btn-primary" onClick={startConnect}>
                       {readinessAction(action)}
                     </button>
@@ -967,7 +1016,7 @@ export default function AccountDetail() {
         </section>
       )}
 
-      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.85fr)] gap-6 items-start">
+      <div className="grid grid-cols-1 gap-6 items-start">
       <section id="channel-settings" className="card bg-base-100 border border-base-300">
         <div className="card-body gap-5">
           <label className="form-control">
@@ -1000,13 +1049,13 @@ export default function AccountDetail() {
             <div className="flex items-center justify-between mb-2 gap-2">
               <span className="label-text">{t("account.scheduleLabel")}</span>
               <span className={`text-xs ${dayUsed > perGoogleKeyCap ? "text-error font-medium" : "text-base-content/50"}`}>
-                {t("account.perDayAllChannels", { n: dayUsed, limit: perGoogleKeyCap })}
+                {isYouTube ? t("account.perDayAllChannels", { n: dayUsed, limit: perGoogleKeyCap }) : `${times.length}/${perChannelCap} публикаций в день`}
               </span>
             </div>
 
             {!isConnected && (
               <div className="text-xs text-warning mb-2 flex items-center gap-1.5">
-                <AppIcon name="warning" size={13} /> {t("account.connectFirstHint")}
+                <AppIcon name="warning" size={13} /> {isYouTube ? t("account.connectFirstHint") : `Сначала подтвердите вход в ${platformName} через cookies — после этого будут доступны расписание и отправка.`}
               </div>
             )}
 
@@ -1109,7 +1158,7 @@ export default function AccountDetail() {
                     notify(t("account.invalidTime"), "error");
                     return;
                   }
-                  if (ownerIsSuperAdminAccount && !isSuperAdminScheduleTimeAllowed(v, channelLang, ownerTimeZone)) {
+                  if (isYouTube && ownerIsSuperAdminAccount && !isSuperAdminScheduleTimeAllowed(v, channelLang, ownerTimeZone)) {
                     notify(`Время вне языкового Shorts-окна: ${describeShortsSchedulePolicy(channelLang)}.`, "error", t("account.scheduleLimitToastTitle"));
                     return;
                   }
@@ -1152,17 +1201,7 @@ export default function AccountDetail() {
         </div>
       </section>
 
-      <YouTubeConnectionCard
-        account={account}
-        clients={clients}
-        boundClient={boundClient}
-        keyChoices={keyChoices}
-        justConnected={justConnected}
-        startConnect={startConnect}
-        connect={connect}
-        setKeyChoices={setKeyChoices}
-        t={t}
-      />
+
       </div>
 
       <LibrarySection

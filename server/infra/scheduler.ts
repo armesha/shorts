@@ -129,6 +129,7 @@ export interface SchedulerOpts {
   log: (msg: string) => void;
   /** Shared SSE/Telegram notifier — used to alert the owner when a channel's token dies mid-schedule. */
   notifier: Notifier;
+  enqueueSocial?: (account: Account, video: Video, runAt: string) => unknown | Promise<unknown>;
 }
 
 /**
@@ -139,16 +140,15 @@ export interface SchedulerOpts {
 export function startScheduler(opts: SchedulerOpts) {
   const fired = new Set<string>(); // accountId|HH:MM|YYYY-MM-DD — prevents double-firing
 
-  const task = cron.schedule("* * * * *", async () => {
-    metrics.noteSchedulerTick(); // heartbeat: proves the per-minute cron is alive
-    const now = new Date();
+  const tick = async (now = new Date()) => {
+    metrics.noteSchedulerTick();
 
     for (const acc of opts.db.listAccounts()) {
       const owner = acc.userId != null ? opts.db.getUserById(acc.userId) : null;
       const { day, hhmm, timeZone } = timePartsInTimeZone(now, owner?.timezone || acc.timezone);
       if (!acc.enabled) continue;
-      const token = opts.db.getRefreshToken(acc.id);
-      if (!token) continue; // channel not connected
+      const token = acc.platform === "youtube" ? opts.db.getRefreshToken(acc.id) : null;
+      if (acc.platform === "youtube" ? !token : acc.status !== "connected") continue;
       if (!acc.schedule.includes(hhmm)) continue;
 
       const key = `${acc.id}|${hhmm}|${day}`;
@@ -182,6 +182,13 @@ export function startScheduler(opts: SchedulerOpts) {
           opts.log(`[sched] account ${acc.id}: нет роликов в библиотеке для паков «${selection.checkedDecks.join(", ")}» — нечего постить`);
           continue;
         }
+        if (acc.platform !== "youtube") {
+          if (!opts.enqueueSocial || acc.userId == null) continue;
+          await opts.enqueueSocial(acc, lib, now.toISOString());
+          opts.log(`[sched] account ${acc.id}: ролик ${lib.id} добавлен в очередь ${acc.platform}`);
+          continue;
+        }
+        if (!token) continue;
         // Each channel posts with the SPECIFIC Google key it was connected with (per-channel binding).
         const creds = opts.credsForAccount(acc);
         if (!creds) {
@@ -294,11 +301,12 @@ export function startScheduler(opts: SchedulerOpts) {
         const reason = ytErrorReason(err);
         // Dead/revoked token → flag the channel so /channels shows "needs reconnect" (not just a history line).
         // On the first failure (healthy→broken edge) alert the owner once: inbox + Telegram DM if linked.
-        if (isYtAuthError(err) && opts.db.markAuthError(acc.id, reason, new Date().toISOString()))
+        if (acc.platform === "youtube" && isYtAuthError(err) && opts.db.markAuthError(acc.id, reason, new Date().toISOString()))
           void opts.notifier.notifyChannelDisconnected(acc, reason);
         opts.db.addHistory({
           accountId: acc.id,
           title: "ошибка автозагрузки",
+          platform: acc.platform,
           status: "failed",
           error: reason,
           oauthClientId: acc.oauthClientId,
@@ -306,9 +314,10 @@ export function startScheduler(opts: SchedulerOpts) {
         opts.log(`[sched] account ${acc.id} FAILED: ${String(err)}`);
       }
     }
-  });
+  };
+  const task = cron.schedule("* * * * *", () => tick());
 
   opts.log("[sched] scheduler started — checking every minute");
   // Returned so graceful shutdown can stop firing new posts before draining.
-  return { stop: () => task.stop() };
+  return { stop: () => task.stop(), tick };
 }

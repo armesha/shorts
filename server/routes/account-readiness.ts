@@ -90,6 +90,7 @@ export function registerAccountReadinessRoutes(app: FastifyInstance, db: Db, dep
     const runwayDays = postsPerDay > 0 ? queuedVideos / postsPerDay : null;
     const blockers: string[] = [];
     const warnings: string[] = [];
+    const platform = account.platform ?? "youtube";
 
     if (account.status !== "connected") blockers.push("not_connected");
     if (account.authError) blockers.push("auth_error");
@@ -117,7 +118,9 @@ export function registerAccountReadinessRoutes(app: FastifyInstance, db: Db, dep
 
     const level: ReadinessLevel = blockers.length ? "blocked" : warnings.length ? "warning" : "ready";
     const actions = unique([
-      ...(blockers.includes("not_connected") || blockers.includes("auth_error") ? ["connect_youtube"] : []),
+      ...(blockers.includes("not_connected") || blockers.includes("auth_error")
+        ? [platform === "youtube" ? "connect_youtube" : "connect_social"]
+        : []),
       ...(blockers.includes("no_schedule") ? ["set_schedule"] : []),
       ...(blockers.includes("no_sources") || blockers.includes("source_language_mismatch") ? ["fix_sources"] : []),
       ...(blockers.includes("no_queue") || warnings.includes("low_runway") ? ["generate_or_upload"] : []),
@@ -125,6 +128,7 @@ export function registerAccountReadinessRoutes(app: FastifyInstance, db: Db, dep
     ]);
 
     return {
+      platform,
       status: level,
       blockers: unique(blockers),
       warnings: unique(warnings),

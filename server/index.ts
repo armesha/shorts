@@ -186,6 +186,7 @@ if (!credsFileExists(credsPath())) {
 // (its refresh token's client_id must match). Full per-user isolation — nobody inherits anyone else's
 // key. The admin's first key is seeded once from the legacy global file in the migration above.
 function accountCreds(account: Account): ClientCreds | null {
+  if (account.platform !== "youtube") return null;
   const json = db.oauthClientSecretForAccount(account);
   if (!json) return null;
   try {
@@ -350,6 +351,7 @@ const deps = makeRouteDeps({
 
 // ---- Register every route module (composition only — handlers live in routes/) ----
 // Self-service password change (logic in a separate file → minimal footprint in this shared module).
+const socialService = createSocialService(db, resolve(process.cwd(), "data/social-private"), resolve(process.cwd(), base.outputDir), createSocialBrowser(base.chromePath));
 registerPasswordRoutes(app, db);
 registerPsychCardsRoutes(app, db);
 registerPacksRoutes(app, db);
@@ -368,12 +370,12 @@ registerAuthRoutes(app, db, deps);
 registerFilesRoutes(app, db, deps);
 registerSettingsKeysRoutes(app, db, { ...deps, chromePath: base.chromePath });
 registerAdminRoutes(app, db, deps);
-registerAccountsRoutes(app, db, deps);
+registerAccountsRoutes(app, db, deps, socialService);
 registerStatsRoutes(app, db, deps);
 registerSignalsRoutes(app, db, deps);
 registerNotificationsRoutes(app, db, deps);
 registerYouTubeOAuthRoutes(app, db, deps);
-registerVideosRoutes(app, db, deps);
+registerVideosRoutes(app, db, deps, socialService);
 registerGenQueueRoutes(app, db, deps);
 registerStudioGalleryRoutes(app, db, deps);
 registerClipDemosRoutes(app, db, deps);
@@ -385,8 +387,7 @@ registerExamplesRoutes(app, db, deps);
 registerAudioRoutes(app, db, deps);
 registerMemesRoutes(app, deps);
 registerIdeasRoutes(app, db, deps);
-const socialService = createSocialService(db, resolve(process.cwd(), "data/social-private"), resolve(process.cwd(), base.outputDir), createSocialBrowser(base.chromePath));
-registerSocialRoutes(app, socialService);
+registerSocialRoutes(app, socialService, deps);
 registerSzzRoutes(app);
 registerCircleEditorRoutes(app, db);
 
@@ -399,6 +400,7 @@ app
       db,
       outputDir: resolve(process.cwd(), base.outputDir),
       credsForAccount: (account) => accountCreds(account),
+      enqueueSocial: (account, video, runAt) => socialService.enqueueForAccount(account.userId!, account.id, video.id, video.title, runAt),
       redirectUri: REDIRECT_URI,
       log: (m) => app.log.info(m),
       notifier, // alert the channel owner (inbox + Telegram) when a token dies mid-schedule

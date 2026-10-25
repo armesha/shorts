@@ -140,7 +140,7 @@ export function deckMethods(db: DatabaseSync) {
       return n;
     },
     scheduleSlotsForKey(oauthClientId: number, excludeAccountId?: number): number {
-      const rows = db.prepare("SELECT id, schedule FROM accounts WHERE oauth_client_id = ?").all(oauthClientId) as Row[];
+      const rows = db.prepare("SELECT id, schedule FROM accounts WHERE oauth_client_id = ? AND platform = 'youtube'").all(oauthClientId) as Row[];
       let n = 0;
       for (const r of rows) {
         if (excludeAccountId != null && (r.id as number) === excludeAccountId) continue;

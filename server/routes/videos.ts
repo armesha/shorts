@@ -62,6 +62,7 @@ const MANUAL_VIDEO_UPLOAD_WINDOW_MS = 60 * 60 * 1000;
 type PostLibraryVideoSuccess = {
   ok: true;
   youtubeId: string | null;
+  queued?: boolean;
   url: string | null;
   scheduled: boolean;
   removed: boolean;
@@ -95,7 +96,7 @@ export function canPrepareLibraryForAccount(account: Pick<Account, "status">, re
   return account.status === "connected" || requesterIsSuperAdmin;
 }
 
-export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
+export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDeps, social?: import("../services/social/store.ts").SocialService) {
   const {
     accessibleAccount,
     accountOwnerId,
@@ -130,6 +131,19 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     v: Video,
     opts: { publishAt?: string | null; rateLimit?: boolean } = {},
   ): Promise<PostLibraryVideoResult> => {
+    if (acc.platform !== "youtube") {
+      if (!social || acc.userId == null) return {ok:false,status:503,error:"Отправка временно недоступна."};
+      if (acc.status !== "connected") return {ok:false,status:400,error:"Сначала подключите канал к выбранной площадке."};
+      if (!canPostVideoDeckForAccount(v.deck, accountSourceDecks(acc))) return {ok:false,status:400,error:"Пак ролика не выбран у канала."};
+      if (opts.rateLimit !== false && !isAdminReq(req) && !checkRateLimit(`user:${uid(req)}:post-now:window`, POST_NOW_LIMIT).ok) return {ok:false,status:429,error:"Слишком частые публикации — подождите немного."};
+      try {
+        social.enqueueForAccount(acc.userId, acc.id, v.id, v.title, opts.publishAt ?? new Date().toISOString());
+        return {ok:true,youtubeId:null,url:null,scheduled:true,removed:false,queued:true};
+      } catch (error) {
+        const failure=error as {statusCode?:number;message?:string};
+        return {ok:false,status:failure.statusCode ?? 400,error:failure.message ?? "Не удалось добавить ролик в очередь."};
+      }
+    }
     const token = db.getRefreshToken(v.accountId);
     if (!token) return { ok: false, status: 400, error: "Канал не подключён к YouTube" };
     // Токен в БД есть, но помечен мёртвым (auth_error) → не пытаемся выкладывать (был бы 500 каждый раз):
@@ -636,7 +650,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
       channelName: string;
       videoId?: number;
       title?: string;
-      status: "published" | "failed" | "skipped";
+      status: "published" | "queued" | "failed" | "skipped";
       reason?: string;
       youtubeId?: string | null;
       url?: string | null;
@@ -649,8 +663,8 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
         continue;
       }
       const token = db.getRefreshToken(acc.id);
-      if (!token) {
-        items.push({ accountId: acc.id, channelName, status: "skipped", reason: "Канал не подключён к YouTube." });
+      if (acc.status !== "connected" || (acc.platform === "youtube" && !token)) {
+        items.push({ accountId: acc.id, channelName, status: "skipped", reason: "Канал не подключён к площадке." });
         continue;
       }
       if (acc.authError) {
@@ -674,6 +688,8 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
           youtubeId: result.youtubeId,
           url: result.url,
         });
+      } else if (result.ok && result.queued) {
+        items.push({accountId:acc.id,channelName,videoId:video.id,title:video.title,status:"queued"});
       } else if (result.ok) {
         items.push({
           accountId: acc.id,
@@ -702,6 +718,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
       total: items.length,
       attempted: items.filter((item) => item.videoId != null).length,
       published: items.filter((item) => item.status === "published").length,
+      queued: items.filter((item) => item.status === "queued").length,
       skipped: items.filter((item) => item.status === "skipped").length,
       failed: items.filter((item) => item.status === "failed").length,
       items,

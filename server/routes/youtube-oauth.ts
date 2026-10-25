@@ -19,6 +19,7 @@ export function registerYouTubeOAuthRoutes(app: FastifyInstance, db: Db, deps: R
     if (!accountId) return reply.code(400).send({ error: "accountId required" });
     const acc = accessibleAccount(req, reply, accountId);
     if (!acc) return;
+    if (acc.platform && acc.platform !== "youtube") return reply.code(400).send({ error: "Для этого канала используйте подключение через cookies." });
     const ownerId = accountOwnerId(req, acc);
     const keys = db.listOAuthClients(ownerId);
     if (!keys.length) return reply.code(400).send({ error: "Сначала добавьте свой Google-ключ в Настройках" });
@@ -70,6 +71,7 @@ export function registerYouTubeOAuthRoutes(app: FastifyInstance, db: Db, deps: R
     // No session here (Google redirects the browser) — resolve the owner's key from the state/account.
     const acc = db.getAccount(accountId);
     if (!acc || acc.userId == null) return fail("account", `Канал #${accIdStr} не найден или без владельца`);
+    if (acc.platform && acc.platform !== "youtube") return fail("platform", "Этот канал подключается через cookies, а не Google OAuth.");
     // Decide the key id: from state, else the channel's existing binding, else (legacy link) the owner's
     // newest key. We ALWAYS bind on success below, so a connected channel is never left unbound (which would
     // later make accountCreds guess a possibly-wrong key).

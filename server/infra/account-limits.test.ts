@@ -77,6 +77,16 @@ test("allows super admin up to 100 scheduled videos across one Google key", () =
   assert.match(dailyScheduleLimitError(11, 90, true, true) ?? "", /доступно 10/);
 });
 
+test("social schedules keep channel caps without sharing Google's upload quota", () => {
+  for (const platform of ["instagram", "tiktok"] as const) {
+    assert.equal(dailyScheduleLimitError(5, 100, false, false, false, platform), null);
+    assert.equal(dailyScheduleLimitError(20, 100, true, true, false, platform), null);
+    assert.match(dailyScheduleLimitError(6, 0, false, false, false, platform) ?? "", /Максимум 5 видео/);
+    assert.match(dailyScheduleLimitError(21, 0, true, true, false, platform) ?? "", /Максимум 20 видео/);
+  }
+  assert.match(dailyScheduleLimitError(5, 100, false, false, false, "youtube") ?? "", /Google-ключ/);
+});
+
 test("regular users can queue 10 videos at once and keep up to 50 videos in a channel library", () => {
   assert.equal(USER_BATCH_VIDEO_CAP, 10);
   assert.equal(USER_CHANNEL_LIBRARY_CAP, 50);

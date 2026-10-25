@@ -107,7 +107,7 @@ function CreatorStandalone() {
     <div className="creator-shell min-h-screen bg-base-200 text-base-content">
       <header className="creator-liquid-header sticky top-0 z-30">
         <div className="creator-liquid-row">
-          <a href="/social" className="btn btn-sm btn-ghost">Instagram и TikTok</a>
+          <a href="/channels" className="btn btn-sm btn-ghost">Каналы</a>
           <div className="creator-liquid-pill creator-liquid-actions h-11 px-2 flex items-center gap-2">
             <a href="/" className="btn btn-ghost btn-sm btn-square" title={t("creator.backToApp")} aria-label={t("creator.backToApp")}>
               <AppIcon name="home" size={16} />

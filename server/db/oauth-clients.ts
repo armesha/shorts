@@ -63,6 +63,7 @@ export function oauthMethods(db: DatabaseSync) {
      * (legacy) channel falls back to the owner's most-recent key.
      */
     oauthClientSecretForAccount(account: Account): string | null {
+      if (account.platform !== "youtube") return null;
       if (account.oauthClientId != null) {
         const r = db.prepare("SELECT client_secret_json FROM oauth_clients WHERE id = ?").get(account.oauthClientId) as Row | undefined;
         return (r?.client_secret_json as string) ?? null;
