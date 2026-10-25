@@ -4,7 +4,7 @@ const templates = [
   {
     id: "montage",
     name: "Нарезка видео",
-    to: "/templates/montage",
+    to: "/cutting",
     Icon: Film,
   },
   { id: "maps", name: "Карты", to: "/templates/maps", Icon: Map },

@@ -1,5 +1,4 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
 import { ArrowDownToLine, ArrowUpRight, Scissors, X } from "lucide-react";
 import { get, send } from "../lib/api/http";
 
@@ -170,9 +169,6 @@ export default function VideoCutting() {
             затем добавит ваш баннер.
           </p>
         </div>
-        <Link to="/templates/montage" className="btn btn-ghost btn-sm">
-          Ручной монтаж <ArrowUpRight size={16} />
-        </Link>
       </header>
       {loadError && (
         <div
