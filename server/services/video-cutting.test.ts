@@ -40,6 +40,7 @@ const request = () =>
     url: "https://youtu.be/iJH6dAG9NVk",
     mode: "manual",
     count: 2,
+    sponsorBlock: false,
   });
 
 test("video links are canonicalized and cannot address local or arbitrary hosts", () => {

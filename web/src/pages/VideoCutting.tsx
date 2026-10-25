@@ -19,6 +19,7 @@ type Job = {
     count?: number;
     bannerId: string | null;
     subtitles: boolean;
+    sponsorBlock?: boolean;
   };
   status:
     | "queued"
@@ -36,6 +37,11 @@ type Job = {
   plan?: Part[];
   clips: Clip[];
   error?: string;
+  sponsorBlock?: {
+    status: "disabled" | "checking" | "removed" | "not_found" | "unavailable";
+    segments: { start: number; end: number }[];
+    removedSeconds: number;
+  };
 };
 type Workspace = { jobs: Job[]; banners: { id: string; name: string }[] };
 const finished = (job: Job) =>
@@ -56,6 +62,7 @@ export default function VideoCutting() {
   const [count, setCount] = useState("5");
   const [bannerId, setBannerId] = useState("");
   const [subtitles, setSubtitles] = useState(true);
+  const [sponsorBlock, setSponsorBlock] = useState(true);
   const [selected, setSelected] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [cancelling, setCancelling] = useState(false);
@@ -107,6 +114,7 @@ export default function VideoCutting() {
         ...(mode === "manual" ? { count: Number(count) } : {}),
         bannerId: bannerId || null,
         subtitles,
+        sponsorBlock,
       });
       setWorkspace((current) => ({
         ...current,
@@ -147,6 +155,7 @@ export default function VideoCutting() {
     setCount(String(job.input.count || 5));
     setBannerId(job.input.bannerId || "");
     setSubtitles(job.input.subtitles);
+    setSponsorBlock(job.input.sponsorBlock ?? true);
     setError("");
     document.getElementById("cutting-url")?.focus();
   }
@@ -297,6 +306,27 @@ export default function VideoCutting() {
             <input
               type="checkbox"
               className="checkbox checkbox-primary checkbox-sm"
+              checked={sponsorBlock}
+              onChange={(event) => setSponsorBlock(event.target.checked)}
+            />
+            Удалять рекламу (SponsorBlock)
+          </label>
+          <p className="text-xs leading-relaxed text-base-content/70">
+            Удаляются только спонсорские вставки с подходящей{" "}
+            <a
+              href="https://sponsor.ajay.app/"
+              target="_blank"
+              rel="noreferrer"
+              className="link"
+            >
+              разметкой SponsorBlock
+            </a>
+            . Если разметки нет, видео остаётся без изменений.
+          </p>
+          <label className="flex cursor-pointer items-center gap-3 text-sm">
+            <input
+              type="checkbox"
+              className="checkbox checkbox-primary checkbox-sm"
               checked={subtitles}
               onChange={(event) => setSubtitles(event.target.checked)}
             />
@@ -406,6 +436,19 @@ export default function VideoCutting() {
                     max={100}
                     aria-label="Ход обработки"
                   />
+                )}
+                {job.sponsorBlock && (
+                  <p className="text-xs leading-relaxed text-base-content/70">
+                    {job.sponsorBlock.status === "removed"
+                      ? `SponsorBlock: удалено рекламы — ${job.sponsorBlock.removedSeconds.toFixed(1)} с. Участков: ${job.sponsorBlock.segments.length}. Тайминги плана — после удаления рекламы.`
+                      : job.sponsorBlock.status === "not_found"
+                        ? "SponsorBlock: подходящая разметка рекламы не найдена."
+                        : job.sponsorBlock.status === "unavailable"
+                          ? "SponsorBlock недоступен. Удаление рекламы не выполнено."
+                          : job.sponsorBlock.status === "disabled"
+                            ? "Удаление рекламы выключено."
+                            : "Проверяем разметку SponsorBlock…"}
+                  </p>
                 )}
                 {(job.status === "failed" || job.status === "cancelled") && (
                   <button

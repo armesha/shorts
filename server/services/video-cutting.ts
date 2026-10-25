@@ -14,6 +14,17 @@ import { extname, resolve } from "node:path";
 import { homedir } from "node:os";
 import { setTimeout as delay } from "node:timers/promises";
 import type { Db } from "../db.ts";
+import {
+  fetchSponsorBlock,
+  sponsorBlockResult,
+  sponsorTimeline,
+  cleanSponsorWords,
+  cuttingSourceRanges,
+  type SponsorBlockResult,
+  type SponsorLookup,
+  type CutTimeline,
+  type SourceRange,
+} from "./video-cutting-sponsorblock.ts";
 import { RateLimitError, withGlobalRenderSlot } from "../infra/rate-limits.ts";
 import {
   circleAdvertiserSource,
@@ -42,7 +53,11 @@ export type CutStatus =
   | "completed"
   | "failed"
   | "cancelled";
-export type CutClip = CutPart & { videoUrl: string; duration: number };
+export type CutClip = CutPart & {
+  videoUrl: string;
+  duration: number;
+  sourceRanges?: SourceRange[];
+};
 export type CutJob = {
   id: string;
   userId: number;
@@ -54,6 +69,8 @@ export type CutJob = {
   updatedAt: string;
   title?: string;
   duration?: number;
+  originalDuration?: number;
+  sponsorBlock?: SponsorBlockResult;
   plan?: CutPart[];
   clips: CutClip[];
   error?: string;
@@ -230,6 +247,7 @@ export async function renderCuttingPart(input: {
   banner?: { item: CircleAdvertiser; file: string };
   signal?: AbortSignal;
   run?: ProcessRunner;
+  timeline?: CutTimeline[];
 }) {
   const run = input.run || runCuttingProcess;
   const duration = input.part.end - input.part.start;
@@ -246,25 +264,44 @@ export async function renderCuttingPart(input: {
     "-y",
     "-filter_complex_threads",
     "1",
-    "-reinit_filter",
-    "0",
-    "-threads",
-    "2",
-    "-ss",
-    String(input.part.start),
-    "-t",
-    String(duration),
-    "-i",
-    input.source,
   ];
+  const ranges = cuttingSourceRanges(
+    input.part.start,
+    input.part.end,
+    input.timeline,
+  );
+  if (!ranges.length)
+    throw new Error("В части не осталось видео после удаления рекламы.");
+  for (const range of ranges)
+    args.push(
+      "-reinit_filter",
+      "0",
+      "-threads",
+      "2",
+      "-ss",
+      String(range.start),
+      "-t",
+      String(range.end - range.start),
+      "-i",
+      input.source,
+    );
   if (input.banner) {
     if (/\.(png|jpe?g|webp)$/i.test(input.banner.file)) args.push("-loop", "1");
     else args.push("-stream_loop", "-1");
     if (extname(input.banner.file) === ".webm") args.push("-c:v", "libvpx-vp9");
     args.push("-i", input.banner.file);
   }
-  let graph =
-    "[0:v]setpts=PTS-STARTPTS,fps=30,split=2[bgsrc][fgsrc];" +
+  let graph = ranges
+    .map(
+      (range, index) =>
+        `[${index}:v]trim=duration=${range.end - range.start},setpts=PTS-STARTPTS,setsar=1[v${index}];[${index}:a]atrim=duration=${range.end - range.start},asetpts=PTS-STARTPTS[a${index}];`,
+    )
+    .join("");
+  graph +=
+    ranges.map((_, index) => `[v${index}][a${index}]`).join("") +
+    `concat=n=${ranges.length}:v=1:a=1[cleanv][cleana];`;
+  graph +=
+    "[cleanv]fps=30,split=2[bgsrc][fgsrc];" +
     "[bgsrc]scale=192:342:force_original_aspect_ratio=increase,crop=192:342,gblur=sigma=8,eq=brightness=-0.15:saturation=0.6,scale=1080:1920[bg];" +
     "[fgsrc]scale=1080:608:force_original_aspect_ratio=decrease,pad=1080:608:(ow-iw)/2:(oh-ih)/2,setsar=1[fg];" +
     "[bg][fg]overlay=0:656:shortest=1[framed];";
@@ -276,7 +313,7 @@ export async function renderCuttingPart(input: {
       item.transparent !== false
         ? "format=rgba"
         : `format=rgba,chromakey=${(item.chromaColor || "#00ff00").replace("#", "0x")}:${item.similarity ?? 0.18}:${item.blend ?? 0.08}`;
-    graph += `[1:v]${crop}scale=1012:292,${alpha},fps=30,setpts=PTS-STARTPTS[banner];[framed][banner]overlay=34:210:eof_action=repeat:shortest=0[branded];`;
+    graph += `[${ranges.length}:v]${crop}scale=1012:292,${alpha},fps=30,setpts=PTS-STARTPTS[banner];[framed][banner]overlay=34:210:eof_action=repeat:shortest=0[branded];`;
     label = "branded";
   }
   graph += `[${label}]${input.subtitles ? `ass=filename=${ass},` : ""}fps=30,format=yuv420p[out]`;
@@ -287,9 +324,7 @@ export async function renderCuttingPart(input: {
     "-map",
     "[out]",
     "-map",
-    "0:a:0?",
-    "-af",
-    "asetpts=PTS-STARTPTS",
+    "[cleana]",
     "-t",
     String(duration),
     "-r",
@@ -350,6 +385,7 @@ export class VideoCuttingService {
       db?: Db;
       root?: string;
       run?: ProcessRunner;
+      sponsorLookup?: SponsorLookup;
       execute?: (job: CutJob, signal: AbortSignal) => Promise<void>;
     },
   ) {
@@ -611,7 +647,7 @@ export class VideoCuttingService {
       throw new Error(
         "У видео нет доступных русских или английских субтитров. Выберите другое видео.",
       );
-    const words = parseVideoVtt(await readFile(resolve(dir, vtt), "utf8"));
+    let words = parseVideoVtt(await readFile(resolve(dir, vtt), "utf8"));
     if (!words.length)
       throw new Error("Не удалось извлечь речь из субтитров видео.");
     if (words.length > 100_000)
@@ -642,7 +678,51 @@ export class VideoCuttingService {
     const media = await probeCuttingMedia(source, this.run, signal);
     if (media.duration > MAX_SOURCE_SECONDS || !media.audio)
       throw new Error("Нужен видеоролик со звуком длительностью до 3 часов.");
-    job.duration = media.duration;
+    job.originalDuration = media.duration;
+    job.sponsorBlock = sponsorBlockResult(media.duration, "disabled");
+    if (job.input.sponsorBlock !== false) {
+      job.sponsorBlock = sponsorBlockResult(media.duration, "checking");
+      await this.update(
+        job,
+        "downloading",
+        "Проверяем рекламные вставки в SponsorBlock",
+        25,
+      );
+      try {
+        const videoId = new URL(job.input.url).searchParams.get("v")!;
+        job.sponsorBlock = await (
+          this.options.sponsorLookup || fetchSponsorBlock
+        )(videoId, media.duration, signal);
+      } catch (error) {
+        job.sponsorBlock.status = "unavailable";
+        await this.save(job);
+        throw error;
+      }
+    }
+    await writeFile(
+      resolve(dir, "sponsorblock.json"),
+      JSON.stringify(job.sponsorBlock, null, 2),
+    );
+    const timeline = sponsorTimeline(media.duration, job.sponsorBlock.segments);
+    const cleanDuration = job.sponsorBlock.cleanDuration;
+    if (
+      cleanDuration <
+      Math.max(2, job.input.mode === "manual" ? job.input.count! : 2)
+    )
+      throw new Error(
+        "После удаления рекламы осталось слишком мало видео для выбранной нарезки.",
+      );
+    if (job.sponsorBlock.segments.length)
+      words = cleanSponsorWords(words, timeline);
+    if (!words.length)
+      throw new Error(
+        "После удаления рекламы в субтитрах не осталось речи для смыслового анализа.",
+      );
+    await writeFile(
+      resolve(dir, "transcript-clean.json"),
+      JSON.stringify(words),
+    );
+    job.duration = cleanDuration;
     await this.update(job, "analyzing", "Выбираем смысловые границы", 35);
     await writeFile(
       resolve(dir, "plan-schema.json"),
@@ -655,7 +735,7 @@ export class VideoCuttingService {
           : "codex"),
       localPlannerArgs(dir),
       {
-        stdin: cuttingPrompt(job.input, media.duration, job.title!, words),
+        stdin: cuttingPrompt(job.input, cleanDuration, job.title!, words),
         timeoutMs: 20 * 60_000,
       },
     );
@@ -670,13 +750,16 @@ export class VideoCuttingService {
     const raw = JSON.parse(
       await readFile(resolve(dir, "plan-result.json"), "utf8"),
     );
-    job.plan = validateCutPlan(raw, media.duration, job.input);
+    job.plan = validateCutPlan(raw, cleanDuration, job.input);
     await writeFile(
       resolve(dir, "edit-plan.json"),
       JSON.stringify(
         {
           source: job.input.url,
-          duration: media.duration,
+          duration: cleanDuration,
+          originalDuration: media.duration,
+          sponsorBlock: job.sponsorBlock,
+          timeline,
           model: CUTTING_MODEL,
           effort: CUTTING_EFFORT,
           parts: job.plan,
@@ -723,6 +806,7 @@ export class VideoCuttingService {
               banner,
               signal,
               run: this.run,
+              timeline,
             }),
           );
           break;
@@ -747,6 +831,7 @@ export class VideoCuttingService {
         ...part,
         videoUrl: `/files/${rel}`,
         duration: part.end - part.start,
+        sourceRanges: cuttingSourceRanges(part.start, part.end, timeline),
       });
       await this.save(job);
     }
