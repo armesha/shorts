@@ -84,6 +84,8 @@ __pycache__/
 # python venv for edge-tts (TTS tooling) — local only
 .venv-tts/
 .venv/
+.venv-cutting/
+data/video-cutting/
 
 # scratch screenshots at repo root — agent working files, not source
 /image.png

@@ -1,0 +1,780 @@
+import { spawn } from "node:child_process";
+import { randomUUID } from "node:crypto";
+import { existsSync } from "node:fs";
+import {
+  mkdir,
+  readFile,
+  readdir,
+  rename,
+  rm,
+  writeFile,
+  copyFile,
+} from "node:fs/promises";
+import { extname, resolve } from "node:path";
+import { homedir } from "node:os";
+import { setTimeout as delay } from "node:timers/promises";
+import type { Db } from "../db.ts";
+import { RateLimitError, withGlobalRenderSlot } from "../infra/rate-limits.ts";
+import {
+  circleAdvertiserSource,
+  listCircleAdvertisers,
+  type CircleAdvertiser,
+} from "./circle-advertisers.ts";
+import {
+  CUTTING_MODEL,
+  CUTTING_EFFORT,
+  MAX_SOURCE_SECONDS,
+  CutRequestSchema,
+  cuttingAss,
+  cuttingPrompt,
+  parseVideoVtt,
+  validateCutPlan,
+  type CutPart,
+  type CutRequest,
+  type TimedWord,
+} from "./video-cutting-plan.ts";
+
+export type CutStatus =
+  | "queued"
+  | "downloading"
+  | "analyzing"
+  | "rendering"
+  | "completed"
+  | "failed"
+  | "cancelled";
+export type CutClip = CutPart & { videoUrl: string; duration: number };
+export type CutJob = {
+  id: string;
+  userId: number;
+  input: CutRequest;
+  status: CutStatus;
+  stage: string;
+  progress: number;
+  createdAt: string;
+  updatedAt: string;
+  title?: string;
+  duration?: number;
+  plan?: CutPart[];
+  clips: CutClip[];
+  error?: string;
+  sessionId?: string;
+};
+export type ProcessInput = {
+  cwd: string;
+  signal?: AbortSignal;
+  stdin?: string;
+  timeoutMs?: number;
+};
+export type ProcessRunner = (
+  bin: string,
+  args: string[],
+  options: ProcessInput,
+) => Promise<string>;
+
+export const runCuttingProcess: ProcessRunner = (bin, args, options) =>
+  new Promise((accept, reject) => {
+    const env = Object.fromEntries(
+      [
+        "HOME",
+        "PATH",
+        "USER",
+        "LOGNAME",
+        "SHELL",
+        "LANG",
+        "LC_ALL",
+        "CODEX_HOME",
+        "XDG_RUNTIME_DIR",
+        "TMPDIR",
+      ].flatMap((key) => (process.env[key] ? [[key, process.env[key]!]] : [])),
+    );
+    const child = spawn(bin, args, {
+      cwd: options.cwd,
+      env,
+      stdio: ["pipe", "pipe", "pipe"],
+      detached: process.platform !== "win32",
+    });
+    let stdout = "",
+      stderr = "",
+      finished = false;
+    let killTimer: ReturnType<typeof setTimeout> | undefined;
+    const terminate = () => {
+      if (!child.pid) return;
+      try {
+        process.platform !== "win32"
+          ? process.kill(-child.pid, "SIGTERM")
+          : child.kill("SIGTERM");
+      } catch {
+        /* already exited */
+      }
+      killTimer = setTimeout(() => {
+        try {
+          process.platform !== "win32"
+            ? process.kill(-child.pid!, "SIGKILL")
+            : child.kill("SIGKILL");
+        } catch {
+          /* already exited */
+        }
+      }, 3000);
+      killTimer.unref();
+    };
+    const timer = setTimeout(terminate, options.timeoutMs ?? 30 * 60_000);
+    const finish = (error?: Error) => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timer);
+      if (killTimer) clearTimeout(killTimer);
+      options.signal?.removeEventListener("abort", terminate);
+      error ? reject(error) : accept(stdout);
+    };
+    child.stdout.on("data", (chunk) => {
+      stdout += String(chunk);
+      if (stdout.length > 16_000_000) terminate();
+    });
+    child.stderr.on("data", (chunk) => {
+      stderr = (stderr + String(chunk)).slice(-6000);
+    });
+    child.on("error", () =>
+      finish(
+        new Error(
+          `Не удалось запустить ${bin.includes("codex") ? "локальную сессию анализа" : "обработчик видео"}. Проверьте зависимости сервера.`,
+        ),
+      ),
+    );
+    child.on("close", (code) => {
+      if (options.signal?.aborted) return finish(new Error("Задача отменена."));
+      if (code !== 0) {
+        const hint =
+          /sign in|not logged|401|authentication|auth.*required|login/i.test(
+            stderr,
+          )
+            ? " Проверьте вход в локальную сессию на сервере."
+            : /subtitles|captions/i.test(stderr)
+              ? " Не удалось получить субтитры источника."
+              : "";
+        return finish(
+          new Error(
+            `Обработка завершилась с ошибкой.${hint} Можно повторить задачу.`,
+          ),
+        );
+      }
+      finish();
+    });
+    options.signal?.addEventListener("abort", terminate, { once: true });
+    if (options.signal?.aborted) terminate();
+    child.stdin.on("error", () => {});
+    child.stdin.end(options.stdin || "");
+  });
+
+export function localPlannerArgs(dir: string) {
+  return [
+    "exec",
+    "--ignore-user-config",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "read-only",
+    "--disable",
+    "shell_tool",
+    "--disable",
+    "multi_agent",
+    "-c",
+    'approval_policy="never"',
+    "-c",
+    'web_search="disabled"',
+    "--model",
+    CUTTING_MODEL,
+    "-c",
+    `model_reasoning_effort="${CUTTING_EFFORT}"`,
+    "--json",
+    "--output-schema",
+    resolve(dir, "plan-schema.json"),
+    "--output-last-message",
+    resolve(dir, "plan-result.json"),
+    "--cd",
+    dir,
+    "-",
+  ];
+}
+
+export async function probeCuttingMedia(
+  path: string,
+  run: ProcessRunner = runCuttingProcess,
+  signal?: AbortSignal,
+) {
+  const data = JSON.parse(
+    await run(
+      process.env.VIDEO_CUTTING_FFPROBE || "ffprobe",
+      ["-v", "error", "-show_streams", "-show_format", "-of", "json", path],
+      { cwd: process.cwd(), signal, timeoutMs: 30_000 },
+    ),
+  );
+  const video = data.streams?.find((s: any) => s.codec_type === "video");
+  const duration = Number(data.format?.duration);
+  if (!video || !Number.isFinite(duration) || duration <= 0)
+    throw new Error("Не удалось определить длительность видео.");
+  return {
+    duration,
+    width: Number(video.width),
+    height: Number(video.height),
+    fps: String(video.avg_frame_rate),
+    audio: data.streams.some((s: any) => s.codec_type === "audio"),
+  };
+}
+
+export async function renderCuttingPart(input: {
+  source: string;
+  output: string;
+  dir: string;
+  part: CutPart;
+  words: TimedWord[];
+  subtitles: boolean;
+  banner?: { item: CircleAdvertiser; file: string };
+  signal?: AbortSignal;
+  run?: ProcessRunner;
+}) {
+  const run = input.run || runCuttingProcess;
+  const duration = input.part.end - input.part.start;
+  const ass = `part-${input.part.number}.ass`;
+  if (input.subtitles)
+    await writeFile(
+      resolve(input.dir, ass),
+      cuttingAss(input.words, input.part),
+    );
+  const args = [
+    "-hide_banner",
+    "-loglevel",
+    "error",
+    "-y",
+    "-filter_complex_threads",
+    "1",
+    "-reinit_filter",
+    "0",
+    "-threads",
+    "2",
+    "-ss",
+    String(input.part.start),
+    "-t",
+    String(duration),
+    "-i",
+    input.source,
+  ];
+  if (input.banner) {
+    if (/\.(png|jpe?g|webp)$/i.test(input.banner.file)) args.push("-loop", "1");
+    else args.push("-stream_loop", "-1");
+    if (extname(input.banner.file) === ".webm") args.push("-c:v", "libvpx-vp9");
+    args.push("-i", input.banner.file);
+  }
+  let graph =
+    "[0:v]setpts=PTS-STARTPTS,fps=30,split=2[bgsrc][fgsrc];" +
+    "[bgsrc]scale=192:342:force_original_aspect_ratio=increase,crop=192:342,gblur=sigma=8,eq=brightness=-0.15:saturation=0.6,scale=1080:1920[bg];" +
+    "[fgsrc]scale=1080:608:force_original_aspect_ratio=decrease,pad=1080:608:(ow-iw)/2:(oh-ih)/2,setsar=1[fg];" +
+    "[bg][fg]overlay=0:656:shortest=1[framed];";
+  let label = "framed";
+  if (input.banner) {
+    const item = input.banner.item;
+    const crop = item.fullFrame !== false ? "crop=900:260:90:830," : "";
+    const alpha =
+      item.transparent !== false
+        ? "format=rgba"
+        : `format=rgba,chromakey=${(item.chromaColor || "#00ff00").replace("#", "0x")}:${item.similarity ?? 0.18}:${item.blend ?? 0.08}`;
+    graph += `[1:v]${crop}scale=1012:292,${alpha},fps=30,setpts=PTS-STARTPTS[banner];[framed][banner]overlay=34:210:eof_action=repeat:shortest=0[branded];`;
+    label = "branded";
+  }
+  graph += `[${label}]${input.subtitles ? `ass=filename=${ass},` : ""}fps=30,format=yuv420p[out]`;
+  const temporary = input.output.replace(/\.mp4$/, ".encoding.mp4");
+  args.push(
+    "-filter_complex",
+    graph,
+    "-map",
+    "[out]",
+    "-map",
+    "0:a:0?",
+    "-af",
+    "asetpts=PTS-STARTPTS",
+    "-t",
+    String(duration),
+    "-r",
+    "30",
+    "-fps_mode",
+    "cfr",
+    "-c:v",
+    "libx264",
+    "-preset",
+    "superfast",
+    "-crf",
+    "20",
+    "-threads",
+    "2",
+    "-c:a",
+    "aac",
+    "-b:a",
+    "160k",
+    "-movflags",
+    "+faststart",
+    temporary,
+  );
+  try {
+    await run(process.env.VIDEO_CUTTING_FFMPEG || "ffmpeg", args, {
+      cwd: input.dir,
+      signal: input.signal,
+      timeoutMs: Math.max(5 * 60_000, duration * 12_000),
+    });
+    const result = await probeCuttingMedia(temporary, run, input.signal);
+    if (
+      result.width !== 1080 ||
+      result.height !== 1920 ||
+      result.fps !== "30/1" ||
+      Math.abs(result.duration - duration) > 0.2
+    )
+      throw new Error(
+        "Итоговый ролик не прошёл проверку формата или длительности.",
+      );
+    await rename(temporary, input.output);
+    return result;
+  } catch (error) {
+    await rm(temporary, { force: true });
+    throw error;
+  }
+}
+
+export class VideoCuttingService {
+  private jobs = new Map<string, CutJob>();
+  private controllers = new Map<string, AbortController>();
+  private ready: Promise<void>;
+  private pumping = false;
+  private stopped = false;
+  private root: string;
+  private run: ProcessRunner;
+  constructor(
+    private options: {
+      outputDir: string;
+      db?: Db;
+      root?: string;
+      run?: ProcessRunner;
+      execute?: (job: CutJob, signal: AbortSignal) => Promise<void>;
+    },
+  ) {
+    this.root = options.root || resolve(process.cwd(), "data/video-cutting");
+    this.run = options.run || runCuttingProcess;
+    this.ready = this.restore();
+  }
+  private file(job: CutJob) {
+    return resolve(this.root, `u${job.userId}`, job.id, "job.json");
+  }
+  private async save(job: CutJob) {
+    job.updatedAt = new Date().toISOString();
+    const file = this.file(job);
+    await mkdir(resolve(file, ".."), { recursive: true });
+    const temp = `${file}.${randomUUID()}.tmp`;
+    await writeFile(temp, JSON.stringify(job, null, 2));
+    await rename(temp, file);
+  }
+  private async restore() {
+    await mkdir(this.root, { recursive: true });
+    for (const owner of await readdir(this.root)) {
+      if (!/^u[1-9]\d*$/.test(owner)) continue;
+      for (const id of await readdir(resolve(this.root, owner))) {
+        if (!/^[a-f\d-]{36}$/.test(id)) continue;
+        try {
+          const job = JSON.parse(
+            await readFile(resolve(this.root, owner, id, "job.json"), "utf8"),
+          ) as CutJob;
+          if (job.id !== id || `u${job.userId}` !== owner) continue;
+          if (!["completed", "failed", "cancelled"].includes(job.status)) {
+            job.status = "failed";
+            job.stage = "Обработка прервана перезапуском. Повторите задачу.";
+            job.error = job.stage;
+            await this.save(job);
+          }
+          this.jobs.set(id, job);
+        } catch {
+          /* Ignore an incomplete or corrupt job record. */
+        }
+      }
+    }
+  }
+  async list(userId: number) {
+    await this.ready;
+    return [...this.jobs.values()]
+      .filter((j) => j.userId === userId)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      .slice(0, 50)
+      .map((j) => structuredClone(j));
+  }
+  async get(userId: number, id: string) {
+    await this.ready;
+    const job = this.jobs.get(id);
+    return job?.userId === userId ? structuredClone(job) : null;
+  }
+  async create(userId: number, raw: unknown) {
+    await this.ready;
+    const input = CutRequestSchema.parse(raw);
+    if (
+      [...this.jobs.values()].some(
+        (j) =>
+          j.userId === userId &&
+          !["completed", "failed", "cancelled"].includes(j.status),
+      )
+    )
+      throw new Error("Дождитесь завершения текущей нарезки или отмените её.");
+    if (
+      [...this.jobs.values()].filter((j) => j.status === "queued").length >= 20
+    )
+      throw new Error("Очередь заполнена. Попробуйте позже.");
+    if (
+      input.bannerId &&
+      !listCircleAdvertisers().some((b) => b.id === input.bannerId)
+    )
+      throw new Error("Выбранный баннер недоступен. Выберите другой.");
+    const now = new Date().toISOString();
+    const job: CutJob = {
+      id: randomUUID(),
+      userId,
+      input,
+      status: "queued",
+      stage: "В очереди",
+      progress: 0,
+      createdAt: now,
+      updatedAt: now,
+      clips: [],
+    };
+    this.jobs.set(job.id, job);
+    try {
+      await this.save(job);
+    } catch (error) {
+      this.jobs.delete(job.id);
+      throw error;
+    }
+    void this.pump();
+    return structuredClone(job);
+  }
+  async cancel(userId: number, id: string) {
+    await this.ready;
+    const job = this.jobs.get(id);
+    if (!job || job.userId !== userId) return null;
+    if (!["completed", "failed", "cancelled"].includes(job.status)) {
+      this.controllers.get(id)?.abort();
+      job.status = "cancelled";
+      job.stage = "Отменено";
+      await this.save(job);
+    }
+    return structuredClone(job);
+  }
+  async close() {
+    this.stopped = true;
+    for (const controller of this.controllers.values()) controller.abort();
+  }
+  private async update(
+    job: CutJob,
+    status: CutStatus,
+    stage: string,
+    progress: number,
+  ) {
+    if (this.controllers.get(job.id)?.signal.aborted)
+      throw new Error("Задача отменена.");
+    Object.assign(job, { status, stage, progress });
+    await this.save(job);
+  }
+  private async pump() {
+    if (this.pumping || this.stopped) return;
+    this.pumping = true;
+    try {
+      while (!this.stopped) {
+        const job = [...this.jobs.values()].find((j) => j.status === "queued");
+        if (!job) break;
+        const controller = new AbortController();
+        this.controllers.set(job.id, controller);
+        try {
+          await this.update(job, "downloading", "Получаем видео и субтитры", 5);
+          controller.signal.throwIfAborted();
+          await (this.options.execute
+            ? this.options.execute(job, controller.signal)
+            : this.execute(job, controller.signal));
+          await this.update(job, "completed", "Готово", 100);
+        } catch (error) {
+          if (job.status !== "cancelled") {
+            job.status = this.stopped ? "cancelled" : "failed";
+            job.error =
+              error instanceof Error
+                ? error.message
+                : "Не удалось обработать видео.";
+            job.stage = job.error;
+            await this.save(job);
+          }
+        } finally {
+          this.controllers.delete(job.id);
+          if (!this.options.execute) {
+            const dir = resolve(this.file(job), "..");
+            for (const file of await readdir(dir).catch(() => [])) {
+              if (
+                /^source(?:\.[\w-]+)*\.(?:mp4|mkv|webm|part|ytdl)$/.test(file)
+              )
+                await rm(resolve(dir, file), { force: true }).catch(() => {});
+            }
+          }
+        }
+      }
+    } finally {
+      this.pumping = false;
+    }
+  }
+  private async execute(job: CutJob, signal: AbortSignal) {
+    const dir = resolve(this.file(job), "..");
+    const command = (
+      bin: string,
+      args: string[],
+      extra: Partial<ProcessInput> = {},
+    ) => this.run(bin, args, { cwd: dir, signal, ...extra });
+    const ytdlp =
+      process.env.VIDEO_CUTTING_YTDLP ||
+      (existsSync(resolve(process.cwd(), ".venv-cutting/bin/yt-dlp"))
+        ? resolve(process.cwd(), ".venv-cutting/bin/yt-dlp")
+        : "yt-dlp");
+    const common = [
+      "--no-playlist",
+      "--no-warnings",
+      "--socket-timeout",
+      "30",
+      "--retries",
+      "2",
+      "--js-runtimes",
+      "node",
+      "--remote-components",
+      "ejs:github",
+    ];
+    const metadata = JSON.parse(
+      await command(
+        ytdlp,
+        [
+          ...common,
+          "--skip-download",
+          "--dump-single-json",
+          "--",
+          job.input.url,
+        ],
+        { timeoutMs: 120_000 },
+      ),
+    );
+    const advertised = Number(metadata.duration);
+    if (
+      !Number.isFinite(advertised) ||
+      advertised < 3 ||
+      advertised > MAX_SOURCE_SECONDS ||
+      metadata.is_live
+    )
+      throw new Error(
+        "Поддерживается записанное видео длительностью от 3 секунд до 3 часов.",
+      );
+    job.title = String(metadata.title || "Видео").slice(0, 200);
+    await writeFile(
+      resolve(dir, "source.json"),
+      JSON.stringify(
+        {
+          url: job.input.url,
+          title: job.title,
+          channel: metadata.channel,
+          duration: advertised,
+        },
+        null,
+        2,
+      ),
+    );
+    const available = { ...metadata.automatic_captions, ...metadata.subtitles };
+    const language = ["ru-orig", "ru", "en-orig", "en"].find(
+      (lang) => Array.isArray(available[lang]) && available[lang].length,
+    );
+    if (!language)
+      throw new Error(
+        "У видео нет доступных русских или английских субтитров. Выберите другое видео.",
+      );
+    await command(ytdlp, [
+      ...common,
+      "--skip-download",
+      "--write-subs",
+      "--write-auto-subs",
+      "--sub-langs",
+      language,
+      "--sub-format",
+      "vtt",
+      "-o",
+      "source.%(ext)s",
+      "--",
+      job.input.url,
+    ]);
+    const files = await readdir(dir);
+    const vtt = [
+      "source.ru-orig.vtt",
+      "source.ru.vtt",
+      "source.en-orig.vtt",
+      "source.en.vtt",
+    ].find((f) => files.includes(f));
+    if (!vtt)
+      throw new Error(
+        "У видео нет доступных русских или английских субтитров. Выберите другое видео.",
+      );
+    const words = parseVideoVtt(await readFile(resolve(dir, vtt), "utf8"));
+    if (!words.length)
+      throw new Error("Не удалось извлечь речь из субтитров видео.");
+    if (words.length > 100_000)
+      throw new Error(
+        "Расшифровка слишком большая для одной задачи. Выберите более короткое видео.",
+      );
+    await writeFile(resolve(dir, "transcript.json"), JSON.stringify(words));
+    await this.update(job, "downloading", "Скачиваем исходник", 15);
+    await command(ytdlp, [
+      ...common,
+      "--no-progress",
+      "--max-filesize",
+      "2G",
+      "-f",
+      "bv*[height<=1080][vcodec^=avc1]+ba[language=ru]/bv*[height<=1080][vcodec^=avc1]+ba/bv*[height<=1080]+ba/b[height<=1080]/b",
+      "--merge-output-format",
+      "mp4",
+      "-o",
+      "source.%(ext)s",
+      "--",
+      job.input.url,
+    ]);
+    const source = resolve(dir, "source.mp4");
+    if (!existsSync(source))
+      throw new Error(
+        "Источник не скачан. Возможно, видео ограничено или превышает 2 ГБ.",
+      );
+    const media = await probeCuttingMedia(source, this.run, signal);
+    if (media.duration > MAX_SOURCE_SECONDS || !media.audio)
+      throw new Error("Нужен видеоролик со звуком длительностью до 3 часов.");
+    job.duration = media.duration;
+    await this.update(job, "analyzing", "Выбираем смысловые границы", 35);
+    await writeFile(
+      resolve(dir, "plan-schema.json"),
+      JSON.stringify(zodPlanSchema()),
+    );
+    const events = await command(
+      process.env.VIDEO_CUTTING_CODEX ||
+        (existsSync(resolve(homedir(), ".local/bin/codex"))
+          ? resolve(homedir(), ".local/bin/codex")
+          : "codex"),
+      localPlannerArgs(dir),
+      {
+        stdin: cuttingPrompt(job.input, media.duration, job.title!, words),
+        timeoutMs: 20 * 60_000,
+      },
+    );
+    for (const line of events.split("\n")) {
+      try {
+        const event = JSON.parse(line);
+        if (event.type === "thread.started") job.sessionId = event.thread_id;
+      } catch {
+        /* non-event */
+      }
+    }
+    const raw = JSON.parse(
+      await readFile(resolve(dir, "plan-result.json"), "utf8"),
+    );
+    job.plan = validateCutPlan(raw, media.duration, job.input);
+    await writeFile(
+      resolve(dir, "edit-plan.json"),
+      JSON.stringify(
+        {
+          source: job.input.url,
+          duration: media.duration,
+          model: CUTTING_MODEL,
+          effort: CUTTING_EFFORT,
+          parts: job.plan,
+        },
+        null,
+        2,
+      ),
+    );
+    const bannerItem = job.input.bannerId
+      ? listCircleAdvertisers().find((b) => b.id === job.input.bannerId)
+      : undefined;
+    let banner: { item: CircleAdvertiser; file: string } | undefined;
+    if (job.input.bannerId && !bannerItem)
+      throw new Error(
+        "Баннер удалён во время обработки. Выберите другой и повторите задачу.",
+      );
+    if (bannerItem) {
+      const original = circleAdvertiserSource(bannerItem.id);
+      const snapshot = resolve(dir, `banner${extname(original)}`);
+      await copyFile(original, snapshot);
+      banner = { item: bannerItem, file: snapshot };
+    }
+    const relDir = `creator/cutting-u${job.userId}/${job.id}`;
+    await mkdir(resolve(this.options.outputDir, relDir), { recursive: true });
+    for (const part of job.plan) {
+      await this.update(
+        job,
+        "rendering",
+        `Собираем часть ${part.number} из ${job.plan.length}`,
+        45 + Math.floor((50 * (part.number - 1)) / job.plan.length),
+      );
+      const rel = `${relDir}/part-${part.number}.mp4`;
+      while (true) {
+        signal.throwIfAborted();
+        try {
+          await withGlobalRenderSlot(() =>
+            renderCuttingPart({
+              source,
+              output: resolve(this.options.outputDir, rel),
+              dir,
+              part,
+              words,
+              subtitles: job.input.subtitles,
+              banner,
+              signal,
+              run: this.run,
+            }),
+          );
+          break;
+        } catch (error) {
+          if (!(error instanceof RateLimitError)) throw error;
+          await delay(2000, undefined, { signal });
+        }
+      }
+      this.options.db?.createCreatorGalleryItem({
+        userId: job.userId,
+        packId: "video-cutting",
+        packName: "Нарезка видео",
+        templateType: "montage",
+        cardIndex: part.number - 1,
+        title: part.title,
+        text: part.reason,
+        format: "mp4",
+        videoRel: rel,
+        durationSec: part.end - part.start,
+      });
+      job.clips.push({
+        ...part,
+        videoUrl: `/files/${rel}`,
+        duration: part.end - part.start,
+      });
+      await this.save(job);
+    }
+  }
+}
+
+function zodPlanSchema() {
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: ["parts"],
+    properties: {
+      parts: {
+        type: "array",
+        minItems: 2,
+        maxItems: 30,
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["start", "end", "title", "reason"],
+          properties: {
+            start: { type: "number" },
+            end: { type: "number" },
+            title: { type: "string" },
+            reason: { type: "string" },
+          },
+        },
+      },
+    },
+  };
+}

@@ -1,4 +1,5 @@
 const routeLoaders = {
+  videoCutting: () => import("../pages/VideoCutting"),
   montageStudio: () => import("../pages/MontageStudio"),
   mapStudio: () => import("../pages/MapStudio"),
   overview: () => import("../pages/Overview"),
@@ -57,6 +58,8 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
   if (pathname === "/stas") return "stasReport";
 
   switch (pathname) {
+    case "/cutting":
+      return "videoCutting";
     case "/overview":
       return "overview";
     case "/templates/montage":

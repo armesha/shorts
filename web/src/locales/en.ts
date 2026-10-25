@@ -55,6 +55,7 @@ export const en: Record<string, string> = {
   "nav.packs": "Packs",
   "nav.templates": "Templates",
   "nav.circles": "Circles",
+  "nav.videoCutting": "Video cutting",
   "nav.banners": "Ad banners",
   "nav.history": "History",
   "nav.statistics": "Statistics",

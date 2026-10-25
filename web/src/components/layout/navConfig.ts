@@ -41,6 +41,7 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
     items: [
       { to: "/library", labelKey: "nav.library", icon: "library", end: false },
       { to: "/circles", labelKey: "nav.circles", icon: "video", end: false },
+      { to: "/cutting", labelKey: "nav.videoCutting", icon: "clips", end: false },
       { to: "/memes", labelKey: "nav.memoteka", icon: "globe", end: false, armenOnly: true, external: true, adminBadge: true },
       // Карточки, галерея и редактор шаблонов остаются рабочими внутренними
       // экранами, но не занимают отдельные пункты бокового меню: вход к ним теперь из «Библиотеки».
