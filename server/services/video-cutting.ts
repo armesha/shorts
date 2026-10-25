@@ -15,6 +15,12 @@ import { homedir } from "node:os";
 import { setTimeout as delay } from "node:timers/promises";
 import type { Db } from "../db.ts";
 import {
+  extractCuttingTimecodes,
+  cleanCuttingTimecodes,
+  alignCutPlanToSpeech,
+  autoCutLimits,
+} from "./video-cutting-context.ts";
+import {
   fetchSponsorBlock,
   sponsorBlockResult,
   sponsorTimeline,
@@ -671,6 +677,7 @@ export class VideoCuttingService {
           title: job.title,
           channel: metadata.channel,
           duration: advertised,
+          timecodes: extractCuttingTimecodes(metadata, advertised),
         },
         null,
         2,
@@ -767,6 +774,10 @@ export class VideoCuttingService {
     );
     const timeline = sponsorTimeline(media.duration, job.sponsorBlock.segments);
     const cleanDuration = job.sponsorBlock.cleanDuration;
+    const timecodes = cleanCuttingTimecodes(
+      extractCuttingTimecodes(metadata, media.duration),
+      timeline,
+    );
     if (
       cleanDuration <
       Math.max(2, job.input.mode === "manual" ? job.input.count! : 2)
@@ -788,7 +799,7 @@ export class VideoCuttingService {
     await this.update(job, "analyzing", "Выбираем смысловые границы", 35);
     await writeFile(
       resolve(dir, "plan-schema.json"),
-      JSON.stringify(zodPlanSchema()),
+      JSON.stringify(zodPlanSchema(job.input, cleanDuration)),
     );
     const events = await command(
       process.env.VIDEO_CUTTING_CODEX ||
@@ -797,7 +808,13 @@ export class VideoCuttingService {
           : "codex"),
       localPlannerArgs(dir),
       {
-        stdin: cuttingPrompt(job.input, cleanDuration, job.title!, words),
+        stdin: cuttingPrompt(
+          job.input,
+          cleanDuration,
+          job.title!,
+          words,
+          timecodes,
+        ),
         timeoutMs: 20 * 60_000,
       },
     );
@@ -812,7 +829,17 @@ export class VideoCuttingService {
     const raw = JSON.parse(
       await readFile(resolve(dir, "plan-result.json"), "utf8"),
     );
-    job.plan = validateCutPlan(raw, cleanDuration, job.input);
+    job.plan = alignCutPlanToSpeech(
+      validateCutPlan(raw, cleanDuration, job.input),
+      words,
+      timecodes,
+      job.input.mode === "auto"
+        ? autoCutLimits(cleanDuration).minimumPartSeconds
+        : 1,
+      job.input.mode === "auto"
+        ? autoCutLimits(cleanDuration).maximumPartSeconds
+        : Infinity,
+    );
     await writeFile(
       resolve(dir, "edit-plan.json"),
       JSON.stringify(
@@ -822,6 +849,7 @@ export class VideoCuttingService {
           originalDuration: media.duration,
           sponsorBlock: job.sponsorBlock,
           timeline,
+          timecodes,
           model: CUTTING_MODEL,
           effort: CUTTING_EFFORT,
           parts: job.plan,
@@ -900,7 +928,7 @@ export class VideoCuttingService {
   }
 }
 
-function zodPlanSchema() {
+function zodPlanSchema(input: CutRequest, duration: number) {
   return {
     type: "object",
     additionalProperties: false,
@@ -908,8 +936,10 @@ function zodPlanSchema() {
     properties: {
       parts: {
         type: "array",
-        minItems: 2,
-        maxItems: 30,
+        minItems:
+          input.mode === "manual" ? input.count : autoCutLimits(duration).min,
+        maxItems:
+          input.mode === "manual" ? input.count : autoCutLimits(duration).max,
         items: {
           type: "object",
           additionalProperties: false,
