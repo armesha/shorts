@@ -24,7 +24,7 @@ Keep shared rules here. Do not duplicate them in `CLAUDE.md`; Claude Code import
 
 - User-facing site: `https://shareboard.live/`. Localhost and Vite are only agent verification surfaces; do not tell the user to check localhost.
 - Visible Shorts changes must be verified against `shareboard.live` when feasible; localhost-only proof is not enough.
-- Do not restart, stop, or kill shared long-lived Shorts processes unless the user explicitly asked or allowed it. If a backend change needs restart and permission is missing, say that clearly.
+- Perform Shorts restarts needed to complete the user's task without asking for separate permission. Use the standard production commands below, preserve unrelated processes, and verify service health afterward.
 - Backend/runtime code changes under `server/**` or `src/**` need a backend restart before they are live. Frontend-only changes need `npm run web:build`; server restart is usually not needed unless deployed static assets must be refreshed by the current workflow.
 - Standard production commands:
   - `npm run ops:check` - read-only live/worker/Armen checks, no restart.
