@@ -2062,3 +2062,14 @@ hypnotic tunnel, kinetic depth dots, aperture bars, neon ladder, ray afterimage 
 Он загружен без перекодирования как `shortrobot-banner` в общую библиотеку
 баннеров Telegram-кружочков и доступен всем вошедшим пользователям.
 Источник — пользовательский файл Shortrobot; исходный alpha-канал сохранён.
+
+## Геймплей Telegram-кружочков
+
+По прямому выбору пользователя добавлены первые 30 минут
+[Minecraft Parkour Gameplay No Copyright](https://www.youtube.com/watch?v=85z7jqGAGcc)
+канала Orbital — No Copyright Gameplay. Файл:
+`data/telegram-circles/gameplay/orbital-85z7jqGAGcc-30min.mp4` — H.264,
+1920×1080, 30 минут, без исходной музыки. Остаток загрузки удалён.
+Разрешение автора на коммерческое использование фоном и credit указаны
+в `data/telegram-circles/gameplay-sources.json`. Ресурс обнаруживается
+редактором и случайным выбором геймплея автоматически, без перезапуска.
