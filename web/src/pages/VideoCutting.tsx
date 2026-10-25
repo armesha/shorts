@@ -1,6 +1,8 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 import { ArrowDownToLine, ArrowUpRight, Scissors, X } from "lucide-react";
 import { get, send } from "../lib/api/http";
+import { confirmDialog } from "../lib/confirm";
 
 type Part = {
   number: number;
@@ -36,13 +38,19 @@ type Job = {
   plan?: Part[];
   clips: Clip[];
   error?: string;
+  channelAdds?: { accountId: number; part: number; videoId: number }[];
+  deletedParts?: number[];
   sponsorBlock?: {
     status: "disabled" | "checking" | "removed" | "not_found" | "unavailable";
     segments: { start: number; end: number }[];
     removedSeconds: number;
   };
 };
-type Workspace = { jobs: Job[]; banners: { id: string; name: string }[] };
+type Workspace = {
+  jobs: Job[];
+  banners: { id: string; name: string }[];
+  channels?: { id: number; name: string; platform: string }[];
+};
 const finished = (job: Job) =>
   ["completed", "failed", "cancelled"].includes(job.status);
 function time(value: number) {
@@ -68,12 +76,31 @@ export default function VideoCutting() {
   const [error, setError] = useState("");
   const [loadError, setLoadError] = useState("");
   const [refresh, setRefresh] = useState(0);
+  const [channelId, setChannelId] = useState("");
+  const [addingToChannel, setAddingToChannel] = useState(false);
+  const [channelError, setChannelError] = useState("");
+  const [channelNotice, setChannelNotice] = useState("");
+  const [deletingPart, setDeletingPart] = useState<number | null>(null);
+  const channels = workspace.channels || [];
+  const validChannel = channels.some(
+    (channel) => String(channel.id) === channelId,
+  );
   const active = workspace.jobs.some((job) => !finished(job));
   const job =
     workspace.jobs.find((item) => item.id === selected) || workspace.jobs[0];
   const invalidCount =
     mode === "manual" &&
     (!/^\d+$/.test(count) || Number(count) < 2 || Number(count) > 30);
+  const alreadyAdded = (part: number) =>
+    !!job?.channelAdds?.some(
+      (row) => row.accountId === Number(channelId) && row.part === part,
+    );
+  const pendingClips =
+    job?.clips.filter((clip) => !alreadyAdded(clip.number)) || [];
+  useEffect(() => {
+    setChannelError("");
+    setChannelNotice("");
+  }, [selected, channelId]);
 
   useEffect(() => {
     let alive = true;
@@ -145,6 +172,72 @@ export default function VideoCutting() {
       setError(e instanceof Error ? e.message : "Не удалось отменить задачу.");
     } finally {
       setCancelling(false);
+    }
+  }
+  async function addToChannel(parts?: number[]) {
+    if (!job || !validChannel) return;
+    setAddingToChannel(true);
+    setChannelError("");
+    setChannelNotice("");
+    try {
+      const result = await send<{
+        added: unknown[];
+        existing: unknown[];
+        job: Job;
+      }>(`/video-cutting/jobs/${job.id}/channel`, "POST", {
+        accountId: Number(channelId),
+        ...(parts ? { parts } : {}),
+      });
+      setWorkspace((current) => ({
+        ...current,
+        jobs: current.jobs.map((item) =>
+          item.id === result.job.id ? result.job : item,
+        ),
+      }));
+      setChannelNotice(
+        result.added.length
+          ? `Добавлено частей в очередь канала: ${result.added.length}.`
+          : "Эти части уже были добавлены на выбранный канал.",
+      );
+    } catch (e) {
+      setChannelError(
+        e instanceof Error ? e.message : "Не удалось добавить части на канал.",
+      );
+    } finally {
+      setAddingToChannel(false);
+    }
+  }
+  async function deletePart(part: number) {
+    if (
+      !job ||
+      !(await confirmDialog(
+        "Часть будет удалена из нарезки и галереи. Копии в библиотеках каналов останутся.",
+        {
+          title: `Удалить часть ${part}?`,
+          confirmText: "Удалить часть",
+          danger: true,
+        },
+      ))
+    )
+      return;
+    setDeletingPart(part);
+    setChannelError("");
+    setChannelNotice("");
+    try {
+      const next = await send<Job>(
+        `/video-cutting/jobs/${job.id}/clips/${part}`,
+        "DELETE",
+      );
+      setWorkspace((current) => ({
+        ...current,
+        jobs: current.jobs.map((item) => (item.id === next.id ? next : item)),
+      }));
+    } catch (e) {
+      setChannelError(
+        e instanceof Error ? e.message : "Не удалось удалить часть.",
+      );
+    } finally {
+      setDeletingPart(null);
     }
   }
   function repeat() {
@@ -433,6 +526,11 @@ export default function VideoCutting() {
                     aria-label="Ход обработки"
                   />
                 )}
+                {!!job.deletedParts?.length && (
+                  <p className="text-xs text-base-content/70">
+                    Удалено частей: {job.deletedParts.length}.
+                  </p>
+                )}
                 {job.sponsorBlock && (
                   <p className="text-xs leading-relaxed text-base-content/70">
                     {job.sponsorBlock.status === "removed"
@@ -479,6 +577,81 @@ export default function VideoCutting() {
                     </ol>
                   </details>
                 )}
+                {!!job.clips.length && (
+                  <div className="border-t border-base-300 pt-4 space-y-3">
+                    <label
+                      htmlFor="cutting-channel"
+                      className="block text-sm font-semibold"
+                    >
+                      Добавить на канал
+                    </label>
+                    {channels.length ? (
+                      <div className="flex flex-wrap gap-3">
+                        <select
+                          id="cutting-channel"
+                          className="select select-bordered min-w-0 flex-1"
+                          value={channelId}
+                          onChange={(event) => setChannelId(event.target.value)}
+                          disabled={addingToChannel}
+                        >
+                          <option value="">Выберите подключённый канал</option>
+                          {channels.map((channel) => (
+                            <option key={channel.id} value={channel.id}>
+                              {channel.name} ·{" "}
+                              {channel.platform === "youtube"
+                                ? "YouTube"
+                                : channel.platform === "instagram"
+                                  ? "Instagram"
+                                  : "TikTok"}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => void addToChannel()}
+                          disabled={
+                            !validChannel ||
+                            addingToChannel ||
+                            deletingPart !== null ||
+                            !pendingClips.length
+                          }
+                          className="btn btn-primary"
+                        >
+                          {addingToChannel
+                            ? "Добавляем…"
+                            : validChannel && !pendingClips.length
+                              ? "Уже добавлено"
+                              : "Добавить готовые части"}
+                        </button>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-base-content/70">
+                        Нет подключённых каналов.{" "}
+                        <Link to="/channels" className="link">
+                          Подключить канал
+                        </Link>
+                      </p>
+                    )}
+                    <p className="text-xs leading-relaxed text-base-content/70">
+                      Части попадут в библиотеку выбранного канала. Их можно
+                      опубликовать вручную или по существующему расписанию
+                      канала.
+                    </p>
+                    {channelError && (
+                      <p role="alert" className="text-sm text-error">
+                        {channelError}
+                      </p>
+                    )}
+                    {channelNotice && (
+                      <p role="status" className="text-sm text-success">
+                        {channelNotice}{" "}
+                        <Link to={`/accounts/${channelId}`} className="link">
+                          Открыть канал
+                        </Link>
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
               {!!job.clips.length && (
                 <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
@@ -511,6 +684,31 @@ export default function VideoCutting() {
                             Скачать
                           </a>
                         </div>
+                        <button
+                          type="button"
+                          className="btn btn-outline btn-sm w-full"
+                          disabled={
+                            !validChannel ||
+                            addingToChannel ||
+                            deletingPart !== null ||
+                            alreadyAdded(clip.number)
+                          }
+                          onClick={() => void addToChannel([clip.number])}
+                        >
+                          {alreadyAdded(clip.number)
+                            ? "Добавлено на канал"
+                            : "Добавить на канал"}
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-ghost btn-sm text-error w-full"
+                          disabled={addingToChannel || deletingPart !== null}
+                          onClick={() => void deletePart(clip.number)}
+                        >
+                          {deletingPart === clip.number
+                            ? "Удаляем…"
+                            : "Удалить часть"}
+                        </button>
                       </div>
                     </article>
                   ))}

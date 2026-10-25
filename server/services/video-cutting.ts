@@ -25,7 +25,15 @@ import {
   type CutTimeline,
   type SourceRange,
 } from "./video-cutting-sponsorblock.ts";
-import { RateLimitError, withGlobalRenderSlot } from "../infra/rate-limits.ts";
+import {
+  RateLimitError,
+  withGlobalRenderSlot,
+  withActiveLimit,
+} from "../infra/rate-limits.ts";
+import {
+  addCuttingClipsToChannel,
+  type CuttingChannelAdd,
+} from "./video-cutting-channels.ts";
 import {
   circleAdvertiserSource,
   listCircleAdvertisers,
@@ -75,6 +83,8 @@ export type CutJob = {
   clips: CutClip[];
   error?: string;
   sessionId?: string;
+  channelAdds?: CuttingChannelAdd[];
+  deletedParts?: number[];
 };
 export type ProcessInput = {
   cwd: string;
@@ -494,6 +504,58 @@ export class VideoCuttingService {
       await this.save(job);
     }
     return structuredClone(job);
+  }
+  async addToChannel(
+    userId: number,
+    id: string,
+    accountId: number,
+    parts?: number[],
+  ) {
+    await this.ready;
+    const job = this.jobs.get(id);
+    if (!job || job.userId !== userId) throw new Error("Нарезка не найдена.");
+    if (!this.options.db) throw new Error("Добавление на канал недоступно.");
+    return withActiveLimit(`cutting-edit:${userId}:${id}`, 1, async () => {
+      const result = await addCuttingClipsToChannel(this.options.db!, {
+        userId,
+        job,
+        accountId,
+        parts,
+        outputDir: this.options.outputDir,
+      });
+      job.channelAdds = [...(job.channelAdds || [])];
+      for (const row of [...result.existing, ...result.added])
+        if (
+          !job.channelAdds.some(
+            (old) => old.accountId === row.accountId && old.part === row.part,
+          )
+        )
+          job.channelAdds.push(row);
+      await this.save(job);
+      return { ...result, job: structuredClone(job) };
+    });
+  }
+  async deletePart(userId: number, id: string, part: number) {
+    await this.ready;
+    const job = this.jobs.get(id);
+    if (!job || job.userId !== userId) throw new Error("Нарезка не найдена.");
+    if (
+      !Number.isInteger(part) ||
+      (!job.clips.some((clip) => clip.number === part) &&
+        !job.deletedParts?.includes(part))
+    )
+      throw new Error("Готовая часть не найдена.");
+    return withActiveLimit(`cutting-edit:${userId}:${id}`, 1, async () => {
+      job.deletedParts = [...new Set([...(job.deletedParts || []), part])];
+      job.clips = job.clips.filter((clip) => clip.number !== part);
+      await this.save(job);
+      const rel = `creator/cutting-u${userId}/${job.id}/part-${part}.mp4`;
+      for (const item of this.options.db?.listCreatorGalleryItems(userId) || [])
+        if (item.videoRel === rel)
+          this.options.db!.deleteCreatorGalleryItem(item.id, userId);
+      await rm(resolve(this.options.outputDir, rel), { force: true });
+      return structuredClone(job);
+    });
   }
   async close() {
     this.stopped = true;

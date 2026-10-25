@@ -28,7 +28,7 @@ test("cutting API requires authentication and isolates jobs including cancellati
     if ([7, 8].includes(id))
       (req as FastifyRequest & { userId?: number }).userId = id;
   });
-  registerVideoCuttingRoutes(app, {} as Db, root, service);
+  registerVideoCuttingRoutes(app, {listAccountsByUser:()=>[]} as unknown as Db, root, service);
   try {
     assert.equal(
       (await app.inject({ url: "/api/video-cutting" })).statusCode,

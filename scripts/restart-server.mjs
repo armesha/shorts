@@ -4,6 +4,7 @@ import { existsSync, mkdirSync, openSync, readdirSync, readFileSync, readlinkSyn
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
+import { assertNoActiveCuttingJobs } from "./lib/cutting-restart-guard.mjs";
 
 const execFile = promisify(execFileCb);
 
@@ -323,6 +324,7 @@ async function restartFallback() {
 }
 
 async function main() {
+  assertNoActiveCuttingJobs(ROOT);
   const loadState = await serviceLoadState();
   if (loadState && loadState !== "not-found") {
     await restartSystemd();
