@@ -73,10 +73,21 @@ function AccountsList() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">(() =>
     localStorage.getItem("channelsRunwaySort") === "desc" ? "desc" : "asc",
   );
-  // Which «low runway» alert the user already dismissed (by the exact set of low channels) — no spam.
-  const [dismissedSig, setDismissedSig] = useState<string>(
-    () => sessionStorage.getItem("lowRunwayDismissed") || "",
-  );
+  const groupStorageKey = `channelGroupsCollapsed:${user?.id}`;
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(groupStorageKey) || "{}");
+      return saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
+    } catch { return {}; }
+  });
+  function toggleGroup(id: number | null) {
+    const key = String(id ?? "ungrouped");
+    setCollapsedGroups(current => {
+      const next = { ...current, [key]: !current[key] };
+      try { localStorage.setItem(groupStorageKey, JSON.stringify(next)); } catch { /* storage unavailable */ }
+      return next;
+    });
+  }
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -216,27 +227,6 @@ function AccountsList() {
     return queued == null ? null : queued / a.schedule.length;
   };
 
-  // Channels about to run dry (< 1 day) — drives the alert and the «< 1 дня» filter.
-  const lowChannels = accounts.filter((a) => {
-    const r = runwayDays(a);
-    return r != null && r < 1;
-  });
-  // Alert is state-derived (auto-disappears when nothing is low) and dismiss is keyed by the EXACT
-  // set of low channels → dismissing hides it, but a NEW channel dropping low brings it back. No spam.
-  const lowSig = lowChannels
-    .map((a) => a.id)
-    .sort((x, y) => x - y)
-    .join(",");
-  const showLowAlert = lowChannels.length > 0 && lowSig !== dismissedSig;
-  const dismissLowAlert = () => {
-    setDismissedSig(lowSig);
-    try {
-      sessionStorage.setItem("lowRunwayDismissed", lowSig);
-    } catch {
-      /* private mode */
-    }
-  };
-
   // Channels whose YouTube token got rejected (revoked/expired/401) — posting is dead until the user
   // reconnects. Driven by the backend `authError` flag set on the upload paths, not by history.
   const disconnectedChannels = accounts.filter((a) => a.authError);
@@ -358,35 +348,6 @@ function AccountsList() {
         </div>
       )}
 
-      {showLowAlert && (
-        <div className="alert alert-warning shadow-sm flex items-center gap-2 py-2.5">
-          <AppIcon name="warning" size={18} className="shrink-0" />
-          <div className="flex-1 text-sm leading-snug">
-            <span className="font-semibold">{t("accounts.lowRunwayTitle")}</span> {t("accounts.lowRunwayLead")}{" "}
-            {lowChannels.map((a, i) => (
-              <span key={a.id}>
-                {i > 0 && ", "}
-                <Link to={`/accounts/${a.id}`} className="link font-medium">
-                  {a.channelName}
-                </Link>{" "}
-                <span className="text-base-content/60">
-                  ({(effectiveQueuedVideos(a) ?? queue[a.id]) === 0 ? t("accounts.noVideos") : t("accounts.inQueueN", { n: effectiveQueuedVideos(a) ?? queue[a.id] })})
-                </span>
-              </span>
-            ))}
-            . {t("accounts.lowRunwayHint")}
-          </div>
-          <button
-            className="btn btn-ghost btn-xs btn-square"
-            onClick={dismissLowAlert}
-            aria-label={t("accounts.hide")}
-            title={t("accounts.dismissReappearHint")}
-          >
-            <AppIcon name="close" size={14} />
-          </button>
-        </div>
-      )}
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Stat icon={<AppIcon name="accounts" />} label={t("accounts.statChannels")} value={accounts.length} />
         <Stat icon={<AppIcon name="queue" />} label={t("accounts.statPerDay")} value={perDay} />
@@ -399,11 +360,12 @@ function AccountsList() {
       </div>
 
       {multiKey && (
-        <div className="card bg-base-100 border border-base-300">
-          <div className="card-body py-4 gap-2">
-            <div className="text-sm font-semibold flex items-center gap-2">
-              <BrandIcon name="youtube" size={16} /> {t("accounts.byKeyTitle")}
-            </div>
+        <details className="card bg-base-100 border border-base-300 group">
+          <summary className="list-none cursor-pointer select-none flex items-center gap-2 px-6 py-4 text-sm font-semibold">
+            <AppIcon name="chevron-right" size={16} className="transition-transform group-open:rotate-90" />
+            <BrandIcon name="youtube" size={16} /> {t("accounts.byKeyTitle")}
+          </summary>
+          <div className="card-body pt-0 pb-4 gap-2">
             <div className={keyGridClass}>
               {perKeyStats.map((k) => (
                 <div key={k.id} className="rounded-lg border border-base-200 px-4 py-3">
@@ -438,7 +400,7 @@ function AccountsList() {
               )}
             </div>
           </div>
-        </div>
+        </details>
       )}
 
       {accounts.length === 0 && groups.length===0 ? (
@@ -478,7 +440,8 @@ function AccountsList() {
           </div>
 
           {groupSections.map(group=><section key={group.id??"ungrouped"} className="space-y-3">
-          <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-lg font-semibold">{group.name}<span className="ml-2 text-sm font-normal text-base-content/70">{group.items.length}</span></h2>{group.id!==null&&<div className="flex flex-wrap gap-1"><button className="btn btn-ghost btn-sm gap-1" onClick={()=>startAddAccount(group.id)}><Plus size={15}/>Добавить канал</button><button className="btn btn-ghost btn-sm gap-1" onClick={()=>{setGroupError("");setGroupEditor(groups.find(g=>g.id===group.id));}}><Pencil size={15}/>Изменить</button><button className="btn btn-ghost btn-sm text-error gap-1" onClick={()=>void deleteGroup(groups.find(g=>g.id===group.id)!)}><Trash2 size={15}/>Удалить группу</button></div>}</div>
+          <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-lg font-semibold"><button type="button" className="flex items-center gap-2 text-left" onClick={()=>toggleGroup(group.id)} aria-expanded={!collapsedGroups[String(group.id??"ungrouped")]} aria-controls={`channel-group-${group.id??"ungrouped"}`}><AppIcon name="chevron-right" size={18} className={collapsedGroups[String(group.id??"ungrouped")]?"":"rotate-90"}/>{group.name}<span className="ml-2 text-sm font-normal text-base-content/70">{group.items.length}</span></button></h2>{group.id!==null&&<div className="flex flex-wrap gap-1"><button className="btn btn-ghost btn-sm gap-1" onClick={()=>startAddAccount(group.id)}><Plus size={15}/>Добавить канал</button><button className="btn btn-ghost btn-sm gap-1" onClick={()=>{setGroupError("");setGroupEditor(groups.find(g=>g.id===group.id));}}><Pencil size={15}/>Изменить</button><button className="btn btn-ghost btn-sm text-error gap-1" onClick={()=>void deleteGroup(groups.find(g=>g.id===group.id)!)}><Trash2 size={15}/>Удалить группу</button></div>}</div>
+          <div id={`channel-group-${group.id??"ungrouped"}`} hidden={!!collapsedGroups[String(group.id??"ungrouped")]}>
           {!group.items.length&&<p className="text-sm text-base-content/70">В группе пока нет каналов.</p>}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {group.items.map((a) => (
@@ -578,6 +541,7 @@ function AccountsList() {
               </div>
             </div>
             ))}
+          </div>
           </div>
           </section>)}
         </div>
