@@ -28,6 +28,7 @@ export default function MapStudio() {
             Библиотека
           </Link>
           <h1 className="text-2xl font-bold">Карты</h1>
+          <Link to="/templates/maps/library" className="btn btn-outline btn-sm">Библиотека карт</Link>
         </div>
         <label className="form-control gap-1">
           <span className="sr-only">Тема карты</span>

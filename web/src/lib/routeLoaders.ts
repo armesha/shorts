@@ -1,6 +1,7 @@
 const routeLoaders = {
   videoCutting: () => import("../pages/VideoCutting"),
   mapStudio: () => import("../pages/MapStudio"),
+  mapLibrary: () => import("../pages/MapLibrary"),
   overview: () => import("../pages/Overview"),
   studio: () => import("../pages/Studio"),
   gallery: () => import("../pages/Gallery"),

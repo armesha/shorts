@@ -49,6 +49,7 @@ import { registerChannelGroupRoutes } from "./routes/channel-groups.ts";
 import { registerVideoTemplateRoutes } from "./routes/video-templates.ts";
 import { registerVideoCuttingRoutes } from "./routes/video-cutting.ts";
 import { registerMapStudioRoutes } from "./routes/map-studio.ts";
+import { registerMapPipelineRoutes } from "./routes/map-pipeline.ts";
 import { registerAccountsRoutes } from "./routes/accounts.ts";
 import { registerStatsRoutes } from "./routes/stats.ts";
 import { registerNotificationsRoutes } from "./routes/notifications.ts";
@@ -381,6 +382,7 @@ registerAdminRoutes(app, db, deps);
 registerAccountsRoutes(app, db, deps, socialService);
 registerChannelGroupRoutes(app, db, deps);
 registerMapStudioRoutes(app, db);
+const mapPipeline = registerMapPipelineRoutes(app, undefined, ownerId => isSuperAdminUser(db.getUserById(ownerId)));
 registerVideoTemplateRoutes(app, db, resolve(process.cwd(), base.outputDir));
 registerVideoCuttingRoutes(app, db, resolve(process.cwd(), base.outputDir));
 registerStatsRoutes(app, db, deps);
@@ -442,6 +444,7 @@ app
             scheduler.stop();
             telegramDigestScheduler.stop();
             geminiTtsLocalJobs.stop();
+            void mapPipeline.close();
           },
           drainQueue: async () => { await Promise.all([genDrainQueue(), socialRunner.drain()]); },
           activeCounts: () => metrics.activeCounts(),
