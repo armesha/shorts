@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { MapPipelineService, type PipelineOptions } from "./service.ts";
 import { DAY_MS } from "./schedule.ts";
+import { withGlobalRenderSlot } from "../../infra/rate-limits.ts";
 
 async function fixture() {
   const root = await mkdtemp(join(tmpdir(), "map-service-"));
@@ -114,4 +115,21 @@ test("rebuilding samples reuses two entries and has a bounded attempt count", as
     assert.deepEqual((await service.list(1)).jobs.map(j => j.id).sort(), ids);
     assert.equal(f.calls(), 6);
   } finally { await service.close(); await rm(f.root, { recursive: true, force: true }); }
+});
+
+test("busy render capacity waits within the same daily slot instead of losing the day's video", async () => {
+  const f = await fixture();
+  let release: () => void = () => {};
+  let observed: () => void = () => {};
+  const busy = new Promise<void>(accept => { release = accept; });
+  const waiting = new Promise<void>(accept => { observed = accept; });
+  const occupied = [withGlobalRenderSlot(() => busy), withGlobalRenderSlot(() => busy)];
+  const service = new MapPipelineService({ ...f.options, log: message => { if (message.includes("Ожидание")) observed(); } });
+  try {
+    await service.begin(1); await service.tick(); await waiting;
+    assert.equal(f.calls(), 0); release(); await Promise.all(occupied); await service.idle();
+    const result = await service.list(1);
+    assert.equal(f.calls(), 1); assert.equal(result.jobs.length, 1); assert.equal(result.jobs[0].status, "ready");
+    assert.equal(result.campaign!.runs.length, 1);
+  } finally { release(); await Promise.all(occupied); await service.close(); await rm(f.root, { recursive: true, force: true }); }
 });

@@ -1,8 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rename, writeFile, stat } from "node:fs/promises";
 import { resolve } from "node:path";
+import { setTimeout as delay } from "node:timers/promises";
 import { z } from "zod";
-import { withGlobalRenderSlot } from "../../infra/rate-limits.ts";
+import { RateLimitError, withGlobalRenderSlot } from "../../infra/rate-limits.ts";
 import * as metrics from "../../infra/metrics.ts";
 import { claimDay, createCampaign, recoverCampaign, validateCampaign, type MapCampaign } from "./schedule.ts";
 import { planMapIdea, type MapIdea } from "./planner.ts";
@@ -180,7 +181,19 @@ export class MapPipelineService {
       const used = this.state.jobs.filter(j => j.ownerId === job.ownerId && j.id !== job.id && j.themeId).map(j => j.themeId!);
       const generate = this.options.generate || ((...args) => this.generate(...args));
       controller.signal.throwIfAborted();
-      const result = await withGlobalRenderSlot(() => metrics.track("render", () => generate(job, directory, controller.signal, stage, used)));
+      let result: { seconds: number; idea: MapIdea };
+      let waiting = false;
+      for (;;) {
+        controller.signal.throwIfAborted();
+        try {
+          result = await withGlobalRenderSlot(() => metrics.track("render", () => generate(job, directory, controller.signal, stage, used)));
+          break;
+        } catch (error) {
+          if (!(error instanceof RateLimitError)) throw error;
+          if (!waiting) { await stage("Ожидание свободного рендера"); waiting = true; }
+          await delay(5000, undefined, { signal: controller.signal });
+        }
+      }
       controller.signal.throwIfAborted();
       if (campaign && (this.now() >= Date.parse(campaign.endsAt) || campaign.stoppedAt)) throw new Error("Срок ежедневной генерации завершён.");
       job.status = "ready"; job.stage = "Готово"; job.seconds = result.seconds; job.idea = result.idea; job.themeId = result.idea.themeId;
