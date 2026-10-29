@@ -162,9 +162,9 @@ export function createSocialService(
   }
   function list(uid: number) {
     return db
-      .listAccountsByUser(uid)
+      .listVisibleAccountsByUser(uid)
       .filter((a) => a.platform !== "youtube")
-      .map((a) => listForAccount(uid, a.id));
+      .map((a) => listForAccount(a.userId!, a.id));
   }
   function jobs(uid: number) {
     return db.db
@@ -535,6 +535,18 @@ export function createSocialService(
     db.deleteVideo(video.id);
     cleanupDrainedAutoExpireDecksForAccount(db, account);
   }
+  async function publishMapFile(uid: number, accountId: number, file: string, caption: string, onSubmit: () => void): Promise<string> {
+    const account = ownedAccount(uid, accountId), c = connection(accountId);
+    if (account.platform !== "tiktok" || c?.status !== "connected" || !c.handle || !c.profile_id)
+      throw new SocialError("Подтвердите вход в TikTok для канала карт.", 409);
+    return locked(accountId, () => metrics.track("upload", () => browser.publish("tiktok", readCookies(account),
+      { handle: c.handle!, userId: c.profile_id! }, file, caption, onSubmit)));
+  }
+  async function confirmMapPublication(uid: number, accountId: number, url: string): Promise<boolean> {
+    const account = ownedAccount(uid, accountId), c = connection(accountId);
+    if (!browser.confirmPublished || c?.status !== "connected" || !c.handle || !c.profile_id) return false;
+    return locked(accountId, () => browser.confirmPublished!("tiktok", readCookies(account), { handle: c.handle!, userId: c.profile_id! }, url));
+  }
   async function tick() {
     if (stopped || active) return;
     active = (async () => {
@@ -741,6 +753,8 @@ export function createSocialService(
     return accounts[0].id;
   }
   return {
+    publishMapFile,
+    confirmMapPublication,
     cancelForAccount,
     confirmNotPublishedForAccount,
     listForAccount,

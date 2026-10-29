@@ -50,6 +50,8 @@ import { registerVideoTemplateRoutes } from "./routes/video-templates.ts";
 import { registerVideoCuttingRoutes } from "./routes/video-cutting.ts";
 import { registerMapStudioRoutes } from "./routes/map-studio.ts";
 import { registerMapPipelineRoutes } from "./routes/map-pipeline.ts";
+import { MapPipelineService } from "./services/map-pipeline/service.ts";
+import { MapPublisher, mapLibraryOwners } from "./services/map-pipeline/publisher.ts";
 import { registerAccountsRoutes } from "./routes/accounts.ts";
 import { registerStatsRoutes } from "./routes/stats.ts";
 import { registerNotificationsRoutes } from "./routes/notifications.ts";
@@ -382,7 +384,9 @@ registerAdminRoutes(app, db, deps);
 registerAccountsRoutes(app, db, deps, socialService);
 registerChannelGroupRoutes(app, db, deps);
 registerMapStudioRoutes(app, db);
-const mapPipeline = registerMapPipelineRoutes(app, undefined, ownerId => isSuperAdminUser(db.getUserById(ownerId)));
+const mapPipelineService = new MapPipelineService({ readOwners: viewerId => mapLibraryOwners(db, viewerId), log: message => app.log.info(message) });
+const mapPublisher = new MapPublisher(db, mapPipelineService, socialService, { log: message => app.log.info(message) });
+const mapPipeline = registerMapPipelineRoutes(app, mapPipelineService, ownerId => isSuperAdminUser(db.getUserById(ownerId)), mapPublisher);
 registerVideoTemplateRoutes(app, db, resolve(process.cwd(), base.outputDir));
 registerVideoCuttingRoutes(app, db, resolve(process.cwd(), base.outputDir));
 registerStatsRoutes(app, db, deps);
@@ -445,6 +449,7 @@ app
             telegramDigestScheduler.stop();
             geminiTtsLocalJobs.stop();
             void mapPipeline.close();
+            void mapPublisher.close();
           },
           drainQueue: async () => { await Promise.all([genDrainQueue(), socialRunner.drain()]); },
           activeCounts: () => metrics.activeCounts(),

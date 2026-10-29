@@ -7,6 +7,32 @@ import { parseCredMeta, defaultClientLabel, type Row } from "./mappers.ts";
 
 export function applySchema(db: DatabaseSync): void {
   db.exec(`
+    CREATE TABLE IF NOT EXISTS account_viewers (
+      account_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      PRIMARY KEY(account_id,user_id)
+    );
+    CREATE TABLE IF NOT EXISTS map_publication_bindings (
+      owner_id INTEGER PRIMARY KEY,
+      account_id INTEGER NOT NULL UNIQUE,
+      enabled INTEGER NOT NULL DEFAULT 0
+    );
+    CREATE TABLE IF NOT EXISTS map_publications (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      map_job_id TEXT NOT NULL UNIQUE,
+      account_id INTEGER NOT NULL,
+      owner_id INTEGER NOT NULL,
+      day_key TEXT NOT NULL,
+      state TEXT NOT NULL,
+      caption TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      submitted_at TEXT,
+      published_at TEXT,
+      url TEXT,
+      error TEXT,
+      cleaned_at TEXT,
+      UNIQUE(account_id,day_key)
+    );
     CREATE TABLE IF NOT EXISTS social_channel_connections (
       account_id INTEGER PRIMARY KEY,
       user_id INTEGER NOT NULL,

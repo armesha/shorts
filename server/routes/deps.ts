@@ -200,12 +200,13 @@ export function makeRouteDeps(input: {
   // require the real admin role, so a moderator cannot turn a visual aggregate into write access.
   function visibleAccounts(req: unknown, scope?: string, readonly = false): Account[] {
     if (scope === "all" && (readonly ? isAdminLikeReq(req) : isAdminReq(req))) return db.listAccounts();
-    return db.listAccountsByUser(uid(req));
+    return readonly ? db.listVisibleAccountsByUser(uid(req)) : db.listAccountsByUser(uid(req));
   }
   function visibleAccount(req: unknown, id: number, readonly = false): Account | null {
     const a = db.getAccount(id);
     if (!a) return null;
     if (readonly && isAdminLikeReq(req)) return a;
+    if (readonly && db.db.prepare("SELECT 1 FROM account_viewers WHERE account_id=? AND user_id=?").get(id, uid(req))) return a;
     return a.userId === uid(req) || isSuperAdminReq(req) ? a : null;
   }
 

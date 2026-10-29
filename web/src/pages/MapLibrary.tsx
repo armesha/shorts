@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Download, RefreshCw, Play, Square, Film } from "lucide-react";
+import { ArrowLeft, Download, RefreshCw, Play, Square, Film, ExternalLink } from "lucide-react";
 import { get, send } from "../lib/api/http";
 
-type Job = { id: string; kind: "sample" | "daily"; status: "queued" | "running" | "ready" | "failed"; stage: string; createdAt: string; finishedAt?: string; idea?: { title: string }; error?: string; attempts?: number };
-type Library = { canGenerate?: boolean; campaign: { startedAt: string; endsAt: string; stoppedAt?: string; runs: { day: number; state: string }[] } | null; jobs: Job[] };
+type Job = { id: string; kind: "sample" | "daily"; status: "queued" | "running" | "ready" | "failed" | "published"; stage: string; createdAt: string; finishedAt?: string; idea?: { title: string }; error?: string; attempts?: number; publication?: { state: string; url?: string; error?: string; cleanedAt?: string } };
+type Target = { accountId: number; name: string; handle: string | null; enabled: boolean; connectionStatus: string };
+type Library = { canGenerate?: boolean; targets?: Target[]; campaign: { startedAt: string; endsAt: string; stoppedAt?: string; runs: { day: number; state: string }[] } | null; jobs: Job[] };
 const time = (value: string) => new Date(value).toLocaleString("ru-RU", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false });
 
 export default function MapLibrary() {
@@ -26,8 +27,14 @@ export default function MapLibrary() {
   }, []);
   const act = async (action: "samples" | "start" | "stop") => {
     setBusy(true); setError("");
-    try { const result = await send<Library>(`/map-pipeline/${action}`, "POST"); setData(previous => ({ ...result, canGenerate: previous?.canGenerate })); }
+    try { const result = await send<Library>(`/map-pipeline/${action}`, "POST"); setData(previous => ({ ...previous, ...result, canGenerate: previous?.canGenerate })); }
     catch (e) { setError(e instanceof Error ? e.message : "Действие не выполнено. Попробуйте ещё раз."); }
+    finally { setBusy(false); }
+  };
+  const togglePublishing = async (target: Target) => {
+    setBusy(true); setError("");
+    try { await send("/map-pipeline/publishing", "POST", { accountId: target.accountId, enabled: !target.enabled }); await refresh(); }
+    catch (e) { setError(e instanceof Error ? e.message : "Не удалось изменить публикацию."); }
     finally { setBusy(false); }
   };
   const campaign = data?.campaign;
@@ -41,11 +48,18 @@ export default function MapLibrary() {
         <h1 className="text-2xl font-bold">Библиотека карт</h1>
         <button type="button" className="btn btn-ghost btn-sm gap-2" onClick={() => void refresh()} disabled={busy}><RefreshCw size={16} />Обновить</button>
       </div>
-      <p className="max-w-2xl text-base-content/75">Готовые ролики с озвучкой сохраняются здесь. Под баннер выделено неподвижное место. Публикация в соцсети не подключена.</p>
+      <p className="max-w-2xl text-base-content/75">Ролики с озвучкой и неподвижным местом под баннер. После подтверждённой публикации локальные файлы удаляются, а ссылка остаётся в библиотеке.</p>
     </header>
     {error && <div role="alert" className="alert alert-error"><span>{error}</span></div>}
     {!data && !error && <p role="status">Загрузка библиотеки…</p>}
     {data && <>
+      {!!data.targets?.length && <section className="space-y-3" aria-label="Канал публикации">
+        <h2 className="text-lg font-semibold">Публикация в TikTok</h2>
+        {data.targets.map(target => <div key={target.accountId} className="flex flex-wrap items-center justify-between gap-3">
+          <div><Link to={`/accounts/${target.accountId}`} className="link font-medium">{target.handle ? `@${target.handle}` : target.name}</Link><p className="mt-1 text-sm text-base-content/75">{target.enabled ? "Включена: не больше одного ролика в сутки" : "Автопубликация выключена"}</p></div>
+          {data.canGenerate && <button type="button" className="btn btn-outline btn-sm" disabled={busy || target.connectionStatus !== "connected"} onClick={() => void togglePublishing(target)}>{target.enabled ? "Выключить публикацию" : "Включить публикацию"}</button>}
+        </div>)}
+      </section>}
       <section className="space-y-4 border-y border-base-300 py-6" aria-labelledby="map-schedule-title">
         <h2 id="map-schedule-title" className="text-lg font-semibold">Одно видео в день</h2>
         {campaign ? <div className="space-y-2">
@@ -55,14 +69,14 @@ export default function MapLibrary() {
         </div> : <p className="text-sm text-base-content/75">После запуска срок фиксируется. Перезапуск сервиса и повторное нажатие не продлевают его.</p>}
         <div className="flex flex-wrap gap-3">
           {!campaign && data.canGenerate && <button className="btn btn-primary gap-2" type="button" disabled={busy} onClick={() => void act("start")}><Play size={16} />Запустить на 20 дней</button>}
-          {campaign && !ended && !campaign.stoppedAt && <button className="btn btn-outline gap-2" type="button" disabled={busy} onClick={() => void act("stop")}><Square size={16} />Остановить расписание</button>}
+          {data.canGenerate && campaign && !ended && !campaign.stoppedAt && <button className="btn btn-outline gap-2" type="button" disabled={busy} onClick={() => void act("stop")}><Square size={16} />Остановить расписание</button>}
           {data.canGenerate && (samples.length < 2 || retry) && <button className="btn btn-outline gap-2" type="button" disabled={busy} onClick={() => void act("samples")}><Film size={16} />{retry ? "Повторить неудачные пробные" : "Создать два пробных ролика"}</button>}
-          {!data.canGenerate && <p className="text-sm text-base-content/75">Автоматическая генерация доступна администратору.</p>}
+          {!data.canGenerate && !campaign && <p className="text-sm text-base-content/75">Автоматическая генерация доступна главному администратору.</p>}
           {busy && <span className="self-center text-sm" role="status">Сохраняем…</span>}
         </div>
       </section>
       <section aria-labelledby="map-videos-title" className="space-y-5">
-        <h2 id="map-videos-title" className="text-lg font-semibold">Видео <span className="text-base-content/65">{data.jobs.filter(j => j.status === "ready").length}</span></h2>
+        <h2 id="map-videos-title" className="text-lg font-semibold">Видео <span className="text-base-content/65">{data.jobs.filter(j => j.status === "ready" || j.status === "published").length}</span></h2>
         {!data.jobs.length && <div className="py-12 text-center"><Film size={32} className="mx-auto mb-4 text-base-content/50" /><p className="font-medium">Здесь появятся готовые карты</p><p className="mt-2 text-sm text-base-content/70">Начните с двух пробных роликов или включите расписание.</p></div>}
         <div className="divide-y divide-base-300">
           {data.jobs.map((job, index) => <article key={job.id} className="flex flex-col gap-5 py-6 sm:flex-row">
@@ -72,6 +86,13 @@ export default function MapLibrary() {
               <p className="text-sm text-base-content/70">{job.kind === "sample" ? "Пробный" : "По расписанию"} · {time(job.createdAt)}</p>
               <p className={job.status === "failed" ? "text-error" : "text-base-content/80"} aria-live={index === 0 ? "polite" : "off"}>{job.stage}</p>
               {job.error && <p className="max-w-xl text-sm text-error">{job.error}</p>}
+              {job.publication?.error && <p className="max-w-xl text-sm text-warning-content">{job.publication.error}</p>}
+              {job.publication?.state === "uploading" && <p className="text-sm">Отправляется в TikTok…</p>}
+              {job.status !== "published" && job.publication?.url && <a className="link text-sm" href={job.publication.url} target="_blank" rel="noreferrer">Проверить отправку в TikTok</a>}
+              {job.status === "published" && job.publication?.url && <>
+                <a className="btn btn-outline btn-sm gap-2" href={job.publication.url} target="_blank" rel="noreferrer"><ExternalLink size={16} />Открыть в TikTok</a>
+                <p className="text-sm text-base-content/70">{job.publication.cleanedAt ? "Локальные файлы удалены. Ссылка сохранена." : "Публикация подтверждена. Очистка локальных файлов ожидается."}</p>
+              </>}
               {job.status === "ready" && <a className="btn btn-outline btn-sm gap-2" download href={`/api/map-pipeline/jobs/${job.id}/video`}><Download size={16} />Скачать MP4</a>}
               {(job.status === "queued" || job.status === "running") && <p className="text-sm text-base-content/65">Можно закрыть страницу — задача продолжит работать.</p>}
             </div>

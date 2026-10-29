@@ -63,9 +63,9 @@ export function historyMethods(db: DatabaseSync) {
       return (
         db
           .prepare(
-            "SELECT h.* FROM history h JOIN accounts a ON a.id = h.account_id WHERE a.user_id = ? ORDER BY h.id DESC LIMIT 100",
+            "SELECT h.* FROM history h JOIN accounts a ON a.id = h.account_id WHERE (a.user_id = ? OR EXISTS(SELECT 1 FROM account_viewers av WHERE av.account_id=a.id AND av.user_id=?)) ORDER BY h.id DESC LIMIT 100",
           )
-          .all(userId) as Row[]
+          .all(userId, userId) as Row[]
       ).map((r) => ({
         id: r.id,
         accountId: r.account_id,
@@ -89,8 +89,8 @@ export function historyMethods(db: DatabaseSync) {
         where.push("h.account_id = ?");
         args.push(opts.accountId);
       } else if (opts.ownerId != null) {
-        where.push("a.user_id = ?");
-        args.push(opts.ownerId);
+        where.push("(a.user_id = ? OR EXISTS(SELECT 1 FROM account_viewers av WHERE av.account_id=a.id AND av.user_id=?))");
+        args.push(opts.ownerId, opts.ownerId);
       }
       // «Только с ошибками»: ролики, которые в итоге не выложились (status=failed либо записан error).
       if (opts.onlyErrors) where.push("(h.status = 'failed' OR h.error IS NOT NULL)");
@@ -125,8 +125,8 @@ export function historyMethods(db: DatabaseSync) {
         where.push("h.account_id = ?");
         args.push(opts.accountId);
       } else if (opts.ownerId != null) {
-        where.push("a.user_id = ?");
-        args.push(opts.ownerId);
+        where.push("(a.user_id = ? OR EXISTS(SELECT 1 FROM account_viewers av WHERE av.account_id=a.id AND av.user_id=?))");
+        args.push(opts.ownerId, opts.ownerId);
       }
       if (opts.onlyErrors) where.push("(h.status = 'failed' OR h.error IS NOT NULL)");
       const sql =

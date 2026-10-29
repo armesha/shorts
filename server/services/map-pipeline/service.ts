@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, rename, writeFile, stat } from "node:fs/promises";
-import { resolve } from "node:path";
+import { mkdir, readFile, rename, writeFile, stat, rm, realpath } from "node:fs/promises";
+import { resolve, sep } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { z } from "zod";
 import { RateLimitError, withGlobalRenderSlot } from "../../infra/rate-limits.ts";
@@ -13,18 +13,20 @@ import { renderMapVideo } from "./render.ts";
 
 const JobSchema = z.object({
   id: z.string().uuid(), ownerId: z.number().int().positive(), kind: z.enum(["sample", "daily"]),
-  status: z.enum(["queued", "running", "ready", "failed"]), stage: z.string(),
+  status: z.enum(["queued", "running", "ready", "failed", "published"]), stage: z.string(),
   createdAt: z.string().datetime(), finishedAt: z.string().datetime().optional(),
   day: z.number().int().min(0).max(29).optional(), themeId: z.string().optional(),
   idea: z.object({ themeId: z.string(), title: z.string(), hook: z.string(), reason: z.string() }).optional(),
   error: z.string().optional(), seconds: z.number().positive().optional(),
   attempts: z.number().int().min(0).max(3).optional(),
+  publication: z.object({ state: z.enum(["uploading", "published", "needs_review", "failed"]), url: z.string().url().optional(), error: z.string().optional(), cleanedAt: z.string().datetime().optional() }).optional(),
 });
 export type MapJob = z.infer<typeof JobSchema>;
 type State = { version: 1; campaigns: Record<string, MapCampaign>; jobs: MapJob[] };
 export type PipelineOptions = {
   root?: string; source?: string; built?: string; log?: (message: string) => void;
   now?: () => number;
+  readOwners?: (viewerId: number) => number[];
   generate?: (job: MapJob, directory: string, signal: AbortSignal, stage: (message: string) => Promise<void>, used: string[]) => Promise<{ seconds: number; idea: MapIdea }>;
 };
 
@@ -93,8 +95,39 @@ export class MapPipelineService {
   }
   async list(ownerId: number) {
     await this.init();
-    return { campaign: structuredClone(this.state.campaigns[ownerId] || null),
-      jobs: structuredClone(this.state.jobs.filter(j => j.ownerId === ownerId).slice().reverse()), bannerSlot: BANNER_SLOT };
+    const owners = [...new Set([ownerId, ...(this.options.readOwners?.(ownerId) || [])])];
+    return { campaign: structuredClone(this.state.campaigns[ownerId] || owners.map(id => this.state.campaigns[id]).find(Boolean) || null),
+      jobs: structuredClone(this.state.jobs.filter(j => owners.includes(j.ownerId)).slice().reverse()), bannerSlot: BANNER_SLOT };
+  }
+  allowsPublication(ownerId: number, now: number): boolean {
+    const campaign = this.state.campaigns[ownerId];
+    return !this.closing && !!campaign && !campaign.stoppedAt && now >= Date.parse(campaign.startedAt) && now < Date.parse(campaign.endsAt);
+  }
+  async notePublication(ownerId: number, id: string, publication: NonNullable<MapJob["publication"]>) {
+    return this.mutate(async () => {
+      await this.init();
+      const job = this.state.jobs.find(j => j.ownerId === ownerId && j.id === id);
+      if (!job || !["ready", "published"].includes(job.status)) throw new Error("Видео для публикации недоступно.");
+      job.publication = publication;
+      if (publication.state === "published") {
+        if (!publication.url || !/^https:\/\/www\.tiktok\.com\/@[a-zA-Z0-9_.]+\/video\/\d+$/.test(publication.url)) throw new Error("Ссылка публикации не подтверждена.");
+        job.status = "published"; job.stage = "Опубликовано";
+      }
+      await this.save();
+    });
+  }
+  async removePublishedMedia(ownerId: number, id: string) {
+    await this.init();
+    const job = this.state.jobs.find(j => j.ownerId === ownerId && j.id === id);
+    if (!job || job.status !== "published" || !job.publication?.url) throw new Error("Удаление до подтверждения публикации запрещено.");
+    const directory = this.directory(job);
+    try {
+      const base = await realpath(resolve(this.source, "exports/daily-library", `u${ownerId}`));
+      const actual = await realpath(directory);
+      if (!actual.startsWith(base + sep) || actual !== resolve(base, job.id)) throw new Error("Неверная папка ролика.");
+      await rm(actual, { recursive: true, force: true });
+    } catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
+    await this.notePublication(ownerId, id, { ...job.publication, state: "published", cleanedAt: new Date(this.now()).toISOString() });
   }
   async samples(ownerId: number, rebuild = false) {
     return this.mutate(async () => {
@@ -159,7 +192,8 @@ export class MapPipelineService {
   }
   async file(ownerId: number, id: string, name: "video.mp4" | "poster.jpg") {
     await this.init();
-    const job = this.state.jobs.find(j => j.ownerId === ownerId && j.id === id && j.status === "ready");
+    const owners = [ownerId, ...(this.options.readOwners?.(ownerId) || [])];
+    const job = this.state.jobs.find(j => owners.includes(j.ownerId) && j.id === id && j.status === "ready");
     if (!job) return null;
     const file = resolve(this.directory(job), name);
     const info = await stat(file);

@@ -47,6 +47,14 @@ export function accountMethods(db: DatabaseSync) {
     listAccountsByUser(userId: number): Account[] {
       return accountsWithUploadsToday("WHERE a.user_id = ?", [userId]);
     },
+    listVisibleAccountsByUser(userId: number): Account[] {
+      return accountsWithUploadsToday("WHERE a.user_id = ? OR EXISTS(SELECT 1 FROM account_viewers av WHERE av.account_id=a.id AND av.user_id=?)", [userId, userId]);
+    },
+    shareAccountReadOnly(ownerId: number, accountId: number, viewerId: number): void {
+      if (this.getAccount(accountId)?.userId !== ownerId || !db.prepare("SELECT id FROM users WHERE id=?").get(viewerId)) throw new Error("Channel or viewer is unavailable");
+      db.prepare("INSERT OR IGNORE INTO account_viewers(account_id,user_id) VALUES (?,?)").run(accountId, viewerId);
+      invalidateReadCache();
+    },
     // One-time migration: existing channels (no owner) become the first admin's.
     assignOrphanAccounts(userId: number): void {
       db.prepare("UPDATE accounts SET user_id = ? WHERE user_id IS NULL").run(userId);
@@ -118,6 +126,7 @@ export function accountMethods(db: DatabaseSync) {
       return this.getAccount(id);
     },
     deleteAccount(id: number): void {
+      db.prepare("DELETE FROM account_viewers WHERE account_id = ?").run(id);
       db.prepare("DELETE FROM accounts WHERE id = ?").run(id);
       invalidateReadCache();
     },

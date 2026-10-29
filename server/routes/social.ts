@@ -7,7 +7,7 @@ import { SocialError, platformValue } from "../services/social/cookies.ts";
 export function registerSocialRoutes(
   app: FastifyInstance,
   service: SocialService,
-  deps?: Pick<RouteDeps, "accessibleAccount">,
+  deps?: Pick<RouteDeps, "accessibleAccount"> & Partial<Pick<RouteDeps, "visibleAccount">>,
 ) {
   app.register(async (routes) => {
     routes.addHook("onRequest", async (req, reply) => {
@@ -42,8 +42,10 @@ export function registerSocialRoutes(
       async (req: FastifyRequest, reply: FastifyReply) => {
         const accountId = Number((req.params as { id: string }).id);
         if (deps) {
-          const account = deps.accessibleAccount(req, reply, accountId);
-          if (!account) return;
+          const account = req.method === "GET" && deps.visibleAccount
+            ? deps.visibleAccount(req, accountId, true)
+            : deps.accessibleAccount(req, reply, accountId);
+          if (!account) return reply.sent ? undefined : reply.code(404).send({ error: "Канал не найден." });
           return action(account.userId ?? uid(req), accountId, req);
         }
         return action(uid(req), accountId, req);

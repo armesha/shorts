@@ -1,8 +1,27 @@
 import { chromium, type Cookie, type Page } from "playwright";
 import { SocialError, type SocialPlatform } from "./cookies.ts";
 
+export function postedTikTokItemId(raw: string): string | null {
+  if (raw.length > 2_000_000) return null;
+  try {
+    const body = JSON.parse(raw.replace(/("(?:item_id|itemId|id)"\s*:\s*)(\d{16,})(?=\s*[,}])/g, '$1"$2"'));
+    const ids = new Set<string>();
+    const visit = (value: unknown, depth = 0) => {
+      if (!value || typeof value !== "object" || depth > 8) return;
+      for (const [key, entry] of Object.entries(value)) {
+        if (["item_id", "itemId", "item_id_str"].includes(key) && /^[1-9]\d{14,24}$/.test(String(entry))) ids.add(String(entry));
+        else if (key === "item" && entry && typeof entry === "object" && /^[1-9]\d{14,24}$/.test(String((entry as { id?: unknown }).id))) ids.add(String((entry as { id: unknown }).id));
+        visit(entry, depth + 1);
+      }
+    };
+    visit(body);
+    return ids.size === 1 ? [...ids][0] : null;
+  } catch { return null; }
+}
+
 export type SocialProfile = { handle: string; userId: string };
 export interface SocialBrowser {
+  confirmPublished?(platform: SocialPlatform, cookies: Cookie[], profile: SocialProfile, url: string): Promise<boolean>;
   verify(platform: SocialPlatform, cookies: Cookie[]): Promise<SocialProfile>;
   publish(
     platform: SocialPlatform,
@@ -44,6 +63,17 @@ async function sessionProfile(
       .catch(() => null);
     if (result?.handle && result.userId === id) return result;
   } else {
+    const verified = await page.evaluate(async () => {
+      try {
+        const response = await fetch("/passport/web/account/info/?aid=1459", { credentials: "include" });
+        const body = await response.json();
+        const id = body?.data?.user_id_str || (typeof body?.data?.user_id === "string" ? body.data.user_id : "");
+        if (response.ok && body.message === "success" && body.data?.username && /^\d+$/.test(id))
+          return { handle: String(body.data.username), userId: id };
+      } catch { /* app state below supports older page versions */ }
+      return null;
+    }).catch(() => null);
+    if (verified?.handle && verified.userId) return verified;
     const profile = await page.evaluate(() => {
       const script = document.querySelector(
         "#__UNIVERSAL_DATA_FOR_REHYDRATION__",
@@ -108,6 +138,25 @@ export function createSocialBrowser(
     }
   }
   return {
+    confirmPublished: (platform, cookies, profile, url) => run(platform, cookies, async page => {
+      if (platform !== "tiktok") return false;
+      const match = /^https:\/\/www\.tiktok\.com\/@([a-zA-Z0-9_.]+)\/video\/(\d+)$/.exec(url);
+      if (!match || match[1] !== profile.handle) return false;
+      await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60_000 });
+      return page.evaluate(async ({ id, handle, url }) => {
+        try {
+          const data = JSON.parse(document.querySelector("#__UNIVERSAL_DATA_FOR_REHYDRATION__")?.textContent || "{}");
+          const item = data.__DEFAULT_SCOPE__?.["webapp.video-detail"]?.itemInfo?.itemStruct;
+          if (String(item?.id) === id && item?.author?.uniqueId === handle) return true;
+        } catch { /* oEmbed is an independent read-only publication check */ }
+        try {
+          const response = await fetch(`/oembed?url=${encodeURIComponent(url)}`);
+          const body = await response.json();
+          return response.ok && body.author_url?.replace(/\/$/, "") === `https://www.tiktok.com/@${handle}` &&
+            typeof body.html === "string" && body.html.includes(`data-video-id="${id}"`);
+        } catch { return false; }
+      }, { id: match[2], handle: profile.handle, url });
+    }),
     verify: (platform, cookies) =>
       run(platform, cookies, (page) => sessionProfile(page, platform, cookies)),
     publish: (platform, cookies, profile, file, caption, onSubmit) =>
@@ -129,6 +178,12 @@ export function createSocialBrowser(
             .setInputFiles(file, { timeout: 60_000 });
           const editor = page.locator('[contenteditable="true"]').first();
           await editor.waitFor({ timeout: 120_000 });
+          // Dismiss optional first-run prompts without changing account check settings.
+          await page.waitForTimeout(1000);
+          if (await page.getByText("Turn on automatic content checks?", { exact: true }).isVisible().catch(() => false))
+            await page.getByRole("button", { name: "Cancel", exact: true }).last().click();
+          if (await page.getByText("New editing features added", { exact: true }).isVisible().catch(() => false))
+            await page.getByRole("button", { name: "Got it", exact: true }).last().click();
           await editor.fill(caption);
           const post = page.getByRole("button", { name: /^Post$/i }).first();
           await post.waitFor({ timeout: 120_000 });
@@ -145,11 +200,11 @@ export function createSocialBrowser(
           onSubmit();
           const confirmation = page
             .waitForResponse(
-              (r) =>
-                r.request().method() === "POST" &&
-                /\/api\/v1\/item\/create\/|\/api\/post\/item\/commit\/|\/api\/post\/item\/create\//.test(
-                  new URL(r.url()).pathname,
-                ),
+              async r => {
+                const url = new URL(r.url());
+                if (!(url.hostname === "tiktok.com" || url.hostname.endsWith(".tiktok.com")) || !/post|publish|commit|project/i.test(url.pathname)) return false;
+                try { return !!postedTikTokItemId(await r.text()); } catch { return false; }
+              },
               { timeout: 120_000 },
             )
             .catch(() => null);
@@ -161,8 +216,7 @@ export function createSocialBrowser(
               409,
               true,
             );
-          const body = await response.json();
-          const id = body?.item_id || body?.data?.item_id || body?.item?.id;
+          const id = postedTikTokItemId(await response.text());
           if (response.ok() && id && /^\d+$/.test(String(id)))
             return `https://www.tiktok.com/@${actual.handle}/video/${id}`;
         } else {

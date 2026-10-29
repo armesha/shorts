@@ -2,17 +2,34 @@ import { createReadStream } from "node:fs";
 import type { FastifyInstance } from "fastify";
 import { uid } from "../infra/auth-session.ts";
 import { MapPipelineService } from "../services/map-pipeline/service.ts";
+import type { MapPublisher } from "../services/map-pipeline/publisher.ts";
 
-export function registerMapPipelineRoutes(app: FastifyInstance, service = new MapPipelineService({ log: message => app.log.info(message) }), canGenerate: (ownerId: number) => boolean = () => false) {
+export function registerMapPipelineRoutes(app: FastifyInstance, service = new MapPipelineService({ log: message => app.log.info(message) }), canGenerate: (ownerId: number) => boolean = () => false, publisher?: MapPublisher) {
   app.addHook("onReady", async () => {
     try { await service.start(); }
     catch { app.log.error("[maps] Конвейер не запущен: проверьте сохранённое состояние. Остальные функции доступны."); }
   });
   app.addHook("onClose", () => service.close());
+  if (publisher) {
+    app.addHook("onReady", async () => { try { await publisher.start(); } catch { app.log.error("[map-publish] Публикации не запущены; проверьте состояние очереди."); } });
+    app.addHook("onClose", () => publisher.close());
+    app.post("/api/map-pipeline/publishing", async (req, reply) => {
+      if (!uid(req)) return reply.code(401).send({ error: "Не авторизован" });
+      if (!canGenerate(uid(req))) return reply.code(403).send({ error: "Недостаточно прав." });
+      const body = req.body as { accountId?: unknown; enabled?: unknown } | null;
+      if (!body || !Number.isSafeInteger(body.accountId) || typeof body.enabled !== "boolean") return reply.code(400).send({ error: "Выберите канал публикации." });
+      if (req.headers.origin) {
+        try { if (new URL(req.headers.origin).host !== req.headers.host) return reply.code(403).send({ error: "Запрос с другого сайта запрещён." }); }
+        catch { return reply.code(403).send({ error: "Некорректный источник запроса." }); }
+      }
+      try { publisher.configure(uid(req), body.accountId as number, body.enabled); return { targets: publisher.info(uid(req)) }; }
+      catch { return reply.code(400).send({ error: "Нужен собственный подключённый TikTok-канал." }); }
+    });
+  }
   app.get("/api/map-pipeline", async (req, reply) => {
     if (!uid(req)) return reply.code(401).send({ error: "Не авторизован" });
     reply.header("Cache-Control", "private, no-store");
-    return { ...await service.list(uid(req)), canGenerate: canGenerate(uid(req)) };
+    return { ...await service.list(uid(req)), canGenerate: canGenerate(uid(req)), targets: publisher?.info(uid(req)) || [] };
   });
   for (const action of ["samples", "start", "stop", "deadline"] as const) {
     app.post(`/api/map-pipeline/${action}`, async (req, reply) => {
