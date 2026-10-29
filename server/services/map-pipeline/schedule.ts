@@ -1,5 +1,6 @@
 export const DAY_MS = 86_400_000;
-export const CAMPAIGN_DAYS = 30;
+export const CAMPAIGN_DAYS = 20;
+const MAX_CAMPAIGN_DAYS = 30;
 
 export type MapRun = {
   day: number;
@@ -31,13 +32,13 @@ export function validateCampaign(value: MapCampaign): void {
   const start = Date.parse(value.startedAt);
   const end = Date.parse(value.endsAt);
   if (!Number.isSafeInteger(value.ownerId) || value.ownerId <= 0 ||
-      !Number.isFinite(start) || end !== start + CAMPAIGN_DAYS * DAY_MS ||
-      !Array.isArray(value.runs) || value.runs.length > CAMPAIGN_DAYS)
+      !Number.isFinite(start) || !Number.isFinite(end) || end <= start || end > start + MAX_CAMPAIGN_DAYS * DAY_MS ||
+      !Array.isArray(value.runs) || value.runs.length > MAX_CAMPAIGN_DAYS)
     throw new Error("Invalid saved campaign");
   const days = new Set<number>();
   for (const run of value.runs) {
     const time = Date.parse(run.startedAt);
-    if (!Number.isInteger(run.day) || run.day < 0 || run.day >= CAMPAIGN_DAYS ||
+    if (!Number.isInteger(run.day) || run.day < 0 || run.day >= MAX_CAMPAIGN_DAYS ||
         days.has(run.day) || !Number.isFinite(time) || time < start || time >= end ||
         Math.floor((time - start) / DAY_MS) !== run.day ||
         !["running", "ready", "failed", "interrupted"].includes(run.state))

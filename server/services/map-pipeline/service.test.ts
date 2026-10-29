@@ -4,7 +4,7 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { MapPipelineService, type PipelineOptions } from "./service.ts";
-import { DAY_MS } from "./schedule.ts";
+import { DAY_MS, CAMPAIGN_DAYS } from "./schedule.ts";
 import { withGlobalRenderSlot } from "../../infra/rate-limits.ts";
 
 async function fixture() {
@@ -21,7 +21,7 @@ async function fixture() {
   return { root, options, advance: (days: number) => { now += days * DAY_MS; }, calls: () => calls };
 }
 
-test("two samples remain separate from thirty daily slots, including after restart", async () => {
+test("two samples remain separate from the configured daily slots, including after restart", async () => {
   const f = await fixture();
   let service = new MapPipelineService(f.options);
   try {
@@ -30,7 +30,7 @@ test("two samples remain separate from thirty daily slots, including after resta
     for (let i = 0; i < 2; i++) { await service.tick(); await service.idle(); }
     await service.begin(1);
     const end = (await service.list(1)).campaign!.endsAt;
-    for (let day = 0; day < 30; day++) {
+    for (let day = 0; day < CAMPAIGN_DAYS; day++) {
       await service.tick(); await service.idle();
       await service.tick(); await service.idle();
       if (day === 15) {
@@ -42,9 +42,9 @@ test("two samples remain separate from thirty daily slots, including after resta
     }
     await service.tick(); await service.idle();
     const list = await service.list(1);
-    assert.equal(list.jobs.filter(j => j.kind === "daily").length, 30);
-    assert.equal(list.jobs.filter(j => j.status === "ready").length, 32);
-    assert.equal(f.calls(), 32);
+    assert.equal(list.jobs.filter(j => j.kind === "daily").length, CAMPAIGN_DAYS);
+    assert.equal(list.jobs.filter(j => j.status === "ready").length, CAMPAIGN_DAYS + 2);
+    assert.equal(f.calls(), CAMPAIGN_DAYS + 2);
     assert.equal((await service.list(2)).jobs.length, 0);
     const job = list.jobs[0];
     assert.equal(await service.file(2, job.id, "video.mp4"), null);
@@ -59,6 +59,30 @@ test("explicit stop cannot be undone by repeated start and does not delete the l
     await service.stop(1); f.advance(1); await service.begin(1); await service.tick(); await service.idle();
     assert.equal(f.calls(), 1);
     assert.equal((await service.list(1)).jobs[0].status, "ready");
+  } finally { await service.close(); await rm(f.root, { recursive: true, force: true }); }
+});
+
+test("legacy thirty-day schedule can be shortened by date without extending or resetting it", async () => {
+  const f = await fixture(); let service = new MapPipelineService(f.options);
+  try {
+    await service.begin(1); await service.tick(); await service.idle(); await service.close();
+    const file = join(f.options.root!, "state.json");
+    const state = JSON.parse(await readFile(file, "utf8"));
+    state.campaigns[1].endsAt = new Date(Date.parse(state.campaigns[1].startedAt) + 30 * DAY_MS).toISOString();
+    await writeFile(file, JSON.stringify(state));
+    service = new MapPipelineService(f.options);
+    const original = (await service.list(1)).campaign!;
+    await service.shortenDeadline(1, "2026-11-19T23:00:00.000Z");
+    await service.begin(1);
+    const result = await service.list(1);
+    assert.equal(result.campaign!.startedAt, original.startedAt);
+    assert.equal(result.campaign!.endsAt, "2026-11-19T23:00:00.000Z");
+    assert.equal(result.jobs[0].status, "ready");
+    await assert.rejects(service.shortenDeadline(1, original.endsAt));
+    f.advance(21); await service.tick(); await service.idle();
+    assert.equal(f.calls(), 2);
+    f.advance(1); await service.tick(); await service.idle();
+    assert.equal(f.calls(), 2);
   } finally { await service.close(); await rm(f.root, { recursive: true, force: true }); }
 });
 

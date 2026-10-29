@@ -14,7 +14,7 @@ export function registerMapPipelineRoutes(app: FastifyInstance, service = new Ma
     reply.header("Cache-Control", "private, no-store");
     return { ...await service.list(uid(req)), canGenerate: canGenerate(uid(req)) };
   });
-  for (const action of ["samples", "start", "stop"] as const) {
+  for (const action of ["samples", "start", "stop", "deadline"] as const) {
     app.post(`/api/map-pipeline/${action}`, async (req, reply) => {
       if (!uid(req)) return reply.code(401).send({ error: "Не авторизован" });
       if (action !== "stop" && !canGenerate(uid(req))) return reply.code(403).send({ error: "Автоматическая генерация доступна администратору." });
@@ -23,6 +23,12 @@ export function registerMapPipelineRoutes(app: FastifyInstance, service = new Ma
         catch { return reply.code(403).send({ error: "Некорректный источник запроса." }); }
       }
       try {
+        if (action === "deadline") {
+          const endsAt = (req.body as { endsAt?: unknown } | null)?.endsAt;
+          if (typeof endsAt !== "string" || !Number.isFinite(Date.parse(endsAt))) return reply.code(400).send({ error: "Укажите дату остановки." });
+          try { return await service.shortenDeadline(uid(req), endsAt); }
+          catch { return reply.code(400).send({ error: "Можно только сократить действующее расписание до будущей даты." }); }
+        }
         const rebuild = action === "samples" && (req.body as { rebuild?: unknown } | null)?.rebuild === true;
         return await (action === "samples" ? service.samples(uid(req), rebuild) : action === "start" ? service.begin(uid(req)) : service.stop(uid(req)));
       } catch { return reply.code(503).send({ error: "Конвейер недоступен. Сохранённые видео остаются в библиотеке." }); }

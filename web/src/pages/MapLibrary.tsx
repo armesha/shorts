@@ -47,14 +47,14 @@ export default function MapLibrary() {
     {!data && !error && <p role="status">Загрузка библиотеки…</p>}
     {data && <>
       <section className="space-y-4 border-y border-base-300 py-6" aria-labelledby="map-schedule-title">
-        <h2 id="map-schedule-title" className="text-lg font-semibold">Одно видео в день · 30 дней</h2>
+        <h2 id="map-schedule-title" className="text-lg font-semibold">Одно видео в день</h2>
         {campaign ? <div className="space-y-2">
           <p className="font-medium">{campaign.stoppedAt ? "Расписание остановлено" : ended ? "Срок генерации завершён" : "Ежедневная генерация включена"}</p>
           <p className="text-sm text-base-content/75">Начало: {time(campaign.startedAt)}. Автоматическая остановка: {time(campaign.endsAt)}.</p>
-          <p className="text-sm text-base-content/75">Готово по расписанию: {campaign.runs.filter(r => r.state === "ready").length} из 30. Два пробных ролика считаются отдельно.</p>
+          <p className="text-sm text-base-content/75">Готово по расписанию: {campaign.runs.filter(r => r.state === "ready").length}. Два пробных ролика считаются отдельно.</p>
         </div> : <p className="text-sm text-base-content/75">После запуска срок фиксируется. Перезапуск сервиса и повторное нажатие не продлевают его.</p>}
         <div className="flex flex-wrap gap-3">
-          {!campaign && data.canGenerate && <button className="btn btn-primary gap-2" type="button" disabled={busy} onClick={() => void act("start")}><Play size={16} />Запустить на 30 дней</button>}
+          {!campaign && data.canGenerate && <button className="btn btn-primary gap-2" type="button" disabled={busy} onClick={() => void act("start")}><Play size={16} />Запустить на 20 дней</button>}
           {campaign && !ended && !campaign.stoppedAt && <button className="btn btn-outline gap-2" type="button" disabled={busy} onClick={() => void act("stop")}><Square size={16} />Остановить расписание</button>}
           {data.canGenerate && (samples.length < 2 || retry) && <button className="btn btn-outline gap-2" type="button" disabled={busy} onClick={() => void act("samples")}><Film size={16} />{retry ? "Повторить неудачные пробные" : "Создать два пробных ролика"}</button>}
           {!data.canGenerate && <p className="text-sm text-base-content/75">Автоматическая генерация доступна администратору.</p>}

@@ -38,6 +38,7 @@ export class MapPipelineService {
   private mutationTail: Promise<unknown> = Promise.resolve();
   private active: Promise<void> | undefined;
   private controller: AbortController | undefined;
+  private deadline: ReturnType<typeof setTimeout> | undefined;
   private current: MapJob | undefined;
   private timer: ReturnType<typeof setInterval> | undefined;
   private closing = false;
@@ -132,6 +133,26 @@ export class MapPipelineService {
       return this.list(ownerId);
     });
   }
+  async shortenDeadline(ownerId: number, endsAt: string) {
+    return this.mutate(async () => {
+      await this.init();
+      const campaign = this.state.campaigns[ownerId];
+      const end = Date.parse(endsAt);
+      if (!campaign || !Number.isFinite(end) || end <= this.now() || end > Date.parse(campaign.endsAt) ||
+          campaign.runs.some(r => Date.parse(r.startedAt) >= end)) throw new Error("Нельзя продлить расписание или указать прошедшую дату.");
+      campaign.endsAt = new Date(end).toISOString();
+      validateCampaign(campaign);
+      if (this.current?.ownerId === ownerId && this.current.kind === "daily") this.armDeadline(campaign);
+      await this.save();
+      return this.list(ownerId);
+    });
+  }
+  private armDeadline(campaign: MapCampaign) {
+    if (this.deadline) clearTimeout(this.deadline);
+    const controller = this.controller;
+    this.deadline = setTimeout(() => controller?.abort(), Math.max(0, Math.min(Date.parse(campaign.endsAt) - this.now(), 2_147_483_647)));
+    this.deadline.unref();
+  }
   private newJob(ownerId: number, kind: MapJob["kind"], day?: number): MapJob {
     if (!Number.isSafeInteger(ownerId) || ownerId <= 0) throw new Error("Invalid library owner");
     return { id: randomUUID(), ownerId, kind, day, status: "queued", stage: "В очереди", createdAt: new Date(this.now()).toISOString() };
@@ -170,7 +191,7 @@ export class MapPipelineService {
     const controller = this.controller = new AbortController();
     const campaign = job.kind === "daily" ? this.state.campaigns[job.ownerId] : undefined;
     const remaining = campaign ? Date.parse(campaign.endsAt) - this.now() : Infinity;
-    const deadline = Number.isFinite(remaining) ? setTimeout(() => controller.abort(), Math.max(0, Math.min(remaining, 2_147_483_647))) : undefined;
+    if (campaign) this.armDeadline(campaign);
     // Node timers cannot exceed ~24.8 days; only the currently running day's remaining window matters.
     const hardLimit = setTimeout(() => controller.abort(), 4 * 3600_000);
     const stage = async (message: string) => { job.stage = message; await this.save(); this.options.log?.(`[maps] ${job.id}: ${message}`); };
@@ -202,7 +223,7 @@ export class MapPipelineService {
       job.error = controller.signal.aborted ? "Генерация остановлена по сроку или при выключении сервиса." : error instanceof Error ? error.message : "Не удалось создать видео.";
       this.options.log?.(`[maps] ${job.id}: ${job.error}`);
     } finally {
-      if (deadline) clearTimeout(deadline); clearTimeout(hardLimit);
+      if (this.deadline) clearTimeout(this.deadline); this.deadline = undefined; clearTimeout(hardLimit);
       job.finishedAt = new Date(this.now()).toISOString();
       const run = campaign?.runs.find(r => r.day === job.day);
       if (run) { run.state = job.status === "ready" ? "ready" : "failed"; run.finishedAt = job.finishedAt; if (job.status === "ready") run.video = job.id; }

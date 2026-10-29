@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createCampaign, claimDay, recoverCampaign, DAY_MS, CAMPAIGN_DAYS } from "./schedule.ts";
 
-test("campaign expires exactly after thirty days and never catches up missed days", () => {
+test("campaign expires exactly after twenty days and never catches up missed days", () => {
   const start = Date.UTC(2026, 9, 28, 12);
   const campaign = createCampaign(1, start);
   assert.equal(claimDay(campaign, start - 1), null);
@@ -37,4 +37,13 @@ test("parallel work and corrupted deadlines fail closed", () => {
   assert.equal(claimDay(campaign, start + DAY_MS), null);
   campaign.endsAt = new Date(start + 31 * DAY_MS).toISOString();
   assert.throws(() => claimDay(campaign, start + 1), /Invalid saved campaign/);
+});
+
+test("an explicit deadline includes November 19 in Prague and excludes November 20", () => {
+  const campaign = createCampaign(1, Date.parse("2026-10-29T12:28:52.583Z"));
+  campaign.endsAt = "2026-11-19T23:00:00.000Z";
+  const last = claimDay(campaign, Date.parse("2026-11-19T22:59:59.999Z"));
+  assert.ok(last);
+  last.state = "ready";
+  assert.equal(claimDay(campaign, Date.parse("2026-11-19T23:00:00.000Z")), null);
 });
