@@ -13,13 +13,13 @@ import { renderMapVideo } from "./render.ts";
 
 const JobSchema = z.object({
   id: z.string().uuid(), ownerId: z.number().int().positive(), kind: z.enum(["sample", "daily"]),
-  status: z.enum(["queued", "running", "ready", "failed", "published"]), stage: z.string(),
+  status: z.enum(["queued", "running", "ready", "failed", "published", "removed"]), stage: z.string(),
   createdAt: z.string().datetime(), finishedAt: z.string().datetime().optional(),
   day: z.number().int().min(0).max(29).optional(), themeId: z.string().optional(),
   idea: z.object({ themeId: z.string(), title: z.string(), hook: z.string(), reason: z.string() }).optional(),
   error: z.string().optional(), seconds: z.number().positive().optional(),
   attempts: z.number().int().min(0).max(3).optional(),
-  publication: z.object({ state: z.enum(["uploading", "published", "needs_review", "failed"]), url: z.string().url().optional(), error: z.string().optional(), cleanedAt: z.string().datetime().optional() }).optional(),
+  publication: z.object({ state: z.enum(["uploading", "published", "needs_review", "failed", "removed"]), url: z.string().url().optional(), error: z.string().optional(), cleanedAt: z.string().datetime().optional() }).optional(),
 });
 export type MapJob = z.infer<typeof JobSchema>;
 type State = { version: 1; campaigns: Record<string, MapCampaign>; jobs: MapJob[] };
@@ -107,12 +107,13 @@ export class MapPipelineService {
     return this.mutate(async () => {
       await this.init();
       const job = this.state.jobs.find(j => j.ownerId === ownerId && j.id === id);
-      if (!job || !["ready", "published"].includes(job.status)) throw new Error("Видео для публикации недоступно.");
+      if (!job || !["ready", "published", "removed"].includes(job.status)) throw new Error("Видео для публикации недоступно.");
       job.publication = publication;
       if (publication.state === "published") {
         if (!publication.url || !/^https:\/\/www\.tiktok\.com\/@[a-zA-Z0-9_.]+\/video\/\d+$/.test(publication.url)) throw new Error("Ссылка публикации не подтверждена.");
         job.status = "published"; job.stage = "Опубликовано";
       }
+      if (publication.state === "removed") { job.status = "removed"; job.stage = "Удалено из TikTok"; }
       await this.save();
     });
   }

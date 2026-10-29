@@ -19,7 +19,7 @@ function statusClass(s: string): string {
 }
 
 // «Посмотреть»: опубликованные → YouTube (Shorts), иначе локальный файл (если ещё не удалён).
-const HISTORY_STATES: Record<string, string> = {published:"Опубликовано",scheduled:"Запланировано",failed:"Ошибка",needs_review:"Проверьте профиль",pending:"В очереди",cancelled:"Отменено"};
+const HISTORY_STATES: Record<string, string> = {published:"Опубликовано",scheduled:"Запланировано",failed:"Ошибка",needs_review:"Проверьте профиль",pending:"В очереди",cancelled:"Отменено",deleted:"Удалено"};
 function watchUrl(h: HistoryItem): string | null {
   if (h.platformUrl) return h.platformUrl;
   if (h.youtubeId) return `https://www.youtube.com/shorts/${h.youtubeId}`;

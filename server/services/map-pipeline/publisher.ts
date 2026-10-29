@@ -4,6 +4,7 @@ import type { Db } from "../../db.ts";
 import type { SocialService } from "../social/store.ts";
 import { DAY_MS } from "./schedule.ts";
 import { MapPipelineService, type MapJob } from "./service.ts";
+import { VIDEO_SECONDS } from "./theme.ts";
 
 type Binding = { owner_id: number; account_id: number; enabled: number };
 type Publication = { id: number; map_job_id: string; account_id: number; owner_id: number; day_key: string; state: string; caption: string; created_at: string; submitted_at: string | null; published_at: string | null; url: string | null; error: string | null; cleaned_at: string | null };
@@ -31,6 +32,13 @@ export class MapPublisher {
     const owners = [viewerId, ...mapLibraryOwners(this.db, viewerId)];
     const rows = this.db.db.prepare("SELECT b.*,a.channel_name,a.social_handle,c.status AS connection_status FROM map_publication_bindings b JOIN accounts a ON a.id=b.account_id LEFT JOIN social_channel_connections c ON c.account_id=a.id").all() as any[];
     return rows.filter(r => owners.includes(r.owner_id)).map(r => ({ accountId: r.account_id, name: r.channel_name, handle: r.social_handle, enabled: !!r.enabled, connectionStatus: r.connection_status }));
+  }
+  async recordRemoval(ownerId: number, jobId: string) {
+    const row = this.db.db.prepare("SELECT * FROM map_publications WHERE owner_id=? AND map_job_id=? AND state IN ('published','removed')").get(ownerId, jobId) as Publication | undefined;
+    if (!row?.url) throw new Error("Подтверждённая публикация не найдена.");
+    this.db.db.prepare("UPDATE map_publications SET state='removed' WHERE id=?").run(row.id);
+    await this.pipeline.notePublication(ownerId, jobId, { state: "removed", url: row.url, ...(row.cleaned_at ? { cleanedAt: row.cleaned_at } : {}) });
+    this.db.db.prepare("UPDATE history SET status='deleted' WHERE account_id=? AND platform_url=?").run(row.account_id, row.url);
   }
   async start() {
     if (!this.initialized) {
@@ -74,7 +82,7 @@ export class MapPublisher {
       if (last && this.now() - Date.parse(last.created_at) < DAY_MS) continue;
       const day = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Prague", year: "numeric", month: "2-digit", day: "2-digit" }).format(this.now());
       if (this.db.db.prepare("SELECT id FROM map_publications WHERE account_id=? AND day_key=?").get(binding.account_id, day)) continue;
-      const job = state.jobs.slice().reverse().find(j => j.ownerId === binding.owner_id && j.status === "ready" && !this.db.db.prepare("SELECT id FROM map_publications WHERE map_job_id=?").get(j.id));
+      const job = state.jobs.slice().reverse().find(j => j.ownerId === binding.owner_id && j.status === "ready" && j.seconds === VIDEO_SECONDS && !this.db.db.prepare("SELECT id FROM map_publications WHERE map_job_id=?").get(j.id));
       if (!job) continue;
       await this.publish(binding, job, day, Date.parse(campaign.endsAt));
     }

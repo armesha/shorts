@@ -8,13 +8,14 @@ import { localPlannerArgs } from "../video-cutting.ts";
 import { BANNER_SLOT, VIDEO_SECONDS, mapSubtitles } from "./theme.ts";
 import { mapPlannerExecutable, type MapIdea } from "./planner.ts";
 import type { Metric } from "./sources.ts";
+import { mapNarration } from "./narration.ts";
 
 const MIME: Record<string, string> = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".geojson": "application/json", ".woff2": "font/woff2", ".woff": "font/woff", ".ttf": "font/ttf", ".png": "image/png", ".webp": "image/webp", ".jpg": "image/jpeg", ".svg": "image/svg+xml" };
 
 export async function serveRenderScene(source: string, built: string, theme: any) {
   const index = (await readFile(resolve(built, "index.html"), "utf8")).replace("</head>", `<style>
-    html.capture-mode #map{position:absolute;top:230px;height:1250px;width:1080px}
-    html.capture-mode .map-legend{top:255px;font-size:30px;right:35px}
+    html.capture-mode #map{position:absolute;top:270px;height:1210px;width:1080px}
+    html.capture-mode .map-legend{top:295px;font-size:30px;right:35px}
     html.capture-mode .winner-banner{bottom:455px;width:88%;font-size:31px}
     html.capture-mode .floating-watermark{display:none!important}
     </style></head>`);
@@ -44,14 +45,23 @@ export async function renderMapVideo(input: { source: string; built: string; dir
   const { source, directory, theme, idea, metric, signal } = input;
   const run = (bin: string, args: string[], cwd = process.cwd(), timeoutMs = 120_000) => runCuttingProcess(bin, args, { cwd, signal, timeoutMs });
   const probe = async (file: string) => JSON.parse(await run("ffprobe", ["-v", "error", "-show_streams", "-show_format", "-of", "json", file]));
-  await writeFile(resolve(directory, "voice-input.json"), JSON.stringify({ text: idea.hook }));
+  const narration = mapNarration(idea, metric);
+  const voiceUsed = resolve(directory, "voice-used.json");
+  let cachedText = "";
+  try { cachedText = JSON.parse(await readFile(voiceUsed, "utf8")).text; } catch { /* old cache needs regeneration */ }
+  await writeFile(resolve(directory, "voice-input.json"), JSON.stringify({ text: narration }));
   await input.stage("Озвучка Kore");
   const envFile = resolve(source, ".env");
   const voice = resolve(directory, "voice.wav");
-  if (!existsSync(voice)) await run(process.execPath, [...(existsSync(envFile) ? [`--env-file=${envFile}`] : []), "--import", "tsx", "scripts/map-pipeline-voice.ts", resolve(directory, "voice-input.json"), voice]);
+  if (!existsSync(voice) || cachedText !== narration) {
+    const pendingVoice = resolve(directory, "voice.pending.wav");
+    await run(process.execPath, [...(existsSync(envFile) ? [`--env-file=${envFile}`] : []), "--import", "tsx", "scripts/map-pipeline-voice.ts", resolve(directory, "voice-input.json"), pendingVoice]);
+    await rename(pendingVoice, voice);
+    await writeFile(voiceUsed, JSON.stringify({ text: narration }));
+  }
   const voiceProbe = await probe(voice);
   const speechSeconds = Number(voiceProbe.format.duration);
-  if (!(speechSeconds > 0.5 && speechSeconds <= 8)) throw new Error("Вступительная озвучка вышла за допустимую длительность.");
+  if (!(speechSeconds > 0.5 && speechSeconds <= 45)) throw new Error("Объяснение показателя вышло за допустимую длительность.");
   await writeFile(resolve(directory, "subtitles.ass"), mapSubtitles(idea, metric, speechSeconds));
   const music = resolve(source, "public/audio/music-reference/carefree.mp3");
   const audio = resolve(directory, "soundtrack.m4a");
@@ -85,20 +95,20 @@ export async function renderMapVideo(input: { source: string; built: string; dir
   try { await handle.read(header, 0, header.length, 0); } finally { await handle.close(); }
   if (header.indexOf("moov") < 0 || header.indexOf("moov") > header.indexOf("mdat") && header.indexOf("mdat") >= 0) throw new Error("MP4 не подготовлен для быстрого воспроизведения.");
   const images: string[] = [];
-  for (const [index, second] of [0, 3, 30, 60, 85].entries()) {
+  for (const [index, second] of [0, 3, VIDEO_SECONDS / 3, VIDEO_SECONDS * 2 / 3, VIDEO_SECONDS - 5].entries()) {
     const image = resolve(directory, `frame-${index}.jpg`);
     await run("ffmpeg", ["-y", "-ss", String(second), "-i", final, "-frames:v", "1", "-q:v", "2", image]);
     images.push(image);
   }
   await copyFile(images[2], resolve(directory, "poster.jpg"));
-  await run("ffmpeg", ["-y", "-i", final, "-vf", "fps=1/18,scale=270:480,tile=5x1", "-frames:v", "1", resolve(directory, "contact-sheet.jpg")]);
+  await run("ffmpeg", ["-y", "-i", final, "-vf", `fps=1/${VIDEO_SECONDS / 5},scale=270:480,tile=5x1`, "-frames:v", "1", resolve(directory, "contact-sheet.jpg")]);
   const reviewDir = resolve(directory, "review");
   await import("node:fs/promises").then(fs => fs.mkdir(reviewDir, { recursive: true }));
   await writeFile(resolve(reviewDir, "plan-schema.json"), JSON.stringify({ type: "object", additionalProperties: false, required: ["passed", "issues"], properties: { passed: { type: "boolean" }, issues: { type: "array", items: { type: "string" } } } }));
   const args = localPlannerArgs(reviewDir);
   args.splice(args.length - 1, 0, ...images.flatMap(file => ["--image", file]));
   await runCuttingProcess(mapPlannerExecutable(), args, { cwd: reviewDir, signal, timeoutMs: 240_000,
-    stdin: `Проверь реальные кадры ролика. Критерии: читаемый постоянный заголовок, карта и числовые метки без артефактов, итоговая карточка без обрезки, нижнее неподвижное место под баннер не занято движущимся водяным знаком. Первые кадры могут показывать ещё не раскрытую карту. Проверяй только наблюдаемое; не выдумывай проблемы из отсутствия звука на картинках. Верни passed=true только при отсутствии существенных видимых ошибок, иначе перечисли issues. Заголовок: ${idea.title}; показатель: ${metric.name}; единицы: ${metric.unit}; год: ${metric.year}. Полоса баннера: ${JSON.stringify(BANNER_SLOT)}. Вступление: ${idea.hook}.` });
+    stdin: `Проверь реальные кадры ролика. Критерии: на метках только числа без знака процента и единиц (≈ допустимо для оценок), единицы объясняются голосом; читаемый постоянный заголовок, карта и числовые метки без артефактов, итоговая карточка без обрезки, нижнее неподвижное место под баннер не занято движущимся водяным знаком. Первые кадры могут показывать ещё не раскрытую карту. Проверяй только наблюдаемое; не выдумывай проблемы из отсутствия звука на картинках. Верни passed=true только при отсутствии существенных видимых ошибок, иначе перечисли issues. Заголовок: ${idea.title}; показатель: ${metric.name}; единицы: ${metric.unit}; год: ${metric.year}. Полоса баннера: ${JSON.stringify(BANNER_SLOT)}. Вступление: ${idea.hook}.` });
   const review = JSON.parse(await readFile(resolve(reviewDir, "plan-result.json"), "utf8"));
   await writeFile(resolve(directory, "qa.json"), JSON.stringify({ media, review, bannerSlot: BANNER_SLOT, speechSeconds, subtitleTiming: "word durations proportional to character lengths within measured audio interval", checkedAt: new Date().toISOString() }, null, 2));
   if (review.passed !== true || !Array.isArray(review.issues) || review.issues.length) throw new Error("Видео требует исправления после проверки кадров.");

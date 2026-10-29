@@ -6,8 +6,9 @@ import { join } from "node:path";
 import { openDb } from "../../db.ts";
 import { MapPipelineService } from "./service.ts";
 import { MapPublisher, mapLibraryOwners } from "./publisher.ts";
+import { VIDEO_SECONDS } from "./theme.ts";
 
-async function fixture(confirmed = true, throwAfterSubmit = false) {
+async function fixture(confirmed = true, throwAfterSubmit = false, seconds = VIDEO_SECONDS) {
   const root = await mkdtemp(join(tmpdir(), "map-publish-"));
   const db = openDb(":memory:");
   const owner = db.createUser({ username: "owner", passHash: "test" });
@@ -23,7 +24,7 @@ async function fixture(confirmed = true, throwAfterSubmit = false) {
       await writeFile(join(directory, "video.mp4"), "synthetic-video");
       await writeFile(join(directory, "voice.wav"), "synthetic-voice");
       await writeFile(join(directory, "metadata.json"), JSON.stringify({ source: "https://api.worldbank.org/v2/", metric: { year: 2023 } }));
-      return { seconds: 90, idea: { themeId: job.id, title: "Тест", hook: "Тест", reason: "Тест" } };
+      return { seconds, idea: { themeId: job.id, title: "Тест", hook: "Тест", reason: "Тест" } };
     } });
   const delivery = { publishMapFile: async (_uid: number, _account: number, _file: string, caption: string, submit: () => void) => {
     uploads++; assert.ok(caption.includes("Kevin MacLeod")); submit(); if (throwAfterSubmit) throw Error("Uncertain result"); return `https://www.tiktok.com/@test/video/${uploads}`;
@@ -71,6 +72,14 @@ test("an accepted upload without visible publication retains media and is never 
     assert.equal(f.uploads(), 1);
     assert.equal((await f.pipeline.list(f.owner.id)).jobs.find(j => j.id === pending.id)!.status, "published");
     await assert.rejects(stat(f.pipeline.directory(pending)), { code: "ENOENT" });
+  } finally { await f.close(); }
+});
+
+test("old accelerated videos stay local instead of being posted as the revised format", async () => {
+  const f = await fixture(true, false, 90);
+  try {
+    await f.publisher.tick(); assert.equal(f.uploads(), 0);
+    for (const job of (await f.pipeline.list(f.owner.id)).jobs) assert.ok(await stat(join(f.pipeline.directory(job), "video.mp4")));
   } finally { await f.close(); }
 });
 

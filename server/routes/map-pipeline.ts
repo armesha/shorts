@@ -11,6 +11,16 @@ export function registerMapPipelineRoutes(app: FastifyInstance, service = new Ma
   });
   app.addHook("onClose", () => service.close());
   if (publisher) {
+    app.post("/api/map-pipeline/jobs/:id/removed", async (req, reply) => {
+      if (!uid(req)) return reply.code(401).send({ error: "Не авторизован" });
+      if (!canGenerate(uid(req))) return reply.code(403).send({ error: "Недостаточно прав." });
+      if (req.headers.origin) {
+        try { if (new URL(req.headers.origin).host !== req.headers.host) return reply.code(403).send({ error: "Запрос с другого сайта запрещён." }); }
+        catch { return reply.code(403).send({ error: "Некорректный источник запроса." }); }
+      }
+      try { await publisher.recordRemoval(uid(req), (req.params as { id: string }).id); return { ok: true }; }
+      catch { return reply.code(400).send({ error: "Не удалось обновить запись публикации." }); }
+    });
     app.addHook("onReady", async () => { try { await publisher.start(); } catch { app.log.error("[map-publish] Публикации не запущены; проверьте состояние очереди."); } });
     app.addHook("onClose", () => publisher.close());
     app.post("/api/map-pipeline/publishing", async (req, reply) => {

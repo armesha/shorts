@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, Download, RefreshCw, Play, Square, Film, ExternalLink } from "lucide-react";
 import { get, send } from "../lib/api/http";
 
-type Job = { id: string; kind: "sample" | "daily"; status: "queued" | "running" | "ready" | "failed" | "published"; stage: string; createdAt: string; finishedAt?: string; idea?: { title: string }; error?: string; attempts?: number; publication?: { state: string; url?: string; error?: string; cleanedAt?: string } };
+type Job = { id: string; kind: "sample" | "daily"; status: "queued" | "running" | "ready" | "failed" | "published" | "removed"; stage: string; createdAt: string; finishedAt?: string; idea?: { title: string }; error?: string; attempts?: number; publication?: { state: string; url?: string; error?: string; cleanedAt?: string } };
 type Target = { accountId: number; name: string; handle: string | null; enabled: boolean; connectionStatus: string };
 type Library = { canGenerate?: boolean; targets?: Target[]; campaign: { startedAt: string; endsAt: string; stoppedAt?: string; runs: { day: number; state: string }[] } | null; jobs: Job[] };
 const time = (value: string) => new Date(value).toLocaleString("ru-RU", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false });
@@ -88,7 +88,7 @@ export default function MapLibrary() {
               {job.error && <p className="max-w-xl text-sm text-error">{job.error}</p>}
               {job.publication?.error && <p className="max-w-xl text-sm text-warning-content">{job.publication.error}</p>}
               {job.publication?.state === "uploading" && <p className="text-sm">Отправляется в TikTok…</p>}
-              {job.status !== "published" && job.publication?.url && <a className="link text-sm" href={job.publication.url} target="_blank" rel="noreferrer">Проверить отправку в TikTok</a>}
+              {job.status === "ready" && job.publication?.url && <a className="link text-sm" href={job.publication.url} target="_blank" rel="noreferrer">Проверить отправку в TikTok</a>}
               {job.status === "published" && job.publication?.url && <>
                 <a className="btn btn-outline btn-sm gap-2" href={job.publication.url} target="_blank" rel="noreferrer"><ExternalLink size={16} />Открыть в TikTok</a>
                 <p className="text-sm text-base-content/70">{job.publication.cleanedAt ? "Локальные файлы удалены. Ссылка сохранена." : "Публикация подтверждена. Очистка локальных файлов ожидается."}</p>

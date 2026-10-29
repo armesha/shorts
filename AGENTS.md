@@ -59,6 +59,8 @@ Keep shared rules here. Do not duplicate them in `CLAUDE.md`; Claude Code import
 - For 1080x1920 Shorts/Reels/TikTok renders, keep important readable text out of the bottom UI area and away from the right action column; verify dense text with real rendered frames.
 - For voiceover or music, follow the current rule in `docs/pack-generation.md` and never print or commit real API keys.
 
+- Для числовых карт подробно объяснять голосом показатель, единицы, смысл цифр и период; на метках — только числа без знака процента и единиц (≈ сохранять для оценок). Автопубликация этого конвейера выключена: одобрение качества само по себе не разрешает отправку, нужна отдельная явная команда пользователя. Подробности — в `docs/pack-generation.md`.
+
 ## Reusable workflow candidates
 
 Keep `AGENTS.md` concise. Long procedures should move to skills or targeted reference docs instead of growing this file:
