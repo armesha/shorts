@@ -83,6 +83,19 @@ test("old accelerated videos stay local instead of being posted as the revised f
   } finally { await f.close(); }
 });
 
+test("a deleted post releases its slot for an explicitly approved replacement", async () => {
+  const f = await fixture();
+  try {
+    await f.publisher.tick();
+    const first = (await f.pipeline.list(f.owner.id)).jobs.find(j => j.status === "published")!;
+    await f.publisher.recordRemoval(f.owner.id, first.id);
+    f.publisher.configure(f.owner.id, f.account.id, true);
+    await f.publisher.tick();
+    assert.equal(f.uploads(), 2);
+    assert.equal((await f.pipeline.list(f.owner.id)).jobs.find(j => j.id === first.id)!.status, "removed");
+  } finally { await f.close(); }
+});
+
 test("the next daily post waits twenty-four hours after confirmation, not upload start", async () => {
   const f = await fixture();
   try {

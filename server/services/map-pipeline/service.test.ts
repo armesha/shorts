@@ -62,6 +62,18 @@ test("explicit stop cannot be undone by repeated start and does not delete the l
   } finally { await service.close(); await rm(f.root, { recursive: true, force: true }); }
 });
 
+test("rebuilding old videos keeps their original files if generation fails", async () => {
+  const f = await fixture(); const service = new MapPipelineService(f.options);
+  try {
+    await service.samples(1);
+    for (let i = 0; i < 2; i++) { await service.tick(); await service.idle(); }
+    const old = (await service.list(1)).jobs[0];
+    f.options.generate = async () => { throw new Error("Render failed"); };
+    await service.rebuildOld(1); await service.tick(); await service.idle();
+    assert.ok(await readFile(join(service.directory(old), "video.mp4"), "utf8"));
+  } finally { await service.close(); await rm(f.root, { recursive: true, force: true }); }
+});
+
 test("legacy thirty-day schedule can be shortened by date without extending or resetting it", async () => {
   const f = await fixture(); let service = new MapPipelineService(f.options);
   try {

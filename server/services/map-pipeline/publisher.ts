@@ -26,6 +26,7 @@ export class MapPublisher {
     const account = this.db.getAccount(accountId);
     if (!account || account.userId !== ownerId || account.platform !== "tiktok") throw new Error("Выберите собственный TikTok-канал.");
     if (enabled && this.db.db.prepare("SELECT status FROM social_channel_connections WHERE account_id=? AND user_id=?").get(accountId, ownerId)?.status !== "connected") throw new Error("Сначала подтвердите вход в канал.");
+    if (enabled) this.db.db.prepare("UPDATE map_publications SET day_key='removed-'||id||'-'||day_key WHERE owner_id=? AND account_id=? AND state='removed' AND day_key NOT LIKE 'removed-%'").run(ownerId, accountId);
     this.db.db.prepare("INSERT INTO map_publication_bindings(owner_id,account_id,enabled) VALUES(?,?,?) ON CONFLICT(owner_id) DO UPDATE SET account_id=excluded.account_id,enabled=excluded.enabled").run(ownerId, accountId, enabled ? 1 : 0);
   }
   info(viewerId: number) {
@@ -78,7 +79,7 @@ export class MapPublisher {
       if (!campaign || campaign.stoppedAt || this.now() >= Date.parse(campaign.endsAt) || this.now() < Date.parse(campaign.startedAt)) continue;
       const unresolved = this.db.db.prepare("SELECT id FROM map_publications WHERE account_id=? AND state IN ('uploading','checking','needs_review') LIMIT 1").get(binding.account_id);
       if (unresolved) continue;
-      const last = this.db.db.prepare("SELECT COALESCE(published_at,submitted_at,created_at) AS created_at FROM map_publications WHERE account_id=? ORDER BY id DESC LIMIT 1").get(binding.account_id) as { created_at: string } | undefined;
+      const last = this.db.db.prepare("SELECT COALESCE(published_at,submitted_at,created_at) AS created_at FROM map_publications WHERE account_id=? AND state!='removed' ORDER BY id DESC LIMIT 1").get(binding.account_id) as { created_at: string } | undefined;
       if (last && this.now() - Date.parse(last.created_at) < DAY_MS) continue;
       const day = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Prague", year: "numeric", month: "2-digit", day: "2-digit" }).format(this.now());
       if (this.db.db.prepare("SELECT id FROM map_publications WHERE account_id=? AND day_key=?").get(binding.account_id, day)) continue;

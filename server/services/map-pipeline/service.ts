@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, rename, writeFile, stat, rm, realpath } from "node:fs/promises";
+import { mkdir, readFile, rename, writeFile, stat, rm, realpath, cp } from "node:fs/promises";
 import { resolve, sep } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { z } from "zod";
@@ -19,6 +19,7 @@ const JobSchema = z.object({
   idea: z.object({ themeId: z.string(), title: z.string(), hook: z.string(), reason: z.string() }).optional(),
   error: z.string().optional(), seconds: z.number().positive().optional(),
   attempts: z.number().int().min(0).max(3).optional(),
+  approvedReview: z.boolean().optional(),
   publication: z.object({ state: z.enum(["uploading", "published", "needs_review", "failed", "removed"]), url: z.string().url().optional(), error: z.string().optional(), cleanedAt: z.string().datetime().optional() }).optional(),
 });
 export type MapJob = z.infer<typeof JobSchema>;
@@ -127,8 +128,49 @@ export class MapPipelineService {
       const actual = await realpath(directory);
       if (!actual.startsWith(base + sep) || actual !== resolve(base, job.id)) throw new Error("Неверная папка ролика.");
       await rm(actual, { recursive: true, force: true });
+      if (job.approvedReview) {
+        const reviewRoot = await realpath(resolve(this.source, "exports/review"));
+        const review = resolve(reviewRoot, "forest-180s-20261029");
+        try { if (await realpath(review) === review) await rm(review, { recursive: true, force: true }); }
+        catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
+      }
     } catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
     await this.notePublication(ownerId, id, { ...job.publication, state: "published", cleanedAt: new Date(this.now()).toISOString() });
+  }
+  async approveReview(ownerId: number) {
+    return this.mutate(async () => {
+      await this.init();
+      const existing = this.state.jobs.find(j => j.ownerId === ownerId && j.approvedReview);
+      if (existing) return this.list(ownerId);
+      const original = this.state.jobs.find(j => j.ownerId === ownerId && j.id === "39567d04-01a6-40eb-bb4f-a465468df5e9" && j.status === "removed");
+      if (!original?.idea) throw new Error("Исходная версия не найдена.");
+      const review = resolve(this.source, "exports/review/forest-180s-20261029");
+      const metadata = JSON.parse(await readFile(resolve(review, "metadata.json"), "utf8"));
+      const qa = JSON.parse(await readFile(resolve(review, "qa.json"), "utf8"));
+      const subtitles = await readFile(resolve(review, "subtitles.ass"), "utf8");
+      const voice = JSON.parse(await readFile(resolve(review, "voice-used.json"), "utf8"));
+      if (metadata.approval !== "pending" || metadata.seconds !== 180 || !qa.review?.passed || qa.review.issues?.length || qa.speechSeconds < 15 || subtitles.includes("%") || !voice.text?.includes("процент") || !voice.text?.includes("половину")) throw new Error("Версия для просмотра не прошла проверку.");
+      const job = this.newJob(ownerId, "sample");
+      job.approvedReview = true; job.status = "ready"; job.stage = "Одобрено"; job.seconds = 180; job.idea = original.idea; job.themeId = original.themeId;
+      const directory = this.directory(job);
+      await mkdir(directory, { recursive: true, mode: 0o700 });
+      try {
+        await cp(review, directory, { recursive: true, errorOnExist: false });
+        await writeFile(resolve(directory, "metadata.json"), JSON.stringify({ ...metadata, approval: "approved", approvedAt: new Date(this.now()).toISOString() }, null, 2));
+        this.state.jobs.push(job); await this.save();
+      }
+      catch (error) { await rm(directory, { recursive: true, force: true }); throw error; }
+      return this.list(ownerId);
+    });
+  }
+  async rebuildOld(ownerId: number) {
+    return this.mutate(async () => {
+      await this.init();
+      for (const job of this.state.jobs) if (job.ownerId === ownerId && job.status === "ready" && job.seconds === 90 && !job.publication) {
+        job.status = "queued"; job.stage = "Пересборка в новом формате"; job.attempts = 0;
+      }
+      await this.save(); return this.list(ownerId);
+    });
   }
   async samples(ownerId: number, rebuild = false) {
     return this.mutate(async () => {
