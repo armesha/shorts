@@ -15,7 +15,7 @@ import { extname, resolve } from "node:path";
 import { homedir } from "node:os";
 import { setTimeout as delay } from "node:timers/promises";
 import type { Db } from "../db.ts";
-import { cuttingBannerFilter } from "./cutting-banner.ts";
+import { cuttingBannerFilter, cuttingBannerHash } from "./cutting-banner.ts";
 import { cuttingRenderCommand } from "../infra/cutting-render-resources.ts";
 import { DAILY_CUTTING_EFFORT, DAILY_CUTTING_MODEL, planDailyCuts, readPreparedDailyPlan, type DailyClip } from "./daily-cutting-plan.ts";
 import {
@@ -315,7 +315,7 @@ export async function renderCuttingPart(input: {
   part: CutPart;
   words: TimedWord[];
   subtitles: boolean;
-  banner?: { item: CircleAdvertiser; file: string };
+  banner?: { item: CircleAdvertiser; file: string; hash?: string };
   signal?: AbortSignal;
   run?: ProcessRunner;
   timeline?: CutTimeline[];
@@ -419,7 +419,8 @@ export async function renderCuttingPart(input: {
     "-b:a",
     "160k",
     "-movflags",
-    "+faststart",
+    input.banner ? "+faststart+use_metadata_tags" : "+faststart",
+    ...(input.banner ? ["-metadata", `cutting_banner_sha256=${input.banner.hash || await cuttingBannerHash(input.banner.file)}`] : []),
     temporary,
   );
   try {
@@ -968,7 +969,7 @@ export class VideoCuttingService {
     const bannerItem = job.input.bannerId
       ? listCircleAdvertisers().find((b) => b.id === job.input.bannerId)
       : undefined;
-    let banner: { item: CircleAdvertiser; file: string } | undefined;
+    let banner: { item: CircleAdvertiser; file: string; hash: string } | undefined;
     if (job.input.bannerId && !bannerItem)
       throw new Error(
         "Баннер удалён во время обработки. Выберите другой и повторите задачу.",
@@ -977,7 +978,7 @@ export class VideoCuttingService {
       const original = circleAdvertiserSource(bannerItem.id);
       const snapshot = resolve(dir, `banner${extname(original)}`);
       await copyFile(original, snapshot);
-      banner = { item: bannerItem, file: snapshot };
+      banner = { item: bannerItem, file: snapshot, hash: await cuttingBannerHash(snapshot) };
     }
     const relDir = `creator/cutting-u${job.userId}/${job.id}`;
     await mkdir(resolve(this.options.outputDir, relDir), { recursive: true });

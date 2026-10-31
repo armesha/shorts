@@ -32,7 +32,7 @@ import {
 } from "./video-cutting.ts";
 import type { Db } from "../db.ts";
 import type { CircleAdvertiser } from "./circle-advertisers.ts";
-import { overlayExistingCuttingBanner } from "./cutting-banner.ts";
+import { cuttingBannerHash, overlayExistingCuttingBanner } from "./cutting-banner.ts";
 
 async function temporary() {
   const parent = resolve(process.cwd(), "tmp/video-cutting-tests");
@@ -328,10 +328,14 @@ test(
         "Banner remains red near the end of the clip",
       );
       assert.ok((await readFile(output)).includes(Buffer.from("moov")));
-      const rebuild = { file: output, banner: { item, file: banner }, bannerHash: "fixture-hash", run: runCuttingProcess };
+      const bannerHash = await cuttingBannerHash(banner);
+      assert.equal(await overlayExistingCuttingBanner({ file: output, banner: { item, file: banner }, bannerHash, run: runCuttingProcess }), "already");
+      const cleanOutput = resolve(root, "clean.mp4");
+      await renderCuttingPart({ source, output: cleanOutput, dir: root, part, words: [], subtitles: false });
+      const rebuild = { file: cleanOutput, banner: { item, file: banner }, bannerHash, run: runCuttingProcess };
       assert.equal(await overlayExistingCuttingBanner(rebuild), "rebuilt");
       assert.equal(await overlayExistingCuttingBanner(rebuild), "already");
-      assert.equal((await probeCuttingMedia(output)).audio, true);
+      assert.equal((await probeCuttingMedia(cleanOutput)).audio, true);
     } finally {
       await rm(root, { recursive: true, force: true });
     }

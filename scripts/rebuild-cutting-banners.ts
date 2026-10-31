@@ -1,9 +1,7 @@
-import { createHash } from "node:crypto";
-import { createReadStream } from "node:fs";
 import { copyFile, mkdir, mkdtemp, open, readFile, rm } from "node:fs/promises";
 import { extname, resolve } from "node:path";
 import { circleAdvertiserSource, circleAdvertiserState } from "../server/services/circle-advertisers.ts";
-import { overlayExistingCuttingBanner } from "../server/services/cutting-banner.ts";
+import { cuttingBannerHash, overlayExistingCuttingBanner } from "../server/services/cutting-banner.ts";
 import { runCuttingProcess, type CutJob } from "../server/services/video-cutting.ts";
 
 const owner = Number(process.argv[2]);
@@ -29,9 +27,7 @@ try {
   const source = circleAdvertiserSource(item.id);
   const banner = resolve(temp, `banner${extname(source)}`);
   await copyFile(source, banner);
-  const hash = createHash("sha256");
-  for await (const chunk of createReadStream(banner)) hash.update(chunk as Buffer);
-  const bannerHash = hash.digest("hex");
+  const bannerHash = await cuttingBannerHash(banner);
   for (const clip of job.clips) {
     controller.signal.throwIfAborted();
     if (!Number.isSafeInteger(clip.number) || clip.number < 1 || clip.number > 200) throw new Error("Invalid clip number.");

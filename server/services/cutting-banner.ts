@@ -1,7 +1,15 @@
 import { rename, rm } from "node:fs/promises";
+import { createReadStream } from "node:fs";
+import { createHash } from "node:crypto";
 import { extname, resolve } from "node:path";
 import type { CircleAdvertiser } from "./circle-advertisers.ts";
 import type { ProcessRunner } from "./video-cutting.ts";
+
+export async function cuttingBannerHash(file: string) {
+  const hash = createHash("sha256");
+  for await (const chunk of createReadStream(file)) hash.update(chunk as Buffer);
+  return hash.digest("hex");
+}
 
 export function cuttingBannerFilter(index: number, item: CircleAdvertiser, base: string, output: string) {
   const crop = item.fullFrame !== false ? "crop=900:260:90:830," : "";
