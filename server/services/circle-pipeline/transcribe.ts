@@ -26,6 +26,8 @@ export async function transcribeCircle(audio: string, options: {
         segment.averageLogProbability < -1 || segment.noSpeechProbability > 0.6))
     throw new UnreliableCircleSpeechError("Speech could not be transcribed reliably");
   const text = transcript.segments.map(segment => segment.text).join(" ");
+  if (text.replace(/[\p{P}\p{S}\s]/gu, "").length < 2)
+    throw new UnreliableCircleSpeechError("Speech could not be transcribed reliably");
   if (text.length > 30_000) throw new Error("Transcription is too long");
   return { text, language: transcript.language };
 }
