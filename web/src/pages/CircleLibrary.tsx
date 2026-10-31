@@ -43,14 +43,6 @@ export default function CircleLibrary() {
         <p className="text-sm text-base-content/70">Готовые ролики сохраняются здесь. Публикация не включается автоматически.</p>
         {data.canGenerate && <button type="button" className="btn btn-outline" disabled={busy || (!data.enabled && !data.configured)} onClick={() => void toggle()}>{data.enabled ? "Остановить" : "Запустить"}</button>}
       </section>
-      {!!data.flagged?.length && <section className="space-y-3" aria-labelledby="circle-review-title">
-        <h2 id="circle-review-title" className="text-lg font-semibold">Не прошли проверку · {data.flagged.length}</h2>
-        <div className="divide-y divide-base-300">{data.flagged.map(item => <article key={item.messageId} className="space-y-2 py-4">
-          <p className="font-medium">{item.verdict === "reject" ? "Отклонён" : "Нужна ручная проверка"}</p>
-          {item.reasons?.length ? <ul className="list-disc space-y-1 pl-5 text-sm text-base-content/75">{[...new Set(item.reasons)].slice(0, 3).map(reason => <li key={reason}>{reason}</li>)}</ul> : null}
-          <a className="link text-sm" href={`https://t.me/kruglyashiki/${item.messageId}`} target="_blank" rel="noreferrer">Открыть исходный кружок</a>
-        </article>)}</div>
-      </section>}
       <section className="space-y-4" aria-labelledby="circle-library-title">
         <h2 id="circle-library-title" className="text-lg font-semibold">Видео · {data.jobs.filter(job => job.state === "ready").length}</h2>
         {!data.jobs.length && <p className="py-8 text-base-content/70">Здесь появятся готовые ролики.</p>}
@@ -63,6 +55,14 @@ export default function CircleLibrary() {
           </div>
         </article>)}</div>
       </section>
+      {!!data.flagged?.length && <details className="border-t border-base-300 py-5">
+        <summary className="cursor-pointer text-lg font-semibold">Не прошли проверку · {data.flagged.length}</summary>
+        <div className="divide-y divide-base-300">{data.flagged.map(item => <article key={item.messageId} className="space-y-2 py-4">
+          <p className="font-medium">{item.verdict === "reject" ? "Отклонён" : "Нужна ручная проверка"}</p>
+          {item.reasons?.length ? <ul className="list-disc space-y-1 pl-5 text-sm text-base-content/75">{[...new Set(item.reasons)].slice(0, 3).map(reason => <li key={reason}>{reason}</li>)}</ul> : null}
+          <a className="link text-sm" href={`https://t.me/kruglyashiki/${item.messageId}`} target="_blank" rel="noreferrer">Открыть исходный кружок</a>
+        </article>)}</div>
+      </details>}
     </>}
   </div>;
 }
