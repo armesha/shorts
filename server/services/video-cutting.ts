@@ -93,6 +93,7 @@ export type CutJob = {
   channelAdds?: CuttingChannelAdd[];
   deletedParts?: number[];
   daily?: boolean;
+  detectedMode?: "serial" | "highlights";
 };
 export type ProcessInput = {
   cwd: string;
@@ -276,7 +277,7 @@ export async function renderCuttingPart(input: {
   if (input.subtitles || input.hook) {
     let offset = 0;
     const mapped = sections.flatMap(section => {
-      const shifted = input.words.filter(word => word.start >= section.start && word.end <= section.end)
+      const shifted = input.words.filter(word => word.start >= section.start && word.end <= section.end && !/^\[(?:смех|аплодисменты|laughter|laughs?|applause)\]$/i.test(word.text))
         .map(word => ({ ...word, start: word.start - section.start + offset, end: word.end - section.start + offset }));
       offset += section.end - section.start;
       return shifted;
@@ -733,7 +734,7 @@ export class VideoCuttingService {
       throw new Error(
         "У видео нет доступных русских или английских субтитров. Выберите другое видео.",
       );
-    let words = parseVideoVtt(await readFile(resolve(dir, vtt), "utf8"));
+    let words = parseVideoVtt(await readFile(resolve(dir, vtt), "utf8"), { includeReactions: !!job.daily });
     if (!words.length)
       throw new Error("Не удалось извлечь речь из субтитров видео.");
     if (words.length > 100_000)
@@ -819,10 +820,13 @@ export class VideoCuttingService {
       JSON.stringify(zodPlanSchema(job.input, cleanDuration)),
     );
     let dailyAds: unknown;
+    let detectedMode: string | undefined;
     if (job.daily) {
       const result = await planDailyCuts({ title: job.title!, duration: cleanDuration, words, anchors: timecodes, cwd: dir, signal });
       job.plan = result.plan;
       dailyAds = result.ads;
+      detectedMode = result.detectedMode;
+      job.detectedMode = result.detectedMode;
       job.sessionId = result.sessionId || undefined;
     } else {
     const events = await command(
@@ -878,7 +882,7 @@ export class VideoCuttingService {
           model: job.daily ? DAILY_CUTTING_MODEL : CUTTING_MODEL,
           effort: job.daily ? DAILY_CUTTING_EFFORT : CUTTING_EFFORT,
           parts: job.plan,
-          ...(job.daily ? { detected_ads_to_exclude: dailyAds } : {}),
+          ...(job.daily ? { detected_mode: detectedMode, detected_ads_to_exclude: dailyAds } : {}),
         },
         null,
         2,

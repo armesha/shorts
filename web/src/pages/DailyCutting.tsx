@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { get, send } from "../lib/api/http";
 
-type Clip = { number: number; title: string; videoUrl: string; duration: number; on_screen_hook?: string; caption_and_tags?: string };
-type Job = { id: string; title?: string; stage: string; status: string; error?: string; clips: Clip[] };
+type Clip = { number: number; title: string; videoUrl: string; duration: number; on_screen_hook?: string; caption_and_tags?: string; viral_score?: number; trigger?: string };
+type Job = { id: string; title?: string; stage: string; status: string; error?: string; detectedMode?: "serial" | "highlights"; clips: Clip[] };
 type State = { enabled: boolean; canManage: boolean; lastDay?: string; error?: string; jobs: Job[] };
 
 export default function DailyCutting() {
@@ -36,9 +36,11 @@ export default function DailyCutting() {
         {state.jobs.map(item => <option key={item.id} value={item.id}>{item.title || "Видео в обработке"} · {item.stage}</option>)}
       </select>
       {job?.error && <p role="alert" className="text-sm text-error">{job.error}</p>}
+      {job?.detectedMode && <p className="text-sm">Режим: {job.detectedMode === "serial" ? "сериал" : "лучшие моменты"}</p>}
       {job && !job.clips.length && <p className="text-sm">{job.stage}</p>}
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">{job?.clips.map(clip => <article key={clip.number} className="min-w-0 space-y-2">
         <h3 className="font-semibold">{clip.title}</h3>
+        {clip.viral_score != null && <p className="text-sm">Оценка потенциала: {clip.viral_score}/10</p>}
         <video className="max-h-[32rem] w-full bg-black" controls preload="metadata" src={clip.videoUrl} />
         {clip.caption_and_tags && <p className="whitespace-pre-wrap text-sm">{clip.caption_and_tags}</p>}
         <a className="link link-primary text-sm" href={clip.videoUrl} download>Скачать ролик</a>

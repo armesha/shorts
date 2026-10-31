@@ -49,7 +49,7 @@ Keep shared rules here. Do not duplicate them in `CLAUDE.md`; Claude Code import
 ## Content, packs, and assets
 
 - Before touching built-in decks, generated packs, template packs, memes, card templates, long videos, voiceover, or source media, read `docs/pack-generation.md`.
-- Before planning serial video cuts or designing or changing that workflow or its agent prompt, read and apply the owner's requirements in `docs/video-cutting-rules.md`. Check the implementation before claiming they are supported.
+- Before planning video cuts or designing or changing that workflow or its agent prompt, read and apply the owner's current requirements in `docs/video-cutting-rules-v2.md`. Check the implementation before claiming they are supported.
 - For any LLM/subagent/workflow that generates, cleans, ranks, formats, localizes, or titles pack content, ask the user which model to use before running it. Local parsers, renderers, and validators can run without asking.
 - All visual and audio assets must be copyright-safe: Pexels license, CC0/Public Domain, compatible open license with evidence, or self-generated. Record source and license.
 - Do not use copyrighted movie/game/anime frames, celebrity press/paparazzi/promotional photos, famous meme templates, paid stock, or unclear "found online" assets.

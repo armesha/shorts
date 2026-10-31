@@ -167,7 +167,7 @@ function textOnly(text: string) {
     .trim();
 }
 
-export function parseVideoVtt(raw: string): TimedWord[] {
+export function parseVideoVtt(raw: string, options: { includeReactions?: boolean } = {}): TimedWord[] {
   const words: TimedWord[] = [];
   const rolling = /<\d{2}:\d{2}:\d{2}\.\d+>/.test(raw);
   for (const block of raw.replace(/\r\n/g, "\n").split("\n\n")) {
@@ -191,7 +191,9 @@ export function parseVideoVtt(raw: string): TimedWord[] {
       const start = chunks[i].start,
         end = chunks[i + 1]?.start ?? b;
       const tokens = chunks[i].text
-        .replace(/\[[^\]]*\]/g, "")
+        .replace(/\[([^\]]*)\]/g, (_match, label: string) =>
+          options.includeReactions && /^(?:смех|аплодисменты|laughter|laughs?|applause)$/i.test(label.trim())
+            ? ` [${label.trim()}] ` : "")
         .split(/\s+/)
         .filter(Boolean);
       const total = tokens.reduce((sum, word) => sum + word.length, 0);
