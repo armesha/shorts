@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import { mkdir, mkdtemp, writeFile, rm } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -114,6 +115,15 @@ test("ready parts can be added and deleted only by their owner through the cutti
     });
     assert.equal(deleted.statusCode, 200, deleted.body);
     assert.equal(deleted.json().clips.length, 0);
+    assert.equal(db.listVideos(account.id).length, 1);
+    await writeFile(resolve(source, "part-2.mp4"), "rendered fixture");
+    db.createCreatorGalleryItem({ userId: owner.id, packId: "video-cutting", packName: "Нарезка", templateType: "montage", cardIndex: 1, title: "Part 2", text: "", format: "mp4", videoRel: `creator/cutting-u${owner.id}/${id}/part-2.mp4`, durationSec: 80 });
+    assert.equal((await app.inject({ method: "DELETE", url: `/api/video-cutting/jobs/${id}`, headers: foreign })).statusCode, 404);
+    const removed = await app.inject({ method: "DELETE", url: `/api/video-cutting/jobs/${id}`, headers });
+    assert.equal(removed.statusCode, 200, removed.body);
+    assert.equal(existsSync(source), false);
+    assert.equal(existsSync(resolve(jobs, `u${owner.id}`, id)), false);
+    assert.equal(db.listCreatorGalleryItems(owner.id).length, 0);
     assert.equal(db.listVideos(account.id).length, 1);
   } finally {
     await app.close();

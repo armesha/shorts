@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { get, send } from "../lib/api/http";
+import { confirmDialog } from "../lib/confirm";
 
 type Clip = { number: number; title: string; videoUrl: string; duration: number; on_screen_hook?: string; caption_and_tags?: string; viral_score?: number; trigger?: string };
 type Job = { id: string; title?: string; stage: string; status: string; error?: string; detectedMode?: "serial" | "highlights"; clips: Clip[] };
@@ -11,7 +12,7 @@ export default function DailyCutting() {
   const [busy, setBusy] = useState(false);
   const [selected, setSelected] = useState("");
   const load = () => get<State>("/video-cutting/daily").then(data => { setState(data); setError(""); }).catch(e => setError(e instanceof Error ? e.message : "Не удалось загрузить библиотеку."));
-  useEffect(() => { void load(); const timer = window.setInterval(load, 10000); return () => window.clearInterval(timer); }, []);
+  useEffect(() => { void load(); window.addEventListener("cutting:changed", load); const timer = window.setInterval(load, 10000); return () => { window.removeEventListener("cutting:changed", load); window.clearInterval(timer); }; }, []);
   const action = async () => {
     setBusy(true); setError("");
     try { await send(`/video-cutting/daily/${state?.enabled ? "stop" : "start"}`, "POST", {}); await load(); }
@@ -21,6 +22,13 @@ export default function DailyCutting() {
   if (!state) return error ? <p role="alert" className="text-sm text-error">{error}</p> : null;
   if (!state.canManage && !state.jobs.length) return null;
   const job = state.jobs.find(item => item.id === selected) || state.jobs[0];
+  const remove = async (part?: number) => {
+    if (!job || !(await confirmDialog(part ? "Часть будет удалена из нарезки и галереи." : "Нарезка и её части будут удалены из галереи. Копии в библиотеках каналов останутся.", { title: part ? `Удалить часть ${part}?` : "Удалить нарезку?", confirmText: "Удалить", danger: true }))) return;
+    setBusy(true); setError("");
+    try { await send(`/video-cutting/jobs/${job.id}${part ? `/clips/${part}` : ""}`, "DELETE"); if (!part) setSelected(""); window.dispatchEvent(new Event("cutting:changed")); await load(); }
+    catch (e) { setError(e instanceof Error ? e.message : "Не удалось удалить нарезку."); }
+    finally { setBusy(false); }
+  };
   return <section className="rounded-lg border border-base-300 bg-base-100 p-4 sm:p-5" aria-labelledby="daily-cutting-heading">
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div><h2 id="daily-cutting-heading" className="text-lg font-semibold">Ежедневные нарезки</h2>
@@ -32,9 +40,9 @@ export default function DailyCutting() {
     {(error || state.error) && <p role="alert" className="mt-3 text-sm text-error">{error || state.error}</p>}
     {state.jobs.length ? <div className="mt-4 space-y-4">
       <label className="block text-sm font-semibold" htmlFor="daily-cutting-job">Библиотека исходников</label>
-      <select id="daily-cutting-job" className="select select-bordered w-full" value={job?.id || ""} onChange={e => setSelected(e.target.value)}>
+      <div className="flex flex-wrap gap-2 sm:flex-nowrap"><select id="daily-cutting-job" className="select select-bordered w-full min-w-0" value={job?.id || ""} onChange={e => setSelected(e.target.value)}>
         {state.jobs.map(item => <option key={item.id} value={item.id}>{item.title || "Видео в обработке"} · {item.stage}</option>)}
-      </select>
+      </select><button type="button" className="btn btn-outline btn-error" onClick={() => void remove()} disabled={busy || !job || !["completed", "failed", "cancelled"].includes(job.status)}>Удалить нарезку</button></div>
       {job?.error && <p role="alert" className="text-sm text-error">{job.error}</p>}
       {job?.detectedMode && <p className="text-sm">Режим: {job.detectedMode === "serial" ? "сериал" : "лучшие моменты"}</p>}
       {job && !job.clips.length && <p className="text-sm">{job.stage}</p>}
@@ -44,6 +52,7 @@ export default function DailyCutting() {
         <video className="max-h-[32rem] w-full bg-black" controls preload="metadata" src={clip.videoUrl} />
         {clip.caption_and_tags && <p className="whitespace-pre-wrap text-sm">{clip.caption_and_tags}</p>}
         <a className="link link-primary text-sm" href={clip.videoUrl} download>Скачать ролик</a>
+        <button type="button" className="btn btn-ghost btn-error btn-sm ml-2" disabled={busy || !["completed", "failed", "cancelled"].includes(job.status)} onClick={() => void remove(clip.number)}>Удалить часть</button>
       </article>)}</div>
     </div> : <p className="mt-4 text-sm text-base-content/70">Готовых нарезок пока нет.</p>}
   </section>;

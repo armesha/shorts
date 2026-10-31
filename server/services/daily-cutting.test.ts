@@ -38,6 +38,10 @@ test("daily schedule alternates selection, excludes repeats and survives restart
     await daily.tick(); jobs = await awaitJobs(2);
     assert.ok(jobs.some(j => j.input.url.includes("aaaaaaaaaaa")));
     await daily.tick(); assert.equal((await cutting.dailyJobs(7)).length, 2);
+    await daily.runNow(7, "https://youtu.be/ccccccccccc");
+    jobs = await awaitJobs(3);
+    assert.ok(jobs.some(j => j.input.url.includes("ccccccccccc")));
+    await assert.rejects(daily.runNow(7, "https://youtu.be/ccccccccccc"), /уже выбиралось/);
     assert.equal(pragueDay(new Date("2026-10-30T23:30:00Z")), "2026-10-31");
   } finally { daily.close(); await cutting.close(); await rm(root, { recursive: true, force: true }); }
 });

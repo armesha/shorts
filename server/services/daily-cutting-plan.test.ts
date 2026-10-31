@@ -1,7 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { dailyCuttingPrompt, validateDailyPlan } from "./daily-cutting-plan.ts";
+import { dailyCuttingPrompt, validateDailyPlan, dailyPlanFingerprint, readPreparedDailyPlan } from "./daily-cutting-plan.ts";
 import { parseVideoVtt } from "./video-cutting-plan.ts";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
 
 const segment = (start: number, end: number) => ({ start_seconds: start, end_seconds: end, start_time: "00:00", end_time: "00:00" });
 const clip = (part: number, start: number, end: number) => ({ clip_id: part, clip_type: "series_part", story_title: "История", part, total_parts: 2,
@@ -49,4 +51,19 @@ test("highlight analysis keeps laughter and applause while discarding music", ()
   const vtt = "WEBVTT\n\n00:00:00.000 --> 00:00:03.000\nСмешно [смех] [музыка] [аплодисменты]\n";
   assert.deepEqual(parseVideoVtt(vtt, { includeReactions: true }).map(w => w.text), ["Смешно", "[смех]", "[аплодисменты]"]);
   assert.deepEqual(parseVideoVtt(vtt).map(w => w.text), ["Смешно"]);
+});
+
+test("prepared plans are used only for the same transcript and validated again", async () => {
+  const base = resolve("tmp/daily-plan-tests"); await mkdir(base, { recursive: true });
+  const dir = await mkdtemp(resolve(base, "run-"));
+  try {
+    const input = { title: "Видео", duration: 200, words: [], anchors: [] };
+    const file = resolve(dir, "prepared.json");
+    const one = { ...clip(1, 0, 150), total_parts: 1 };
+    await writeFile(file, JSON.stringify({ fingerprint: await dailyPlanFingerprint(input), result: { detected_mode: "serial", detected_ads_to_exclude: [], clips: [one] } }));
+    assert.equal((await readPreparedDailyPlan(file, input))?.plan.length, 1);
+    assert.equal(await readPreparedDailyPlan(file, { ...input, title: "Другое видео" }), null);
+    await writeFile(file, JSON.stringify({ fingerprint: await dailyPlanFingerprint(input), result: { detected_mode: "serial", detected_ads_to_exclude: [], clips: [{ ...one, total_duration_seconds: 5 }] } }));
+    assert.equal(await readPreparedDailyPlan(file, input), null);
+  } finally { await rm(dir, { recursive: true, force: true }); }
 });

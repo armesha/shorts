@@ -33,6 +33,7 @@ test("cutting API requires authentication and isolates jobs including cancellati
   try {
     assert.equal((await app.inject({ url: "/api/video-cutting/daily" })).statusCode, 401);
     assert.equal((await app.inject({ method: "POST", url: "/api/video-cutting/daily/start", headers: { "x-test-user": "7" } })).statusCode, 403);
+    assert.equal((await app.inject({ method: "POST", url: "/api/video-cutting/daily/run-now", headers: { "x-test-user": "7" }, payload: { url: "https://youtu.be/aaaaaaaaaaa" } })).statusCode, 403);
     assert.equal(
       (await app.inject({ url: "/api/video-cutting" })).statusCode,
       401,
@@ -56,6 +57,7 @@ test("cutting API requires authentication and isolates jobs including cancellati
     });
     assert.equal(created.statusCode, 202, created.body);
     const id = created.json().id;
+    assert.equal((await app.inject({ method: "DELETE", url: `/api/video-cutting/jobs/${id}`, headers: { "x-test-user": "7" } })).statusCode, 400);
     assert.equal(
       (
         await app.inject({

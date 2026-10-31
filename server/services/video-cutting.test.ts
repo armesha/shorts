@@ -24,6 +24,9 @@ import {
   probeCuttingMedia,
   renderCuttingPart,
   runCuttingProcess,
+  russianSubtitleLanguage,
+  takePrefetchedSource,
+  waitForPrefetchedSource,
   VideoCuttingService,
   type ProcessRunner,
 } from "./video-cutting.ts";
@@ -61,6 +64,32 @@ test("video links are canonicalized and cannot address local or arbitrary hosts"
     "https://user:pass@youtube.com/watch?v=iJH6dAG9NVk",
   ])
     assert.throws(() => normalizeVideoUrl(url));
+});
+test("only Russian caption tracks are selected", () => {
+  assert.equal(russianSubtitleLanguage({ subtitles: { en: [{}] } }), undefined);
+  assert.equal(russianSubtitleLanguage({ automatic_captions: { ru: [{}], "ru-orig": [{}] } }), "ru-orig");
+  assert.equal(russianSubtitleLanguage({ subtitles: { ru: [{}] } }), "ru");
+  assert.equal(russianSubtitleLanguage({ subtitles: { ru: [] }, automatic_captions: { ru: [{}] } }), "ru");
+});
+test("only a completed prefetch for the exact video is consumed", async () => {
+  const root = await temporary();
+  const cache = resolve(root, "prefetch", "iJH6dAG9NVk");
+  const destination = resolve(root, "source.mp4");
+  try {
+    await mkdir(cache, { recursive: true });
+    await writeFile(resolve(cache, "source.mp4"), "video");
+    assert.equal(await takePrefetchedSource(root, "iJH6dAG9NVk", destination), false);
+    await writeFile(resolve(cache, "ready.json"), JSON.stringify({ id: "other" }));
+    await assert.rejects(takePrefetchedSource(root, "iJH6dAG9NVk", destination));
+    await writeFile(resolve(cache, "ready.json"), JSON.stringify({ id: "iJH6dAG9NVk" }));
+    assert.equal(await takePrefetchedSource(root, "iJH6dAG9NVk", destination), true);
+    assert.equal(await readFile(destination, "utf8"), "video");
+    assert.equal(await takePrefetchedSource(root, "iJH6dAG9NVk", destination), false);
+    await writeFile(resolve(cache, "source.mp4"), "another video");
+    await writeFile(resolve(cache, "ready.json"), JSON.stringify({ id: "iJH6dAG9NVk" }));
+    await writeFile(resolve(cache, "pending.json"), JSON.stringify({ id: "iJH6dAG9NVk", pid: 999999 }));
+    assert.equal(await waitForPrefetchedSource(root, "iJH6dAG9NVk", resolve(root, "second.mp4"), new AbortController().signal), true);
+  } finally { await rm(root, { recursive: true, force: true }); }
 });
 test("manual counts, full coverage and ordered semantic plans are enforced", () => {
   assert.equal(

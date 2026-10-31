@@ -94,6 +94,7 @@ export default function VideoCutting() {
   const [channelError, setChannelError] = useState("");
   const [channelNotice, setChannelNotice] = useState("");
   const [deletingPart, setDeletingPart] = useState<number | null>(null);
+  const [deletingJob, setDeletingJob] = useState(false);
   const channels = workspace.channels || [];
   const validChannel = channels.some(
     (channel) => String(channel.id) === channelId,
@@ -145,9 +146,11 @@ export default function VideoCutting() {
           }
         });
     void load();
+    window.addEventListener("cutting:changed", load);
     const timer = window.setInterval(load, active ? 3000 : 15000);
     return () => {
       alive = false;
+      window.removeEventListener("cutting:changed", load);
       window.clearInterval(timer);
     };
   }, [active, refresh]);
@@ -273,6 +276,18 @@ export default function VideoCutting() {
       setDeletingPart(null);
     }
   }
+  async function deleteJob() {
+    if (!job || !(await confirmDialog("Нарезка и её части будут удалены из галереи. Копии в библиотеках каналов останутся.", { title: "Удалить нарезку?", confirmText: "Удалить", danger: true }))) return;
+    setDeletingJob(true);
+    setLoadError("");
+    try {
+      await send(`/video-cutting/jobs/${job.id}`, "DELETE");
+      setWorkspace(current => ({ ...current, jobs: current.jobs.filter(item => item.id !== job.id) }));
+      setSelected("");
+      window.dispatchEvent(new Event("cutting:changed"));
+    } catch (e) { setLoadError(e instanceof Error ? e.message : "Не удалось удалить нарезку."); }
+    finally { setDeletingJob(false); }
+  }
   function repeat() {
     if (!job) return;
     setUrl(job.input.url);
@@ -341,7 +356,7 @@ export default function VideoCutting() {
               Выберите видео, чтобы открыть его части
             </p>
           </div>
-          <select
+          <div className="flex min-w-0 flex-wrap gap-2 sm:flex-nowrap"><select
             id="cutting-job"
             value={job?.id || ""}
             onChange={(event) => setSelected(event.target.value)}
@@ -361,6 +376,9 @@ export default function VideoCutting() {
               </option>
             ))}
           </select>
+          <button type="button" className="btn btn-outline btn-error gap-2" onClick={() => void deleteJob()} disabled={!job || !finished(job) || deletingJob || addingToChannel || deletingPart !== null}>
+            <Trash2 size={16} /> Удалить
+          </button></div>
         </section>
       )}
       {loadError && (

@@ -9,12 +9,13 @@ import {
   rm,
   writeFile,
   copyFile,
+  stat,
 } from "node:fs/promises";
 import { extname, resolve } from "node:path";
 import { homedir } from "node:os";
 import { setTimeout as delay } from "node:timers/promises";
 import type { Db } from "../db.ts";
-import { DAILY_CUTTING_EFFORT, DAILY_CUTTING_MODEL, planDailyCuts, type DailyClip } from "./daily-cutting-plan.ts";
+import { DAILY_CUTTING_EFFORT, DAILY_CUTTING_MODEL, planDailyCuts, readPreparedDailyPlan, type DailyClip } from "./daily-cutting-plan.ts";
 import {
   extractCuttingTimecodes,
   cleanCuttingTimecodes,
@@ -229,6 +230,54 @@ export function localPlannerArgs(dir: string) {
     dir,
     "-",
   ];
+}
+
+export function russianSubtitleLanguage(metadata: { automatic_captions?: Record<string, unknown>; subtitles?: Record<string, unknown> }) {
+  return ["ru-orig", "ru"].find(lang => [metadata.subtitles?.[lang], metadata.automatic_captions?.[lang]].some(track => Array.isArray(track) && track.length));
+}
+
+export async function takePrefetchedSource(root: string, videoId: string, destination: string) {
+  if (!/^[\w-]{11}$/.test(videoId)) throw new Error("Некорректный идентификатор видео.");
+  const directory = resolve(root, "prefetch", videoId);
+  const source = resolve(directory, "source.mp4");
+  let marker: { id?: string };
+  try { marker = JSON.parse(await readFile(resolve(directory, "ready.json"), "utf8")); }
+  catch (error) { if ((error as NodeJS.ErrnoException).code === "ENOENT") return false; throw error; }
+  const file = await stat(source);
+  if (marker.id !== videoId || !file.isFile() || file.size <= 0 || file.size > 2 * 1024 ** 3)
+    throw new Error("Предварительно загруженное видео не прошло проверку.");
+  await rename(source, destination);
+  await rm(resolve(directory, "ready.json"), { force: true });
+  return true;
+}
+
+export async function waitForPrefetchedSource(root: string, videoId: string, destination: string, signal: AbortSignal) {
+  if (!/^[\w-]{11}$/.test(videoId)) throw new Error("Некорректный идентификатор видео.");
+  const directory = resolve(root, "prefetch", videoId);
+  let pending: { id?: string; pid?: number };
+  try { pending = JSON.parse(await readFile(resolve(directory, "pending.json"), "utf8")); }
+  catch (error) { if ((error as NodeJS.ErrnoException).code === "ENOENT") return takePrefetchedSource(root, videoId, destination); throw error; }
+  if (pending.id !== videoId || !Number.isSafeInteger(pending.pid) || pending.pid! < 2) return false;
+  let stoppedAt = 0;
+  const deadline = Date.now() + 30 * 60_000;
+  while (Date.now() < deadline) {
+    signal.throwIfAborted();
+    if (await takePrefetchedSource(root, videoId, destination)) {
+      await rm(resolve(directory, "pending.json"), { force: true });
+      return true;
+    }
+    let running = false;
+    try {
+      const command = await readFile(`/proc/${pending.pid}/cmdline`, "utf8");
+      running = command.includes("yt-dlp") && command.includes(videoId);
+    } catch { /* process already exited */ }
+    if (running) stoppedAt = 0;
+    else if (!stoppedAt) stoppedAt = Date.now();
+    else if (Date.now() - stoppedAt >= 10_000) break;
+    await delay(2000, undefined, { signal });
+  }
+  await rm(resolve(directory, "pending.json"), { force: true });
+  return false;
 }
 
 export async function probeCuttingMedia(
@@ -581,6 +630,22 @@ export class VideoCuttingService {
       return structuredClone(job);
     });
   }
+  async deleteJob(userId: number, id: string) {
+    await this.ready;
+    const job = this.jobs.get(id);
+    if (!job || job.userId !== userId) throw new Error("Нарезка не найдена.");
+    if (!/^[a-f\d-]{36}$/.test(id) || !["completed", "failed", "cancelled"].includes(job.status) || this.controllers.has(id))
+      throw new Error("Сначала дождитесь завершения или отмените обработку.");
+    return withActiveLimit(`cutting-edit:${userId}:${id}`, 1, async () => {
+      const prefix = `creator/cutting-u${userId}/${id}/`;
+      for (const item of this.options.db?.listCreatorGalleryItems(userId) || [])
+        if (item.videoRel?.startsWith(prefix)) this.options.db!.deleteCreatorGalleryItem(item.id, userId);
+      await rm(resolve(this.options.outputDir, prefix), { recursive: true, force: true });
+      await rm(resolve(this.root, `u${userId}`, id), { recursive: true, force: true });
+      this.jobs.delete(id);
+      return { ok: true };
+    });
+  }
   async close() {
     this.stopped = true;
     for (const controller of this.controllers.values()) controller.abort();
@@ -701,13 +766,10 @@ export class VideoCuttingService {
         2,
       ),
     );
-    const available = { ...metadata.automatic_captions, ...metadata.subtitles };
-    const language = ["ru-orig", "ru", "en-orig", "en"].find(
-      (lang) => Array.isArray(available[lang]) && available[lang].length,
-    );
+    const language = russianSubtitleLanguage(metadata);
     if (!language)
       throw new Error(
-        "У видео нет доступных русских или английских субтитров. Выберите другое видео.",
+        "У видео нет доступных русских субтитров. Выберите другое видео.",
       );
     await command(ytdlp, [
       ...common,
@@ -727,12 +789,10 @@ export class VideoCuttingService {
     const vtt = [
       "source.ru-orig.vtt",
       "source.ru.vtt",
-      "source.en-orig.vtt",
-      "source.en.vtt",
     ].find((f) => files.includes(f));
     if (!vtt)
       throw new Error(
-        "У видео нет доступных русских или английских субтитров. Выберите другое видео.",
+        "У видео нет доступных русских субтитров. Выберите другое видео.",
       );
     let words = parseVideoVtt(await readFile(resolve(dir, vtt), "utf8"), { includeReactions: !!job.daily });
     if (!words.length)
@@ -743,7 +803,10 @@ export class VideoCuttingService {
       );
     await writeFile(resolve(dir, "transcript.json"), JSON.stringify(words));
     await this.update(job, "downloading", "Скачиваем исходник", 15);
-    await command(ytdlp, [
+    const source = resolve(dir, "source.mp4");
+    const videoId = new URL(job.input.url).searchParams.get("v")!;
+    const prefetched = await waitForPrefetchedSource(this.root, videoId, source, signal);
+    if (!prefetched) await command(ytdlp, [
       ...common,
       "--no-progress",
       "--max-filesize",
@@ -757,12 +820,13 @@ export class VideoCuttingService {
       "--",
       job.input.url,
     ]);
-    const source = resolve(dir, "source.mp4");
     if (!existsSync(source))
       throw new Error(
         "Источник не скачан. Возможно, видео ограничено или превышает 2 ГБ.",
       );
     const media = await probeCuttingMedia(source, this.run, signal);
+    if (prefetched && Math.abs(media.duration - advertised) > 2)
+      throw new Error("Длительность предварительно загруженного видео не совпадает с источником.");
     if (media.duration > MAX_SOURCE_SECONDS || !media.audio)
       throw new Error("Нужен видеоролик со звуком длительностью до 3 часов.");
     job.originalDuration = media.duration;
@@ -822,7 +886,9 @@ export class VideoCuttingService {
     let dailyAds: unknown;
     let detectedMode: string | undefined;
     if (job.daily) {
-      const result = await planDailyCuts({ title: job.title!, duration: cleanDuration, words, anchors: timecodes, cwd: dir, signal });
+      const input = { title: job.title!, duration: cleanDuration, words, anchors: timecodes };
+      const result = await readPreparedDailyPlan(resolve(this.root, "prefetch", videoId, "prepared.json"), input)
+        || await planDailyCuts({ ...input, cwd: dir, signal });
       job.plan = result.plan;
       dailyAds = result.ads;
       detectedMode = result.detectedMode;

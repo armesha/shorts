@@ -1,4 +1,5 @@
 import { Codex } from "@openai/codex-sdk";
+import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
@@ -23,6 +24,21 @@ const clip = z.object({
 const schema = z.object({ detected_mode: z.enum(["serial", "highlights"]), detected_ads_to_exclude: z.array(ad), clips: z.array(clip).min(1).max(200) }).strict();
 export type DailyClip = CutPart & z.infer<typeof clip>;
 export type DailyPlan = { plan: DailyClip[]; ads: z.infer<typeof ad>[]; detectedMode: "serial" | "highlights" };
+type PlanInput = { title: string; duration: number; words: TimedWord[]; anchors: CuttingTimecode[] };
+
+export async function dailyPlanFingerprint(input: PlanInput) {
+  const rules = await readFile(resolve(process.cwd(), "docs/video-cutting-rules-v2.md"), "utf8");
+  return createHash("sha256").update(JSON.stringify({ title: input.title, words: input.words, anchors: input.anchors, rules, model: DAILY_CUTTING_MODEL, effort: DAILY_CUTTING_EFFORT })).digest("hex");
+}
+
+export async function readPreparedDailyPlan(file: string, input: PlanInput) {
+  try {
+    const cached = JSON.parse(await readFile(file, "utf8"));
+    if (cached.fingerprint !== await dailyPlanFingerprint(input)) return null;
+    const plan = validateDailyPlan(cached.result, input.duration, input.words);
+    return { ...plan, sessionId: typeof cached.sessionId === "string" ? cached.sessionId : null };
+  } catch { return null; }
+}
 
 export function validateDailyPlan(raw: unknown, duration: number, words: TimedWord[] = []): DailyPlan {
   const result = schema.parse(raw);
