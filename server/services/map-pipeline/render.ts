@@ -1,6 +1,7 @@
 import { createReadStream, existsSync } from "node:fs";
 import { readFile, realpath, stat, writeFile, rm, copyFile, rename } from "node:fs/promises";
 import { createServer } from "node:http";
+import { createHash } from "node:crypto";
 import { extname, resolve, sep } from "node:path";
 import { pathToFileURL } from "node:url";
 import { runCuttingProcess } from "../video-cutting.ts";
@@ -47,6 +48,15 @@ export async function serveRenderScene(source: string, built: string, theme: any
   return { url: `http://127.0.0.1:${address.port}/map-studio/`, close: () => new Promise<void>(accept => { server.close(() => accept()); server.closeAllConnections(); }) };
 }
 
+export function mapBannerFilter(subs: string, fonts: string, crop: string, alpha: string): string {
+  return `[0:v]subtitles='${subs}':fontsdir='${fonts}'[base];[2:v]${crop}scale=${BANNER_SLOT.width}:${BANNER_SLOT.height}:force_original_aspect_ratio=decrease,${alpha},fps=30,setpts=PTS-STARTPTS[ad];[base][ad]overlay=x=${BANNER_SLOT.left}+(${BANNER_SLOT.width}-w)/2:y=${BANNER_SLOT.top}+(${BANNER_SLOT.height}-h)/2:eof_action=repeat:shortest=1[out]`;
+}
+
+export async function rawMapFingerprint(theme: unknown, built: string): Promise<string> {
+  const index = await readFile(resolve(built, "index.html"));
+  return createHash("sha256").update("map-scene-2026-10-31-v2\n").update(JSON.stringify(theme)).update(index).digest("hex");
+}
+
 export async function renderMapVideo(input: { source: string; built: string; directory: string; theme: any; idea: MapIdea; metric: Metric; signal: AbortSignal; stage: (message: string) => Promise<void> }) {
   const { source, directory, theme, idea, metric, signal } = input;
   const run = (bin: string, args: string[], cwd = process.cwd(), timeoutMs = 120_000) => runCuttingProcess(bin, args, { cwd, signal, timeoutMs });
@@ -77,15 +87,30 @@ export async function renderMapVideo(input: { source: string; built: string; dir
   await input.stage("Рендер карты");
   const { validateTheme } = await import(pathToFileURL(resolve(source, "src/theme.js")).href);
   validateTheme(theme);
-  const scene = await serveRenderScene(source, input.built, theme);
   const raw = resolve(directory, "raw.mp4");
+  const rawMarker = resolve(directory, "raw-used.json");
+  const fingerprint = await rawMapFingerprint(theme, input.built);
+  let reusable = false;
   try {
-    const preview = resolve(directory, "preflight.mp4");
-    await run(process.execPath, ["scripts/export-video.mjs", "--url", scene.url, "--theme", theme.id, "--lang", "ru", "--duration", "3", "--output", preview, "--overwrite"], source, 10 * 60_000);
-    const preflight = await probe(preview);
-    if (preflight.streams[0]?.width !== 1080 || preflight.streams[0]?.height !== 1920 || Math.abs(Number(preflight.format.duration) - 3) > 0.1) throw new Error("Пробный экспорт карты не прошёл проверку.");
-    await run(process.execPath, ["scripts/export-video.mjs", "--url", scene.url, "--theme", theme.id, "--lang", "ru", "--output", raw, "--overwrite"], source, 4 * 3600_000);
-  } finally { await scene.close(); }
+    const marker = JSON.parse(await readFile(rawMarker, "utf8"));
+    if (marker.fingerprint === fingerprint) {
+      const info = await probe(raw);
+      const stream = info.streams.find((item: any) => item.codec_type === "video");
+      reusable = stream?.width === 1080 && stream?.height === 1920 && Math.abs(Number(info.format.duration) - VIDEO_SECONDS) < 0.15;
+    }
+  } catch { /* A missing or incomplete raw render must be regenerated. */ }
+  if (!reusable) {
+    await rm(rawMarker, { force: true });
+    const scene = await serveRenderScene(source, input.built, theme);
+    try {
+      const preview = resolve(directory, "preflight.mp4");
+      await run(process.execPath, ["scripts/export-video.mjs", "--url", scene.url, "--theme", theme.id, "--lang", "ru", "--duration", "3", "--output", preview, "--overwrite"], source, 10 * 60_000);
+      const preflight = await probe(preview);
+      if (preflight.streams[0]?.width !== 1080 || preflight.streams[0]?.height !== 1920 || Math.abs(Number(preflight.format.duration) - 3) > 0.1) throw new Error("Пробный экспорт карты не прошёл проверку.");
+      await run(process.execPath, ["scripts/export-video.mjs", "--url", scene.url, "--theme", theme.id, "--lang", "ru", "--output", raw, "--overwrite"], source, 4 * 3600_000);
+      await writeFile(rawMarker, JSON.stringify({ fingerprint }));
+    } finally { await scene.close(); }
+  }
   const destination = resolve(directory, "video.mp4");
   const final = resolve(directory, "video.pending.mp4");
   const subs = resolve(directory, "subtitles.ass").replace(/\\/g, "/").replace(/:/g, "\\:").replace(/'/g, "\\'");
@@ -97,8 +122,8 @@ export async function renderMapVideo(input: { source: string; built: string; dir
   const crop = banner.fullFrame !== false ? "crop=900:260:90:830," : "";
   const alpha = banner.transparent !== false ? "format=rgba" : `format=rgba,chromakey=${(banner.chromaColor || "#00ff00").replace("#", "0x")}:${banner.similarity ?? 0.18}:${banner.blend ?? 0.08}`;
   const bannerInput = /\.(png|jpe?g|webp)$/i.test(bannerFile) ? ["-loop", "1", "-i", bannerFile] : ["-stream_loop", "-1", "-i", bannerFile];
-  const filter = `[0:v]subtitles='${subs}':fontsdir='${fonts}'[base];[2:v]${crop}scale=${BANNER_SLOT.width}:${BANNER_SLOT.height}:force_original_aspect_ratio=decrease,${alpha},fps=30,setpts=PTS-STARTPTS[ad];[base][ad]overlay=x=${BANNER_SLOT.left}+(${BANNER_SLOT.width}-w)/2:y=${BANNER_SLOT.top}+(${BANNER_SLOT.height}-h)/2:eof_action=repeat:shortest=0[out]`;
-  await run("ffmpeg", ["-y", "-i", raw, "-i", audio, ...bannerInput, "-filter_complex", filter, "-map", "[out]", "-map", "1:a", "-c:v", "libx264", "-preset", "fast", "-crf", "18", "-profile:v", "high", "-pix_fmt", "yuv420p", "-color_range", "tv", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-c:a", "copy", "-movflags", "+faststart", "-metadata", "comment=Carefree — Kevin MacLeod (incompetech.com), CC BY 4.0; original tempo. World Bank WDI, CC BY 4.0; translated, rounded; regional estimates marked ≈.", final], process.cwd(), 30 * 60_000);
+  const filter = mapBannerFilter(subs, fonts, crop, alpha);
+  await run("ffmpeg", ["-y", "-i", raw, "-i", audio, ...bannerInput, "-filter_complex", filter, "-map", "[out]", "-map", "1:a", "-t", String(VIDEO_SECONDS), "-c:v", "libx264", "-preset", "fast", "-crf", "18", "-profile:v", "high", "-pix_fmt", "yuv420p", "-color_range", "tv", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-c:a", "copy", "-movflags", "+faststart", "-metadata", "comment=Carefree — Kevin MacLeod (incompetech.com), CC BY 4.0; original tempo. World Bank WDI, CC BY 4.0; translated, rounded; regional estimates marked ≈.", final], process.cwd(), 30 * 60_000);
   await input.stage("Проверка видео и кадров");
   const media = await probe(final);
   const videoStream = media.streams.find((s: any) => s.codec_type === "video");
@@ -128,5 +153,6 @@ export async function renderMapVideo(input: { source: string; built: string; dir
   if (review.passed !== true || !Array.isArray(review.issues) || review.issues.length) throw new Error("Видео требует исправления после проверки кадров.");
   await rename(final, destination);
   await rm(raw, { force: true });
+  await rm(rawMarker, { force: true });
   return { seconds: VIDEO_SECONDS, video: destination, poster: resolve(directory, "poster.jpg"), speechSeconds };
 }
