@@ -7,7 +7,7 @@ try {
   } else {
     const input = JSON.parse(await readFile(process.argv[2], "utf8"));
     const result = await generateGeminiTtsPreview({ text: input.text, language: "ru", voice: "Kore",
-      scene: "Понятное вступительное объяснение показателя на карте мира.", style: "Естественно и увлечённо; ясно произносить единицы измерения и пример.", pace: "Разговорный темп, небольшие паузы между предложениями." });
+      scene: "Короткий вопрос для видео с картой мира.", style: "Естественно и ясно прочитать только заданный вопрос, без добавлений и объяснений.", pace: "Спокойный разговорный темп." });
     await writeFile(process.argv[3], Buffer.from(result.audioDataUrl.split(",")[1], "base64"), { mode: 0o600 });
     console.log(JSON.stringify({ seconds: result.durationSec, voice: result.voice, model: result.model }));
   }
