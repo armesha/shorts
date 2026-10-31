@@ -92,6 +92,19 @@ test("a three-minute video in the earlier format cannot be published", async () 
   } finally { await f.close(); }
 });
 
+test("replacement videos are published before unrelated ready videos", async () => {
+  const f = await fixture();
+  try {
+    await f.publisher.tick();
+    const original = (await f.pipeline.list(f.owner.id)).jobs.find(j => j.status === "published")!;
+    await f.pipeline.rebuildOld(f.owner.id);
+    for (let i = 0; i < 3; i++) { await f.pipeline.tick(); await f.pipeline.idle(); }
+    f.advance(); await f.publisher.tick();
+    const replacement = (await f.pipeline.list(f.owner.id)).jobs.find(j => j.replacementFor === original.id)!;
+    assert.equal(replacement.status, "published");
+  } finally { await f.close(); }
+});
+
 test("a deleted post releases its slot for an explicitly approved replacement", async () => {
   const f = await fixture();
   try {

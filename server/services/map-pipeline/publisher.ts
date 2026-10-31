@@ -83,7 +83,8 @@ export class MapPublisher {
       if (last && this.now() - Date.parse(last.created_at) < DAY_MS) continue;
       const day = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Prague", year: "numeric", month: "2-digit", day: "2-digit" }).format(this.now());
       if (this.db.db.prepare("SELECT id FROM map_publications WHERE account_id=? AND day_key=?").get(binding.account_id, day)) continue;
-      const job = state.jobs.slice().reverse().find(j => j.ownerId === binding.owner_id && j.status === "ready" && j.formatVersion === 2 && j.seconds === VIDEO_SECONDS && !this.db.db.prepare("SELECT id FROM map_publications WHERE map_job_id=?").get(j.id));
+      const candidates = state.jobs.slice().reverse().filter(j => j.ownerId === binding.owner_id && j.status === "ready" && j.formatVersion === 2 && j.seconds === VIDEO_SECONDS && !this.db.db.prepare("SELECT id FROM map_publications WHERE map_job_id=?").get(j.id));
+      const job = candidates.find(j => j.replacementFor) || candidates[0];
       if (!job) continue;
       await this.publish(binding, job, day, Date.parse(campaign.endsAt));
     }
