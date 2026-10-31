@@ -68,7 +68,6 @@ import { registerExamplesRoutes } from "./routes/examples.ts";
 import { registerAudioRoutes } from "./routes/audio.ts";
 import { registerMemesRoutes } from "./routes/memes.ts";
 import { registerIdeasRoutes } from "./routes/ideas.ts";
-import { registerSzzRoutes } from "./routes/szz.ts";
 import { registerCircleEditorRoutes } from "./routes/circle-editor.ts";
 import { registerSignalsRoutes } from "./routes/signals.ts";
 
@@ -406,7 +405,6 @@ registerAudioRoutes(app, db, deps);
 registerMemesRoutes(app, deps);
 registerIdeasRoutes(app, db, deps);
 registerSocialRoutes(app, socialService, deps);
-registerSzzRoutes(app);
 registerCircleEditorRoutes(app, db);
 
 app
