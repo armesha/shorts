@@ -18,6 +18,15 @@ export function registerMapPipelineRoutes(app: FastifyInstance, service = new Ma
       try { return action === "approve-review" ? await service.approveReview(uid(req)) : await service.rebuildOld(uid(req)); }
       catch { return reply.code(400).send({ error: "Не удалось подготовить ролики." }); }
     });
+    app.post("/api/map-pipeline/rebuild-numeric", async (req, reply) => {
+      if (!uid(req)) return reply.code(401).send({ error: "Не авторизован" });
+      if (!canGenerate(uid(req))) return reply.code(403).send({ error: "Недостаточно прав." });
+      if (req.headers.origin) { try { if (new URL(req.headers.origin).host !== req.headers.host) return reply.code(403).send({ error: "Запрос с другого сайта запрещён." }); } catch { return reply.code(403).send({ error: "Некорректный источник запроса." }); } }
+      const ids = (req.body as { ids?: unknown } | null)?.ids;
+      if (!Array.isArray(ids) || ids.some(id => typeof id !== "string")) return reply.code(400).send({ error: "Выберите ролики." });
+      try { return await service.rebuildNumeric(uid(req), ids); }
+      catch { return reply.code(400).send({ error: "Не удалось подготовить ролики." }); }
+    });
     app.post("/api/map-pipeline/jobs/:id/removed", async (req, reply) => {
       if (!uid(req)) return reply.code(401).send({ error: "Не авторизован" });
       if (!canGenerate(uid(req))) return reply.code(403).send({ error: "Недостаточно прав." });

@@ -22,10 +22,12 @@ const JobSchema = z.object({
   approvedReview: z.boolean().optional(),
   replacementFor: z.string().uuid().optional(),
   formatVersion: z.number().int().optional(),
+  answerMode: z.enum(["binary", "numeric"]).optional(),
   publication: z.object({ state: z.enum(["uploading", "published", "needs_review", "failed", "removed"]), url: z.string().url().optional(), error: z.string().optional(), cleanedAt: z.string().datetime().optional() }).optional(),
 });
 export type MapJob = z.infer<typeof JobSchema>;
-export function mapAnswerMode(job: Pick<MapJob, "kind" | "day">): "binary" | "numeric" {
+export function mapAnswerMode(job: Pick<MapJob, "kind" | "day" | "answerMode">): "binary" | "numeric" {
+  if (job.answerMode) return job.answerMode;
   return job.kind === "daily" && (job.day ?? 0) % 2 === 1 ? "numeric" : "binary";
 }
 type State = { version: 1; campaigns: Record<string, MapCampaign>; jobs: MapJob[] };
@@ -183,6 +185,20 @@ export class MapPipelineService {
         this.state.jobs.push(replacement);
       }
       await this.save(); return this.list(ownerId);
+    });
+  }
+  async rebuildNumeric(ownerId: number, ids: string[]) {
+    return this.mutate(async () => {
+      await this.init();
+      if (this.closing || ids.length < 1 || ids.length > 30 || new Set(ids).size !== ids.length || ids.some(id => !z.string().uuid().safeParse(id).success)) throw new Error("Некорректный список роликов.");
+      const jobs = ids.map(id => this.state.jobs.find(j => j.id === id && j.ownerId === ownerId));
+      if (jobs.some(j => !j || j.status !== "ready" || j.publication)) throw new Error("Ролик недоступен для пересборки.");
+      for (const job of jobs as MapJob[]) {
+        job.answerMode = "numeric"; job.status = "queued"; job.stage = "Пересборка с числами";
+        job.attempts = 0; delete job.error; delete job.finishedAt; delete job.formatVersion;
+      }
+      await this.save();
+      return this.list(ownerId);
     });
   }
   async samples(ownerId: number, rebuild = false) {

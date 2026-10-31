@@ -189,4 +189,25 @@ test("daily videos alternate between binary and numeric answers", () => {
   assert.equal(mapAnswerMode({ kind: "daily", day: 2 }), "binary");
   assert.equal(mapAnswerMode({ kind: "daily", day: 3 }), "numeric");
   assert.equal(mapAnswerMode({ kind: "daily", day: 4 }), "binary");
+  assert.equal(mapAnswerMode({ kind: "sample", answerMode: "numeric" }), "numeric");
+});
+
+test("selected videos can be queued for numeric rebuild without touching other owners or files", async () => {
+  const f = await fixture(); const service = new MapPipelineService(f.options);
+  try {
+    await service.samples(1);
+    for (let i = 0; i < 2; i++) { await service.tick(); await service.idle(); }
+    const original = (await service.list(1)).jobs;
+    const target = original[0];
+    await assert.rejects(service.rebuildNumeric(2, [target.id]));
+    await assert.rejects(service.rebuildNumeric(1, [target.id, target.id]));
+    await service.rebuildNumeric(1, [target.id]);
+    const queued = (await service.list(1)).jobs;
+    assert.equal(queued.find(j => j.id === target.id)?.status, "queued");
+    assert.equal(queued.find(j => j.id === target.id)?.answerMode, "numeric");
+    assert.equal(queued.find(j => j.id !== target.id)?.status, "ready");
+    assert.equal(await readFile(join(service.directory(target), "video.mp4"), "utf8"), "synthetic-media");
+    await service.tick(); await service.idle();
+    assert.equal((await service.list(1)).jobs.find(j => j.id === target.id)?.answerMode, "numeric");
+  } finally { await service.close(); await rm(f.root, { recursive: true, force: true }); }
 });
