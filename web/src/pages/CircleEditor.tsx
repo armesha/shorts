@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ExternalLink, Video } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const CIRCLE_EDITOR_URL = "/circle-editor/index.html";
 const CIRCLE_EDITOR_VERSION = "20260727-1";
@@ -41,6 +42,7 @@ export default function CircleEditor() {
           </div>
         </div>
         <div className="grid w-full gap-2 sm:flex sm:w-auto sm:flex-wrap">
+          <Link to="/circles/library" className="btn btn-outline min-h-11 sm:btn-sm sm:min-h-0">Библиотека кружков</Link>
           <a href={editorSrc} target="_blank" rel="noreferrer" className="btn btn-outline min-h-11 gap-2 sm:btn-sm sm:min-h-0">
             <ExternalLink size={16} />
             На весь экран

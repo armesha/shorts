@@ -19,6 +19,7 @@ const routeLoaders = {
   clipDemos: () => import("../pages/ClipDemos"),
   examples: () => import("../pages/Examples"),
   circleEditor: () => import("../pages/CircleEditor"),
+  circleLibrary: () => import("../pages/CircleLibrary"),
   login: () => import("../pages/Login"),
   register: () => import("../pages/Register"),
   telegramMiniApp: () => import("../pages/TelegramMiniApp"),
@@ -95,6 +96,8 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
     case "/circles":
     case "/admin/circles":
       return "circleEditor";
+    case "/circles/library":
+      return "circleLibrary";
     case "/users":
       return "users";
     case "/login":

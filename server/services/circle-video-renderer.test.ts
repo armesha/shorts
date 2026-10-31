@@ -80,6 +80,7 @@ test("circle renderer produces a vertical MP4 with audio and a duration-fitted a
       outputFile: output,
       durationOverrideSec: 0.45,
       encoderPreset: "ultrafast",
+      ffmpegExecutable: "ffmpeg",
       layout: {
         circle: { x: 130, y: 300, size: 820 },
         puzzle: { x: 90, y: 92, width: 900, labelSize: 30, puzzleSize: 68, gap: 14 },
@@ -98,6 +99,16 @@ test("circle renderer produces a vertical MP4 with audio and a duration-fitted a
     assert.match(inspected.stderr, /Duration:\s*00:00:00\.4/);
     assert.match(inspected.stderr, /1080x1920/);
     assert.match(inspected.stderr, /\bAudio:\s/);
+    rmSync(banner);
+    await assert.rejects(renderCircleVideo({
+      sourceFile: source, gameplayFile: gameplay, outputFile: resolve(root, "missing-banner.mp4"),
+      requireBanner: true,
+      layout: {
+        circle: { x: 130, y: 300, size: 820 },
+        puzzle: { x: 90, y: 92, width: 900, labelSize: 30, puzzleSize: 68, gap: 14 },
+        banner: { x: 90, y: 830, width: 900, height: 260, startSeconds: 0, repeatEverySeconds: 0 },
+      },
+    }));
   } finally {
     if (previous === undefined) delete process.env.TG_CIRCLES_DIR;
     else process.env.TG_CIRCLES_DIR = previous;

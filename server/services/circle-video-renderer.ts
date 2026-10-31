@@ -47,6 +47,8 @@ export interface CircleVideoRenderInput {
   layout: CircleLayout;
   durationOverrideSec?: number;
   encoderPreset?: "ultrafast" | "superfast" | "veryfast" | "faster" | "fast" | "medium";
+  requireBanner?: boolean;
+  ffmpegExecutable?: string;
 }
 
 export interface CircleVideoRenderResult {
@@ -56,9 +58,9 @@ export interface CircleVideoRenderResult {
   puzzle: string;
 }
 
-function runFfmpeg(args: string[], cwd: string): Promise<string> {
+function runFfmpeg(args: string[], cwd: string, executable = ffmpeg): Promise<string> {
   return new Promise((resolvePromise, reject) => {
-    const child = spawn(ffmpeg, args, {
+    const child = spawn(executable, args, {
       cwd,
       windowsHide: true,
       stdio: ["ignore", "ignore", "pipe"],
@@ -79,12 +81,12 @@ function runFfmpeg(args: string[], cwd: string): Promise<string> {
   });
 }
 
-async function probeMedia(file: string): Promise<MediaProbe> {
+async function probeMedia(file: string, executable = ffmpeg): Promise<MediaProbe> {
   if (!existsSync(file)) throw new Error(`Видеофайл не найден: ${basename(file)}`);
   const stderr = await runFfmpeg([
     "-hide_banner", "-loglevel", "info", "-i", file,
     "-map", "0:v:0", "-frames:v", "1", "-f", "null", "-",
-  ], dirname(file));
+  ], dirname(file), executable);
   const duration = /Duration:\s*(\d+):(\d+):(\d+(?:\.\d+)?)/i.exec(stderr);
   if (!duration) throw new Error(`Не удалось определить длительность видео: ${basename(file)}`);
   const durationSec = Number(duration[1]) * 3600 + Number(duration[2]) * 60 + Number(duration[3]);
@@ -266,8 +268,8 @@ function circleMask(size: number, duration: number): string {
 export async function renderCircleVideo(input: CircleVideoRenderInput): Promise<CircleVideoRenderResult> {
   const root = ensureCircleWorkspace();
   const [sourceProbe, gameplayProbe] = await Promise.all([
-    probeMedia(input.sourceFile),
-    probeMedia(input.gameplayFile),
+    probeMedia(input.sourceFile, input.ffmpegExecutable),
+    probeMedia(input.gameplayFile, input.ffmpegExecutable),
   ]);
   const requestedDuration = Number(input.durationOverrideSec);
   const durationSec = Number.isFinite(requestedDuration) && requestedDuration > 0
@@ -279,12 +281,13 @@ export async function renderCircleVideo(input: CircleVideoRenderInput): Promise<
     pickGameplayStart(root, input.gameplayFile, gameplayProbe.durationSec, durationSec),
     pickPuzzle(root),
   ]);
+  const banner = activeBanner();
+  if (input.requireBanner && !banner) throw new Error("Активный баннер недоступен.");
   const puzzleFile = resolve(root, ".runtime", `puzzle-${randomUUID()}.png`);
   const temporaryOutput = `${input.outputFile}.${randomUUID()}.tmp.mp4`;
   await mkdir(dirname(input.outputFile), { recursive: true });
   await renderPuzzleOverlay(puzzleFile, input.layout, puzzle);
 
-  const banner = activeBanner();
   const args = [
     "-hide_banner", "-loglevel", "error", "-y",
     "-stream_loop", "-1", "-ss", seconds(gameplayStartSec), "-i", input.gameplayFile,
@@ -339,7 +342,7 @@ export async function renderCircleVideo(input: CircleVideoRenderInput): Promise<
   args.push("-movflags", "+faststart", temporaryOutput);
 
   try {
-    await runFfmpeg(args, root);
+    await runFfmpeg(args, root, input.ffmpegExecutable);
     if (!existsSync(temporaryOutput)) throw new Error("FFmpeg не создал итоговый MP4.");
     await rename(temporaryOutput, input.outputFile);
   } finally {

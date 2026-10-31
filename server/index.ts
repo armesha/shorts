@@ -69,6 +69,8 @@ import { registerAudioRoutes } from "./routes/audio.ts";
 import { registerMemesRoutes } from "./routes/memes.ts";
 import { registerIdeasRoutes } from "./routes/ideas.ts";
 import { registerCircleEditorRoutes } from "./routes/circle-editor.ts";
+import { registerCirclePipelineRoutes } from "./routes/circle-pipeline.ts";
+import { CirclePipelineService } from "./services/circle-pipeline/service.ts";
 import { registerSignalsRoutes } from "./routes/signals.ts";
 
 import { registerSocialRoutes } from "./routes/social.ts";
@@ -406,6 +408,7 @@ registerMemesRoutes(app, deps);
 registerIdeasRoutes(app, db, deps);
 registerSocialRoutes(app, socialService, deps);
 registerCircleEditorRoutes(app, db);
+registerCirclePipelineRoutes(app, new CirclePipelineService({ log: message => app.log.info(message) }), ownerId => isSuperAdminUser(db.getUserById(ownerId)));
 
 app
   .listen({ port: base.port, host: "0.0.0.0" })

@@ -30,6 +30,7 @@ const Users = lazy(pageLoaders.users);
 const ClipDemos = lazy(pageLoaders.clipDemos);
 const Examples = lazy(pageLoaders.examples);
 const CircleEditor = lazy(pageLoaders.circleEditor);
+const CircleLibrary = lazy(pageLoaders.circleLibrary);
 const Login = lazy(pageLoaders.login);
 const Register = lazy(pageLoaders.register);
 const TelegramMiniApp = lazy(pageLoaders.telegramMiniApp);
@@ -106,6 +107,7 @@ function Gate() {
             <Route path="/system" element={<System />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/circles" element={<CircleEditor />} />
+            <Route path="/circles/library" element={<CircleLibrary />} />
             <Route path="/admin/circles" element={<Navigate to="/circles" replace />} />
             <Route path="/users" element={realAdmin ? <Users /> : <Navigate to="/statistics" replace />} />
             <Route path="*" element={defaultRoute} />
