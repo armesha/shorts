@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { existsSync } from "node:fs";
+import { existsSync, statSync } from "node:fs";
 import {
   mkdir,
   readFile,
@@ -15,6 +15,8 @@ import { extname, resolve } from "node:path";
 import { homedir } from "node:os";
 import { setTimeout as delay } from "node:timers/promises";
 import type { Db } from "../db.ts";
+import { cuttingBannerFilter } from "./cutting-banner.ts";
+import { cuttingRenderCommand } from "../infra/cutting-render-resources.ts";
 import { DAILY_CUTTING_EFFORT, DAILY_CUTTING_MODEL, planDailyCuts, readPreparedDailyPlan, type DailyClip } from "./daily-cutting-plan.ts";
 import {
   extractCuttingTimecodes,
@@ -124,7 +126,8 @@ export const runCuttingProcess: ProcessRunner = (bin, args, options) =>
         "TMPDIR",
       ].flatMap((key) => (process.env[key] ? [[key, process.env[key]!]] : [])),
     );
-    const child = spawn(bin, args, {
+    const limited = cuttingRenderCommand(bin, args);
+    const child = spawn(limited.bin, limited.args, {
       cwd: options.cwd,
       env,
       stdio: ["pipe", "pipe", "pipe"],
@@ -385,13 +388,7 @@ export async function renderCuttingPart(input: {
     "[bg][fg]overlay=0:656:shortest=1[framed];";
   let label = "framed";
   if (input.banner) {
-    const item = input.banner.item;
-    const crop = item.fullFrame !== false ? "crop=900:260:90:830," : "";
-    const alpha =
-      item.transparent !== false
-        ? "format=rgba"
-        : `format=rgba,chromakey=${(item.chromaColor || "#00ff00").replace("#", "0x")}:${item.similarity ?? 0.18}:${item.blend ?? 0.08}`;
-    graph += `[${ranges.length}:v]${crop}scale=1012:292,${alpha},fps=30,setpts=PTS-STARTPTS[banner];[framed][banner]overlay=34:210:eof_action=repeat:shortest=0[branded];`;
+    graph += cuttingBannerFilter(ranges.length, input.banner.item, "framed", "branded");
     label = "branded";
   }
   graph += `[${label}]${input.subtitles || input.hook ? `ass=filename=${ass},` : ""}fps=30,format=yuv420p[out]`;
@@ -474,6 +471,19 @@ export class VideoCuttingService {
   private file(job: CutJob) {
     return resolve(this.root, `u${job.userId}`, job.id, "job.json");
   }
+  private snapshot(job: CutJob) {
+    const copy = structuredClone(job);
+    if (!Array.isArray(copy.clips)) return copy;
+    for (const clip of copy.clips) {
+      const expected = `/files/creator/cutting-u${job.userId}/${job.id}/part-${clip.number}.mp4`;
+      if (typeof clip.videoUrl !== "string" || clip.videoUrl.split("?")[0] !== expected) continue;
+      try {
+        const file = statSync(resolve(this.options.outputDir, `creator/cutting-u${job.userId}/${job.id}/part-${clip.number}.mp4`));
+        clip.videoUrl = `${expected}?v=${Math.floor(file.mtimeMs)}-${file.size}`;
+      } catch { /* A removed or incomplete file remains unavailable. */ }
+    }
+    return copy;
+  }
   private async save(job: CutJob) {
     job.updatedAt = new Date().toISOString();
     const file = this.file(job);
@@ -512,16 +522,16 @@ export class VideoCuttingService {
       .filter((j) => j.userId === userId)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
       .slice(0, 50)
-      .map((j) => structuredClone(j));
+      .map((j) => this.snapshot(j));
   }
   async dailyJobs(userId: number) {
     await this.ready;
-    return [...this.jobs.values()].filter(j => j.userId === userId && j.daily).map(j => structuredClone(j));
+    return [...this.jobs.values()].filter(j => j.userId === userId && j.daily).map(j => this.snapshot(j));
   }
   async get(userId: number, id: string) {
     await this.ready;
     const job = this.jobs.get(id);
-    return job?.userId === userId ? structuredClone(job) : null;
+    return job?.userId === userId ? this.snapshot(job) : null;
   }
   async create(userId: number, raw: unknown, daily = false) {
     await this.ready;
@@ -693,7 +703,8 @@ export class VideoCuttingService {
             const dir = resolve(this.file(job), "..");
             for (const file of await readdir(dir).catch(() => [])) {
               if (
-                /^source(?:\.[\w-]+)*\.(?:mp4|mkv|webm|part|ytdl)$/.test(file)
+                /^source(?:\.[\w-]+)*\.(?:mp4|mkv|webm|part|ytdl)$/.test(file) ||
+                /^banner\.(?:mov|mp4|webm|mkv|png|jpe?g|webp)$/i.test(file)
               )
                 await rm(resolve(dir, file), { force: true }).catch(() => {});
             }

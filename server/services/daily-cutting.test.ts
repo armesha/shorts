@@ -17,7 +17,14 @@ test("daily schedule alternates selection, excludes repeats and survives restart
     { id: "ccccccccccc", views: 50, duration: 600 },
   ];
   const cutting = new VideoCuttingService({ root: resolve(root, "jobs"), outputDir: root, execute: async () => {} });
-  const options = { file: resolve(root, "state.json"), now: () => now, fetch: async () => videos };
+  const create = cutting.create.bind(cutting);
+  const selectedBanners: unknown[] = [];
+  cutting.create = async (owner, input, daily) => {
+    const data = input as { bannerId?: unknown };
+    selectedBanners.push(data.bannerId);
+    return create(owner, { ...(input as object), bannerId: null }, daily);
+  };
+  const options = { file: resolve(root, "state.json"), now: () => now, fetch: async () => videos, bannerId: () => "active-banner" };
   let daily = new DailyCuttingService(cutting, options);
   const awaitJobs = async (count: number) => {
     for (let i = 0; i < 100; i++) {
@@ -41,6 +48,7 @@ test("daily schedule alternates selection, excludes repeats and survives restart
     await daily.runNow(7, "https://youtu.be/ccccccccccc");
     jobs = await awaitJobs(3);
     assert.ok(jobs.some(j => j.input.url.includes("ccccccccccc")));
+    assert.deepEqual(selectedBanners, ["active-banner", "active-banner", "active-banner"]);
     await assert.rejects(daily.runNow(7, "https://youtu.be/ccccccccccc"), /уже выбиралось/);
     assert.equal(pragueDay(new Date("2026-10-30T23:30:00Z")), "2026-10-31");
   } finally { daily.close(); await cutting.close(); await rm(root, { recursive: true, force: true }); }

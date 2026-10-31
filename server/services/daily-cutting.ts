@@ -5,6 +5,7 @@ import { z } from "zod";
 import { runCuttingProcess, type VideoCuttingService } from "./video-cutting.ts";
 import { normalizeVideoUrl } from "./video-cutting-plan.ts";
 import { withActiveLimit } from "../infra/rate-limits.ts";
+import { circleAdvertiserState } from "./circle-advertisers.ts";
 
 const stateSchema = z.object({ ownerId: z.number().int().positive(), enabled: z.boolean(),
   lastDay: z.string().optional(), sequence: z.number().int().nonnegative(),
@@ -47,7 +48,7 @@ export class DailyCuttingService {
   private controller?: AbortController;
   private saveQueue: Promise<void> = Promise.resolve();
   private readonly file: string;
-  constructor(private readonly cutting: VideoCuttingService, private readonly options: { file?: string; now?: () => Date; fetch?: () => Promise<ChannelVideo[]>; log?: (s: string) => void } = {}) {
+  constructor(private readonly cutting: VideoCuttingService, private readonly options: { file?: string; now?: () => Date; fetch?: () => Promise<ChannelVideo[]>; bannerId?: () => string | null; log?: (s: string) => void } = {}) {
     this.file = options.file || resolve(process.cwd(), "data/video-cutting/daily-state.json");
   }
   private async save() {
@@ -167,7 +168,9 @@ export class DailyCuttingService {
         await this.save();
       }
       if (state.pending && !state.pending.jobId && state.enabled) {
-        const job = await this.cutting.create(state.ownerId, { url: `https://www.youtube.com/watch?v=${state.pending.id}`, mode: "auto", bannerId: null, subtitles: true, sponsorBlock: true }, true);
+        const bannerId = this.options.bannerId ? this.options.bannerId() : circleAdvertiserState().activeAdvertiserId;
+        if (!bannerId && !this.options.bannerId) throw new Error("Не найден активный баннер для нарезок.");
+        const job = await this.cutting.create(state.ownerId, { url: `https://www.youtube.com/watch?v=${state.pending.id}`, mode: "auto", bannerId: bannerId || null, subtitles: true, sponsorBlock: true }, true);
         state.pending.jobId = job.id;
         state.lastDay = pragueDay(this.options.now?.() || new Date(job.createdAt));
         state.error = undefined;

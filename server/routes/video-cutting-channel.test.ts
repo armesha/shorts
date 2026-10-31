@@ -51,6 +51,7 @@ test("ready parts can be added and deleted only by their owner through the cutti
           duration: 80,
           start: 0,
           end: 80,
+          videoUrl: `/files/creator/cutting-u${owner.id}/${id}/part-1.mp4`,
         },
       ],
     }),
@@ -66,6 +67,10 @@ test("ready parts can be added and deleted only by their owner through the cutti
   try {
     const headers = { "x-user": String(owner.id) },
       foreign = { "x-user": String(other.id) };
+    const beforeUrl = (await app.inject({ url: `/api/video-cutting/jobs/${id}`, headers })).json().clips[0].videoUrl;
+    await writeFile(resolve(source, "part-1.mp4"), "a different rendered fixture");
+    const afterUrl = (await app.inject({ url: `/api/video-cutting/jobs/${id}`, headers })).json().clips[0].videoUrl;
+    assert.notEqual(beforeUrl, afterUrl);
     const workspace = await app.inject({ url: "/api/video-cutting", headers });
     assert.deepEqual(
       workspace.json().channels.map((channel: any) => channel.id),

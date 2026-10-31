@@ -3,7 +3,7 @@ import type { Db } from "../db.ts";
 import { z } from "zod";
 import { uid } from "../infra/auth-session.ts";
 import { checkRateLimit } from "../infra/rate-limits.ts";
-import { listCircleAdvertisers } from "../services/circle-advertisers.ts";
+import { circleAdvertiserState, listCircleAdvertisers } from "../services/circle-advertisers.ts";
 import {
   CUTTING_MODEL,
   CUTTING_EFFORT,
@@ -59,6 +59,7 @@ export function registerVideoCuttingRoutes(
         id: item.id,
         name: item.name,
       })),
+      activeBannerId: circleAdvertiserState().activeAdvertiserId,
       engine: { model: CUTTING_MODEL, effort: CUTTING_EFFORT },
     };
   });

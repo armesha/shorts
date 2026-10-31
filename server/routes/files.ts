@@ -120,7 +120,7 @@ export function registerFilesRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const lastModified = st.mtime.toUTCString();
     reply.header("Content-Type", contentType);
     reply.header("Accept-Ranges", "bytes");
-    reply.header("Cache-Control", "private, max-age=86400");
+    reply.header("Cache-Control", /^creator\/cutting-u\d+\//.test(rel) ? "private, no-cache" : "private, max-age=86400");
     reply.header("ETag", etag);
     reply.header("Last-Modified", lastModified);
     const rangeRaw = req.headers.range;

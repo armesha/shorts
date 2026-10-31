@@ -60,6 +60,7 @@ type Job = {
 type Workspace = {
   jobs: Job[];
   banners: { id: string; name: string }[];
+  activeBannerId?: string;
   channels?: { id: number; name: string; platform: string }[];
 };
 const finished = (job: Job) =>
@@ -125,6 +126,7 @@ export default function VideoCutting() {
             setWorkspace(data);
             if (!initialLoad.current) {
               initialLoad.current = true;
+              if (data.activeBannerId) setBannerId(data.activeBannerId);
               if (
                 data.jobs.length &&
                 !document
