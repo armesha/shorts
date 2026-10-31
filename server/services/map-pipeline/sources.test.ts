@@ -4,7 +4,7 @@ import { mapObservations, type CountryMeta } from "./sources.ts";
 import { buildMapTheme, mapSubtitles } from "./theme.ts";
 import { METRICS } from "./sources.ts";
 
-test("regional estimates are marked, attributed to measured donors, and never win measured ranking", () => {
+test("regional estimates are marked and both answers match the stated threshold", () => {
   const meta: Record<string, CountryMeta> = {};
   const values: Record<string, number> = {};
   const ids = Array.from({ length: 101 }, (_, i) => String(i).padStart(3, "0"));
@@ -22,10 +22,15 @@ test("regional estimates are marked, attributed to measured donors, and never wi
   const theme = buildMapTheme(template, meta, observations, METRICS[0], idea, "daily-test");
   assert.equal(theme.duration, 180);
   assert.ok(theme.countryStyles["100"].value.startsWith("≈"));
-  assert.match(theme.countryStyles["100"].value, /^[≈\d\s,.-]+$/);
+  assert.match(theme.countryStyles["100"].value, /^≈(ДА|НЕТ)$/);
+  assert.deepEqual(theme.legend.map((row: {label:string}) => row.label), ["НЕТ", "ДА"]);
+  assert.equal(theme.countryStyles["000"].value, "НЕТ");
+  assert.equal(theme.countryStyles["099"].value, "ДА");
+  assert.match(idea.title, /выше 50 процентов\?$/);
+  assert.equal(theme.winner.title.ru, "ОТВЕТЫ ПО СТРАНАМ");
+  assert.equal(theme.winner.showAt, 172);
   assert.ok(theme.legend.every((row: {label:string}) => !row.label.includes("%")));
   assert.ok(!mapSubtitles(idea, METRICS[0], 25).includes("%"));
-  assert.equal(theme.winner.ranking[0].country.ru, "Country 99");
   assert.ok(mapSubtitles(idea, METRICS[0], 3).includes("2023"));
   assert.throws(() => mapObservations(ids, meta, {}, 2023), /минимум 100/);
 });

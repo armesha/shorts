@@ -83,7 +83,7 @@ export class MapPublisher {
       if (last && this.now() - Date.parse(last.created_at) < DAY_MS) continue;
       const day = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Prague", year: "numeric", month: "2-digit", day: "2-digit" }).format(this.now());
       if (this.db.db.prepare("SELECT id FROM map_publications WHERE account_id=? AND day_key=?").get(binding.account_id, day)) continue;
-      const job = state.jobs.slice().reverse().find(j => j.ownerId === binding.owner_id && j.status === "ready" && j.seconds === VIDEO_SECONDS && !this.db.db.prepare("SELECT id FROM map_publications WHERE map_job_id=?").get(j.id));
+      const job = state.jobs.slice().reverse().find(j => j.ownerId === binding.owner_id && j.status === "ready" && j.formatVersion === 2 && j.seconds === VIDEO_SECONDS && !this.db.db.prepare("SELECT id FROM map_publications WHERE map_job_id=?").get(j.id));
       if (!job) continue;
       await this.publish(binding, job, day, Date.parse(campaign.endsAt));
     }
@@ -91,7 +91,7 @@ export class MapPublisher {
   private async publish(binding: Binding, job: MapJob, day: string, endsAt: number) {
     const directory = this.pipeline.directory(job);
     const metadata = JSON.parse(await readFile(resolve(directory, "metadata.json"), "utf8"));
-    const caption = `${job.idea?.title || "Карта мира"}\nДанные: Всемирный банк, ${metadata.metric?.year || 2023}; перевод, округление; ≈ — региональная оценка.\n${metadata.source}\nCarefree — Kevin MacLeod (incompetech.com), CC BY 4.0, темп 1.15×.\nhttps://creativecommons.org/licenses/by/4.0/\n#карты #география #странымира`;
+    const caption = `${job.idea?.title || "Карта мира"}\nДанные: Всемирный банк, ${metadata.metric?.year || 2023}; перевод, округление; ≈ — региональная оценка.\n${metadata.source}\nCarefree — Kevin MacLeod (incompetech.com), CC BY 4.0.\nhttps://creativecommons.org/licenses/by/4.0/\n#карты #география #странымира`;
     const time = new Date(this.now()).toISOString();
     const row = this.db.db.prepare("INSERT INTO map_publications(map_job_id,account_id,owner_id,day_key,state,caption,created_at) VALUES(?,?,?,?,'uploading',?,?) RETURNING *").get(job.id, binding.account_id, binding.owner_id, day, caption, time) as Publication;
     await this.pipeline.notePublication(row.owner_id, row.map_job_id, { state: "uploading" });

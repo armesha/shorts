@@ -48,7 +48,7 @@ export default function MapLibrary() {
         <h1 className="text-2xl font-bold">Библиотека карт</h1>
         <button type="button" className="btn btn-ghost btn-sm gap-2" onClick={() => void refresh()} disabled={busy}><RefreshCw size={16} />Обновить</button>
       </div>
-      <p className="max-w-2xl text-base-content/75">Ролики с озвучкой и неподвижным местом под баннер. После подтверждённой публикации локальные файлы удаляются, а ссылка остаётся в библиотеке.</p>
+      <p className="max-w-2xl text-base-content/75">Ролики с озвученным вопросом и баннером в нижней части. После подтверждённой публикации локальные файлы удаляются, а ссылка остаётся в библиотеке.</p>
     </header>
     {error && <div role="alert" className="alert alert-error"><span>{error}</span></div>}
     {!data && !error && <p role="status">Загрузка библиотеки…</p>}

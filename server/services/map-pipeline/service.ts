@@ -20,6 +20,8 @@ const JobSchema = z.object({
   error: z.string().optional(), seconds: z.number().positive().optional(),
   attempts: z.number().int().min(0).max(3).optional(),
   approvedReview: z.boolean().optional(),
+  replacementFor: z.string().uuid().optional(),
+  formatVersion: z.number().int().optional(),
   publication: z.object({ state: z.enum(["uploading", "published", "needs_review", "failed", "removed"]), url: z.string().url().optional(), error: z.string().optional(), cleanedAt: z.string().datetime().optional() }).optional(),
 });
 export type MapJob = z.infer<typeof JobSchema>;
@@ -28,7 +30,7 @@ export type PipelineOptions = {
   root?: string; source?: string; built?: string; log?: (message: string) => void;
   now?: () => number;
   readOwners?: (viewerId: number) => number[];
-  generate?: (job: MapJob, directory: string, signal: AbortSignal, stage: (message: string) => Promise<void>, used: string[]) => Promise<{ seconds: number; idea: MapIdea }>;
+  generate?: (job: MapJob, directory: string, signal: AbortSignal, stage: (message: string) => Promise<void>, used: string[]) => Promise<{ seconds: number; idea: MapIdea; formatVersion?: number }>;
 };
 
 export class MapPipelineService {
@@ -166,8 +168,16 @@ export class MapPipelineService {
   async rebuildOld(ownerId: number) {
     return this.mutate(async () => {
       await this.init();
-      for (const job of this.state.jobs) if (job.ownerId === ownerId && job.status === "ready" && job.seconds === 90 && !job.publication) {
-        job.status = "queued"; job.stage = "Пересборка в новом формате"; job.attempts = 0;
+      const existing = [...this.state.jobs];
+      for (const job of existing) if (job.ownerId === ownerId && (job.status === "ready" || job.status === "failed" && job.error === "Генерация остановлена по сроку или при выключении сервиса.") && !job.publication) {
+        delete job.error; delete job.finishedAt; job.status = "queued"; job.stage = "Пересборка в новом формате"; job.attempts = 0; delete job.formatVersion;
+      }
+      for (const job of existing) if (job.ownerId === ownerId && job.status === "published" && job.idea && !existing.some(j => j.replacementFor === job.id)) {
+        const replacement = this.newJob(ownerId, "sample");
+        replacement.replacementFor = job.id;
+        replacement.idea = { ...job.idea };
+        replacement.themeId = job.themeId;
+        this.state.jobs.push(replacement);
       }
       await this.save(); return this.list(ownerId);
     });
@@ -279,7 +289,7 @@ export class MapPipelineService {
       const used = this.state.jobs.filter(j => j.ownerId === job.ownerId && j.id !== job.id && j.themeId).map(j => j.themeId!);
       const generate = this.options.generate || ((...args) => this.generate(...args));
       controller.signal.throwIfAborted();
-      let result: { seconds: number; idea: MapIdea };
+      let result: { seconds: number; idea: MapIdea; formatVersion?: number };
       let waiting = false;
       for (;;) {
         controller.signal.throwIfAborted();
@@ -294,7 +304,7 @@ export class MapPipelineService {
       }
       controller.signal.throwIfAborted();
       if (campaign && (this.now() >= Date.parse(campaign.endsAt) || campaign.stoppedAt)) throw new Error("Срок ежедневной генерации завершён.");
-      job.status = "ready"; job.stage = "Готово"; job.seconds = result.seconds; job.idea = result.idea; job.themeId = result.idea.themeId;
+      job.status = "ready"; job.stage = "Готово"; job.formatVersion = result.formatVersion; job.seconds = result.seconds; job.idea = result.idea; job.themeId = result.idea.themeId;
     } catch (error) {
       job.status = "failed"; job.stage = "Не завершено";
       job.error = controller.signal.aborted ? "Генерация остановлена по сроку или при выключении сервиса." : error instanceof Error ? error.message : "Не удалось создать видео.";
@@ -329,8 +339,8 @@ export class MapPipelineService {
     await writeFile(resolve(directory, "theme.json"), JSON.stringify(theme, null, 2));
     const result = await renderMapVideo({ source: this.source, built: this.built, directory, theme, idea, metric, signal, stage });
     await writeFile(resolve(directory, "metadata.json"), JSON.stringify({ title: idea.title, hook: idea.hook, metric, source: snapshot.url, license: snapshot.license, bannerSlot: BANNER_SLOT,
-      music: { title: "Carefree", composer: "Kevin MacLeod", source: "https://incompetech.com/", license: "https://creativecommons.org/licenses/by/4.0/", tempo: 1.15 }, duration: result.seconds }, null, 2));
-    return { seconds: result.seconds, idea };
+      music: { title: "Carefree", composer: "Kevin MacLeod", source: "https://incompetech.com/", license: "https://creativecommons.org/licenses/by/4.0/", tempo: 1 }, duration: result.seconds }, null, 2));
+    return { seconds: result.seconds, idea, formatVersion: 2 };
   }
   async start() {
     await this.init();

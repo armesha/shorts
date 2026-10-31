@@ -169,3 +169,17 @@ test("busy render capacity waits within the same daily slot instead of losing th
     assert.equal(result.campaign!.runs.length, 1);
   } finally { release(); await Promise.all(occupied); await service.close(); await rm(f.root, { recursive: true, force: true }); }
 });
+
+test("published videos receive one replacement without losing publication history", async () => {
+  const f = await fixture(); const service = new MapPipelineService(f.options);
+  try {
+    await service.samples(1); await service.tick(); await service.idle();
+    const old = (await service.list(1)).jobs.find(j => j.status === "ready")!;
+    await service.notePublication(1, old.id, { state: "published", url: "https://www.tiktok.com/@test/video/123" });
+    await service.rebuildOld(1); await service.rebuildOld(1);
+    const jobs = (await service.list(1)).jobs;
+    assert.equal(jobs.filter(j => j.replacementFor === old.id).length, 1);
+    assert.equal(jobs.find(j => j.id === old.id)?.status, "published");
+    assert.equal(jobs.find(j => j.replacementFor === old.id)?.themeId, old.themeId);
+  } finally { await service.close(); await rm(f.root, { recursive: true, force: true }); }
+});

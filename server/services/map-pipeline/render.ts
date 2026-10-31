@@ -9,6 +9,7 @@ import { BANNER_SLOT, VIDEO_SECONDS, mapSubtitles } from "./theme.ts";
 import { mapPlannerExecutable, type MapIdea } from "./planner.ts";
 import type { Metric } from "./sources.ts";
 import { mapNarration } from "./narration.ts";
+import { circleAdvertiserState, circleAdvertiserSource } from "../circle-advertisers.ts";
 
 const MIME: Record<string, string> = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".geojson": "application/json", ".woff2": "font/woff2", ".woff": "font/woff", ".ttf": "font/ttf", ".png": "image/png", ".webp": "image/webp", ".jpg": "image/jpeg", ".svg": "image/svg+xml" };
 
@@ -18,6 +19,11 @@ export async function serveRenderScene(source: string, built: string, theme: any
     html.capture-mode .map-legend{top:295px;font-size:30px;right:35px}
     html.capture-mode .winner-banner{bottom:455px;width:88%;font-size:31px}
     html.capture-mode .floating-watermark{display:none!important}
+    html.capture-mode .winner-banner .score-pct{display:none!important}
+    html.capture-mode .score-rht .score-count{color:#ffbe55}
+    html.capture-mode .score-lht .score-count{color:#36c9b0}
+    html.capture-mode .score-rht .score-dot{background:#ffbe55!important}
+    html.capture-mode .score-lht .score-dot{background:#36c9b0!important}
     </style></head>`);
   const roots = { assets: await realpath(built), public: await realpath(resolve(source, "public")) };
   const server = createServer(async (req, res) => {
@@ -66,7 +72,7 @@ export async function renderMapVideo(input: { source: string; built: string; dir
   const music = resolve(source, "public/audio/music-reference/carefree.mp3");
   const audio = resolve(directory, "soundtrack.m4a");
   await run("ffmpeg", ["-y", "-stream_loop", "-1", "-i", music, "-i", voice,
-    "-filter_complex", `[0:a]atempo=1.15,volume='if(lt(t,${speechSeconds + 0.2}),0.12,if(lt(t,${speechSeconds + 0.7}),0.12+0.4*(t-${speechSeconds + 0.2})/0.5,0.52))':eval=frame,afade=t=out:st=${VIDEO_SECONDS - 3}:d=3:curve=exp[m];[1:a]loudnorm=I=-14:TP=-1.5:LRA=11,adelay=200|200[v];[m][v]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[a]`,
+    "-filter_complex", `[0:a]volume='if(lt(t,${speechSeconds + 0.2}),0.12,if(lt(t,${speechSeconds + 0.7}),0.12+0.4*(t-${speechSeconds + 0.2})/0.5,0.52))':eval=frame,afade=t=out:st=${VIDEO_SECONDS - 3}:d=3:curve=exp[m];[1:a]loudnorm=I=-14:TP=-1.5:LRA=11,adelay=200|200[v];[m][v]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[a]`,
     "-map", "[a]", "-t", String(VIDEO_SECONDS), "-ac", "2", "-c:a", "aac", "-b:a", "192k", audio]);
   await input.stage("Рендер карты");
   const { validateTheme } = await import(pathToFileURL(resolve(source, "src/theme.js")).href);
@@ -84,7 +90,15 @@ export async function renderMapVideo(input: { source: string; built: string; dir
   const final = resolve(directory, "video.pending.mp4");
   const subs = resolve(directory, "subtitles.ass").replace(/\\/g, "/").replace(/:/g, "\\:").replace(/'/g, "\\'");
   const fonts = resolve(source, "public/fonts").replace(/:/g, "\\:");
-  await run("ffmpeg", ["-y", "-i", raw, "-i", audio, "-vf", `subtitles='${subs}':fontsdir='${fonts}'`, "-map", "0:v", "-map", "1:a", "-c:v", "libx264", "-preset", "fast", "-crf", "18", "-profile:v", "high", "-pix_fmt", "yuv420p", "-color_range", "tv", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-c:a", "copy", "-movflags", "+faststart", "-metadata", "comment=Carefree — Kevin MacLeod (incompetech.com), CC BY 4.0; tempo 1.15x. World Bank WDI, CC BY 4.0; translated, rounded; regional estimates marked ≈.", final], process.cwd(), 30 * 60_000);
+  const bannerState = circleAdvertiserState();
+  const banner = bannerState.advertisers.find(item => item.id === bannerState.activeAdvertiserId);
+  if (!banner || !bannerState.bannerEnabled) throw new Error("В библиотеке сайта не выбран активный баннер.");
+  const bannerFile = circleAdvertiserSource(banner.id);
+  const crop = banner.fullFrame !== false ? "crop=900:260:90:830," : "";
+  const alpha = banner.transparent !== false ? "format=rgba" : `format=rgba,chromakey=${(banner.chromaColor || "#00ff00").replace("#", "0x")}:${banner.similarity ?? 0.18}:${banner.blend ?? 0.08}`;
+  const bannerInput = /\.(png|jpe?g|webp)$/i.test(bannerFile) ? ["-loop", "1", "-i", bannerFile] : ["-stream_loop", "-1", "-i", bannerFile];
+  const filter = `[0:v]subtitles='${subs}':fontsdir='${fonts}'[base];[2:v]${crop}scale=${BANNER_SLOT.width}:${BANNER_SLOT.height}:force_original_aspect_ratio=decrease,${alpha},fps=30,setpts=PTS-STARTPTS[ad];[base][ad]overlay=x=${BANNER_SLOT.left}+(${BANNER_SLOT.width}-w)/2:y=${BANNER_SLOT.top}+(${BANNER_SLOT.height}-h)/2:eof_action=repeat:shortest=0[out]`;
+  await run("ffmpeg", ["-y", "-i", raw, "-i", audio, ...bannerInput, "-filter_complex", filter, "-map", "[out]", "-map", "1:a", "-c:v", "libx264", "-preset", "fast", "-crf", "18", "-profile:v", "high", "-pix_fmt", "yuv420p", "-color_range", "tv", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-c:a", "copy", "-movflags", "+faststart", "-metadata", "comment=Carefree — Kevin MacLeod (incompetech.com), CC BY 4.0; original tempo. World Bank WDI, CC BY 4.0; translated, rounded; regional estimates marked ≈.", final], process.cwd(), 30 * 60_000);
   await input.stage("Проверка видео и кадров");
   const media = await probe(final);
   const videoStream = media.streams.find((s: any) => s.codec_type === "video");
@@ -108,7 +122,7 @@ export async function renderMapVideo(input: { source: string; built: string; dir
   const args = localPlannerArgs(reviewDir);
   args.splice(args.length - 1, 0, ...images.flatMap(file => ["--image", file]));
   await runCuttingProcess(mapPlannerExecutable(), args, { cwd: reviewDir, signal, timeoutMs: 240_000,
-    stdin: `Проверь реальные кадры ролика. Критерии: на метках только числа без знака процента и единиц (≈ допустимо для оценок), единицы объясняются голосом; читаемый постоянный заголовок, карта и числовые метки без артефактов, итоговая карточка без обрезки, нижнее неподвижное место под баннер не занято движущимся водяным знаком. Первые кадры могут показывать ещё не раскрытую карту. Проверяй только наблюдаемое; не выдумывай проблемы из отсутствия звука на картинках. Верни passed=true только при отсутствии существенных видимых ошибок, иначе перечисли issues. Заголовок: ${idea.title}; показатель: ${metric.name}; единицы: ${metric.unit}; год: ${metric.year}. Полоса баннера: ${JSON.stringify(BANNER_SLOT)}. Вступление: ${idea.hook}.` });
+    stdin: `Проверь реальные кадры ролика. Критерии: на метках только ДА или НЕТ (≈ допустимо для оценок), на легенде ровно два ответа; читаемый постоянный заголовок, карта и метки ответов без артефактов, в нижней выделенной полосе виден неподвижно расположенный баннер, не перекрывающий карту и заголовок. Первые кадры могут показывать ещё не раскрытую карту. Проверяй только наблюдаемое; не выдумывай проблемы из отсутствия звука на картинках. Верни passed=true только при отсутствии существенных видимых ошибок, иначе перечисли issues. Заголовок: ${idea.title}; показатель: ${metric.name}; единицы: ${metric.unit}; год: ${metric.year}. Полоса баннера: ${JSON.stringify(BANNER_SLOT)}. Вступление: ${idea.hook}.` });
   const review = JSON.parse(await readFile(resolve(reviewDir, "plan-result.json"), "utf8"));
   await writeFile(resolve(directory, "qa.json"), JSON.stringify({ media, review, bannerSlot: BANNER_SLOT, speechSeconds, subtitleTiming: "word durations proportional to character lengths within measured audio interval", checkedAt: new Date().toISOString() }, null, 2));
   if (review.passed !== true || !Array.isArray(review.issues) || review.issues.length) throw new Error("Видео требует исправления после проверки кадров.");
