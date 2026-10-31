@@ -59,7 +59,7 @@ Keep shared rules here. Do not duplicate them in `CLAUDE.md`; Claude Code import
 - For 1080x1920 Shorts/Reels/TikTok renders, keep important readable text out of the bottom UI area and away from the right action column; verify dense text with real rendered frames.
 - For voiceover or music, follow the current rule in `docs/pack-generation.md` and never print or commit real API keys.
 
-- Для этого конвейера озвучивать только название-вопрос; показывать ровно два варианта ответа: два числа либо «да» и «нет». Единицы и период указывать в вопросе или источнике. На числовых метках не писать знак процента или единицы; ≈ сохранять для оценок. Музыку не ускорять. Автопубликацию этого конвейера включать только по явной команде пользователя; одобрение качества само по себе не разрешает отправку. Подробности — в `docs/pack-generation.md`.
+- Для этого конвейера озвучивать только название-вопрос; показывать ровно два варианта ответа: два числа либо «да» и «нет». Единицы и период указывать в вопросе или источнике. На числовых метках не писать знак процента или единицы; ≈ сохранять для оценок. Музыку не ускорять. Ролики этого конвейера только сохранять в библиотеку: публикация в TikTok и автопубликация выключены до новой явной команды пользователя. Подробности — в `docs/pack-generation.md`.
 
 ## Reusable workflow candidates
 
