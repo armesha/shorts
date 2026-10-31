@@ -7,6 +7,7 @@ import Fastify, { type FastifyRequest } from "fastify";
 import { openDb } from "../db.ts";
 import { registerVideoCuttingRoutes } from "./video-cutting.ts";
 import { VideoCuttingService } from "../services/video-cutting.ts";
+import { DailyCuttingService } from "../services/daily-cutting.ts";
 
 test("ready parts can be added and deleted only by their owner through the cutting API", async () => {
   const base = resolve("tmp/cutting-channel-api-tests");
@@ -60,7 +61,7 @@ test("ready parts can be added and deleted only by their owner through the cutti
       (req as FastifyRequest & { userId: number }).userId = userId;
   });
   const service = new VideoCuttingService({ root: jobs, outputDir: root, db });
-  registerVideoCuttingRoutes(app, db, root, service);
+  registerVideoCuttingRoutes(app, db, root, service, new DailyCuttingService(service, { file: resolve(root, "daily.json") }));
   try {
     const headers = { "x-user": String(owner.id) },
       foreign = { "x-user": String(other.id) };

@@ -5,6 +5,7 @@ import test from "node:test";
 import Fastify, { type FastifyRequest } from "fastify";
 import type { Db } from "../db.ts";
 import { VideoCuttingService } from "../services/video-cutting.ts";
+import { DailyCuttingService } from "../services/daily-cutting.ts";
 import { registerVideoCuttingRoutes } from "./video-cutting.ts";
 
 test("cutting API requires authentication and isolates jobs including cancellation", async () => {
@@ -28,8 +29,10 @@ test("cutting API requires authentication and isolates jobs including cancellati
     if ([7, 8].includes(id))
       (req as FastifyRequest & { userId?: number }).userId = id;
   });
-  registerVideoCuttingRoutes(app, {listAccountsByUser:()=>[]} as unknown as Db, root, service);
+  registerVideoCuttingRoutes(app, {listAccountsByUser:()=>[], getUserById: () => ({ role: "user" })} as unknown as Db, root, service, new DailyCuttingService(service, { file: resolve(root, "daily.json") }));
   try {
+    assert.equal((await app.inject({ url: "/api/video-cutting/daily" })).statusCode, 401);
+    assert.equal((await app.inject({ method: "POST", url: "/api/video-cutting/daily/start", headers: { "x-test-user": "7" } })).statusCode, 403);
     assert.equal(
       (await app.inject({ url: "/api/video-cutting" })).statusCode,
       401,

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { get, send } from "../lib/api/http";
 import { confirmDialog } from "../lib/confirm";
+import DailyCutting from "./DailyCutting";
 
 type Part = {
   number: number;
@@ -329,6 +330,7 @@ export default function VideoCutting() {
           </button>
         )}
       </header>
+      <DailyCutting />
       {!!workspace.jobs.length && (
         <section className="grid gap-3 rounded-lg border border-base-300 bg-base-100 p-4 sm:grid-cols-[220px_minmax(0,1fr)] sm:items-center">
           <div>

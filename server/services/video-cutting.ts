@@ -14,6 +14,7 @@ import { extname, resolve } from "node:path";
 import { homedir } from "node:os";
 import { setTimeout as delay } from "node:timers/promises";
 import type { Db } from "../db.ts";
+import { DAILY_CUTTING_EFFORT, DAILY_CUTTING_MODEL, planDailyCuts, type DailyClip } from "./daily-cutting-plan.ts";
 import {
   extractCuttingTimecodes,
   cleanCuttingTimecodes,
@@ -91,6 +92,7 @@ export type CutJob = {
   sessionId?: string;
   channelAdds?: CuttingChannelAdd[];
   deletedParts?: number[];
+  daily?: boolean;
 };
 export type ProcessInput = {
   cwd: string;
@@ -264,15 +266,29 @@ export async function renderCuttingPart(input: {
   signal?: AbortSignal;
   run?: ProcessRunner;
   timeline?: CutTimeline[];
+  segments?: SourceRange[];
+  hook?: string;
 }) {
   const run = input.run || runCuttingProcess;
-  const duration = input.part.end - input.part.start;
+  const sections = input.segments || [{ start: input.part.start, end: input.part.end }];
+  const duration = sections.reduce((sum, section) => sum + section.end - section.start, 0);
   const ass = `part-${input.part.number}.ass`;
-  if (input.subtitles)
-    await writeFile(
-      resolve(input.dir, ass),
-      cuttingAss(input.words, input.part),
-    );
+  if (input.subtitles || input.hook) {
+    let offset = 0;
+    const mapped = sections.flatMap(section => {
+      const shifted = input.words.filter(word => word.start >= section.start && word.end <= section.end)
+        .map(word => ({ ...word, start: word.start - section.start + offset, end: word.end - section.start + offset }));
+      offset += section.end - section.start;
+      return shifted;
+    });
+    let overlay = cuttingAss(input.subtitles ? mapped : [], { ...input.part, start: 0, end: duration });
+    if (input.hook) {
+      const safe = input.hook.replace(/[{}\\\r\n]/g, " ").slice(0, 96).trim();
+      const lines = safe.match(/.{1,28}(?:\s|$)|\S{1,28}/g)?.map(s => s.trim()).join("\\N") || "";
+      if (lines) overlay += `Dialogue: 1,0:00:00.00,0:00:05.00,Default,,0,0,0,,{\\an8\\pos(540,280)\\fs52}${lines}\n`;
+    }
+    await writeFile(resolve(input.dir, ass), overlay);
+  }
   const args = [
     "-hide_banner",
     "-loglevel",
@@ -281,11 +297,7 @@ export async function renderCuttingPart(input: {
     "-filter_complex_threads",
     "1",
   ];
-  const ranges = cuttingSourceRanges(
-    input.part.start,
-    input.part.end,
-    input.timeline,
-  );
+  const ranges = sections.flatMap(section => cuttingSourceRanges(section.start, section.end, input.timeline));
   if (!ranges.length)
     throw new Error("В части не осталось видео после удаления рекламы.");
   for (const range of ranges)
@@ -332,7 +344,7 @@ export async function renderCuttingPart(input: {
     graph += `[${ranges.length}:v]${crop}scale=1012:292,${alpha},fps=30,setpts=PTS-STARTPTS[banner];[framed][banner]overlay=34:210:eof_action=repeat:shortest=0[branded];`;
     label = "branded";
   }
-  graph += `[${label}]${input.subtitles ? `ass=filename=${ass},` : ""}fps=30,format=yuv420p[out]`;
+  graph += `[${label}]${input.subtitles || input.hook ? `ass=filename=${ass},` : ""}fps=30,format=yuv420p[out]`;
   const temporary = input.output.replace(/\.mp4$/, ".encoding.mp4");
   args.push(
     "-filter_complex",
@@ -452,12 +464,16 @@ export class VideoCuttingService {
       .slice(0, 50)
       .map((j) => structuredClone(j));
   }
+  async dailyJobs(userId: number) {
+    await this.ready;
+    return [...this.jobs.values()].filter(j => j.userId === userId && j.daily).map(j => structuredClone(j));
+  }
   async get(userId: number, id: string) {
     await this.ready;
     const job = this.jobs.get(id);
     return job?.userId === userId ? structuredClone(job) : null;
   }
-  async create(userId: number, raw: unknown) {
+  async create(userId: number, raw: unknown, daily = false) {
     await this.ready;
     const input = CutRequestSchema.parse(raw);
     if (
@@ -488,6 +504,7 @@ export class VideoCuttingService {
       createdAt: now,
       updatedAt: now,
       clips: [],
+      ...(daily ? { daily: true } : {}),
     };
     this.jobs.set(job.id, job);
     try {
@@ -801,6 +818,13 @@ export class VideoCuttingService {
       resolve(dir, "plan-schema.json"),
       JSON.stringify(zodPlanSchema(job.input, cleanDuration)),
     );
+    let dailyAds: unknown;
+    if (job.daily) {
+      const result = await planDailyCuts({ title: job.title!, duration: cleanDuration, words, anchors: timecodes, cwd: dir, signal });
+      job.plan = result.plan;
+      dailyAds = result.ads;
+      job.sessionId = result.sessionId || undefined;
+    } else {
     const events = await command(
       process.env.VIDEO_CUTTING_CODEX ||
         (existsSync(resolve(homedir(), ".local/bin/codex"))
@@ -840,6 +864,7 @@ export class VideoCuttingService {
         ? autoCutLimits(cleanDuration).maximumPartSeconds
         : Infinity,
     );
+    }
     await writeFile(
       resolve(dir, "edit-plan.json"),
       JSON.stringify(
@@ -850,9 +875,10 @@ export class VideoCuttingService {
           sponsorBlock: job.sponsorBlock,
           timeline,
           timecodes,
-          model: CUTTING_MODEL,
-          effort: CUTTING_EFFORT,
+          model: job.daily ? DAILY_CUTTING_MODEL : CUTTING_MODEL,
+          effort: job.daily ? DAILY_CUTTING_EFFORT : CUTTING_EFFORT,
           parts: job.plan,
+          ...(job.daily ? { detected_ads_to_exclude: dailyAds } : {}),
         },
         null,
         2,
@@ -875,6 +901,9 @@ export class VideoCuttingService {
     const relDir = `creator/cutting-u${job.userId}/${job.id}`;
     await mkdir(resolve(this.options.outputDir, relDir), { recursive: true });
     for (const part of job.plan) {
+      const dailyPart = job.daily ? part as DailyClip : undefined;
+      const sections = dailyPart?.segments.map(s => ({ start: s.start_seconds, end: s.end_seconds }));
+      const partDuration = sections?.reduce((n, s) => n + s.end - s.start, 0) ?? part.end - part.start;
       await this.update(
         job,
         "rendering",
@@ -897,6 +926,8 @@ export class VideoCuttingService {
               signal,
               run: this.run,
               timeline,
+              segments: sections,
+              hook: dailyPart?.on_screen_hook,
             }),
           );
           break;
@@ -907,21 +938,21 @@ export class VideoCuttingService {
       }
       this.options.db?.createCreatorGalleryItem({
         userId: job.userId,
-        packId: "video-cutting",
-        packName: "Нарезка видео",
+        packId: job.daily ? "daily-video-cutting" : "video-cutting",
+        packName: job.daily ? "Ежедневные нарезки" : "Нарезка видео",
         templateType: "montage",
         cardIndex: part.number - 1,
         title: part.title,
         text: part.reason,
         format: "mp4",
         videoRel: rel,
-        durationSec: part.end - part.start,
+        durationSec: partDuration,
       });
       job.clips.push({
         ...part,
         videoUrl: `/files/${rel}`,
-        duration: part.end - part.start,
-        sourceRanges: cuttingSourceRanges(part.start, part.end, timeline),
+        duration: partDuration,
+        sourceRanges: (sections || [{ start: part.start, end: part.end }]).flatMap(s => cuttingSourceRanges(s.start, s.end, timeline)),
       });
       await this.save(job);
     }

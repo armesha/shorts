@@ -39,7 +39,7 @@ export async function addCuttingClipsToChannel(
   ].sort((a, b) => a - b);
   if (
     !numbers.length ||
-    numbers.length > 30 ||
+    numbers.length > (job.daily ? 200 : 30) ||
     numbers.some(
       (n) =>
         !Number.isInteger(n) || !job.clips.some((clip) => clip.number === n),

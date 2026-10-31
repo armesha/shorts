@@ -10,14 +10,36 @@ import {
   CutRequestSchema,
 } from "../services/video-cutting-plan.ts";
 import { VideoCuttingService } from "../services/video-cutting.ts";
+import { DailyCuttingService } from "../services/daily-cutting.ts";
+import { isSuperAdminUser } from "../auth.ts";
 
 export function registerVideoCuttingRoutes(
   app: FastifyInstance,
   db: Db,
   outputDir: string,
   service = new VideoCuttingService({ db, outputDir }),
+  daily = new DailyCuttingService(service, { log: message => app.log.error(message) }),
 ) {
+  app.addHook("onReady", async () => { try { await daily.start(); } catch { app.log.error("Не удалось загрузить расписание нарезок."); } });
+  app.addHook("onClose", async () => daily.close());
   app.addHook("onClose", async () => service.close());
+  app.get("/api/video-cutting/daily", async (req, reply) => {
+    const userId = uid(req);
+    if (!userId) return reply.code(401).send({ error: "Не авторизован" });
+    reply.header("Cache-Control", "private, no-store");
+    return { ...await daily.info(userId), canManage: isSuperAdminUser(db.getUserById(userId)) };
+  });
+  for (const action of ["start", "stop"] as const) app.post(`/api/video-cutting/daily/${action}`, async (req, reply) => {
+    const userId = uid(req);
+    if (!userId) return reply.code(401).send({ error: "Не авторизован" });
+    if (!isSuperAdminUser(db.getUserById(userId))) return reply.code(403).send({ error: "Недостаточно прав." });
+    if (req.headers.origin) {
+      try { if (new URL(req.headers.origin).host !== req.headers.host) return reply.code(403).send({ error: "Запрос с другого сайта запрещён." }); }
+      catch { return reply.code(403).send({ error: "Некорректный источник запроса." }); }
+    }
+    try { return action === "start" ? await daily.enable(userId) : await daily.disable(userId); }
+    catch { return reply.code(400).send({ error: "Не удалось изменить расписание." }); }
+  });
   app.get("/api/video-cutting", async (req, reply) => {
     const userId = uid(req);
     if (!userId) return reply.code(401).send({ error: "Не авторизован" });
@@ -86,9 +108,9 @@ export function registerVideoCuttingRoutes(
       .object({
         accountId: z.number().int().positive(),
         parts: z
-          .array(z.number().int().min(1).max(30))
+          .array(z.number().int().min(1).max(200))
           .min(1)
-          .max(30)
+          .max(200)
           .optional(),
       })
       .safeParse(req.body);
@@ -122,7 +144,7 @@ export function registerVideoCuttingRoutes(
     if (!(await service.get(userId, params.id)))
       return reply.code(404).send({ error: "Нарезка не найдена." });
     const part = Number(params.part);
-    if (!Number.isInteger(part) || part < 1 || part > 30)
+    if (!Number.isInteger(part) || part < 1 || part > 200)
       return reply.code(400).send({ error: "Укажите номер готовой части." });
     try {
       return await service.deletePart(userId, params.id, part);

@@ -277,6 +277,20 @@ test(
           `Expected ${expected} Hz, got ${frequency}`,
         );
       }
+      const composite = resolve(root, "composite.mp4");
+      const compositeResult = await renderCuttingPart({
+        source, output: composite, dir: root,
+        part: { number: 2, start: 0, end: 3, title: "Test", reason: "Skip middle" },
+        segments: [{ start: 0, end: 1 }, { start: 2, end: 3 }],
+        words: [], subtitles: false, hook: "Тестовая плашка",
+      });
+      assert.ok(Math.abs(compositeResult.duration - 2) < 0.2);
+      for (const [position, channel] of [[0.5, 2], [1.5, 1]]) {
+        const pixels = spawnSync("ffmpeg", ["-v", "error", "-ss", String(position), "-i", composite, "-vf", "crop=2:2:500:900", "-frames:v", "1", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"]);
+        assert.equal(pixels.status, 0);
+        assert.ok(pixels.stdout[channel] > 80);
+        assert.ok(pixels.stdout[0] < 40);
+      }
     } finally {
       await rm(root, { recursive: true, force: true });
     }
