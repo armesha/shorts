@@ -25,6 +25,9 @@ const JobSchema = z.object({
   publication: z.object({ state: z.enum(["uploading", "published", "needs_review", "failed", "removed"]), url: z.string().url().optional(), error: z.string().optional(), cleanedAt: z.string().datetime().optional() }).optional(),
 });
 export type MapJob = z.infer<typeof JobSchema>;
+export function mapAnswerMode(job: Pick<MapJob, "kind" | "day">): "binary" | "numeric" {
+  return job.kind === "daily" && (job.day ?? 0) % 2 === 1 ? "numeric" : "binary";
+}
 type State = { version: 1; campaigns: Record<string, MapCampaign>; jobs: MapJob[] };
 export type PipelineOptions = {
   root?: string; source?: string; built?: string; log?: (message: string) => void;
@@ -335,10 +338,11 @@ export class MapPipelineService {
     const ids = [...new Set<string>(template.reveals.flatMap((r: any) => r.countries))];
     const observations = mapObservations(ids, meta, snapshot.byIso3, metric.year);
     await writeFile(resolve(directory, "observations.json"), JSON.stringify(observations, null, 2));
-    const theme = buildMapTheme(template, meta, observations, metric, idea, `daily-${job.id}`);
+    const mode = mapAnswerMode(job);
+    const theme = buildMapTheme(template, meta, observations, metric, idea, `daily-${job.id}`, mode);
     await writeFile(resolve(directory, "theme.json"), JSON.stringify(theme, null, 2));
     const result = await renderMapVideo({ source: this.source, built: this.built, directory, theme, idea, metric, signal, stage });
-    await writeFile(resolve(directory, "metadata.json"), JSON.stringify({ title: idea.title, hook: idea.hook, metric, source: snapshot.url, license: snapshot.license, bannerSlot: BANNER_SLOT,
+    await writeFile(resolve(directory, "metadata.json"), JSON.stringify({ title: idea.title, hook: idea.hook, mode, metric, source: snapshot.url, license: snapshot.license, bannerSlot: BANNER_SLOT,
       music: { title: "Carefree", composer: "Kevin MacLeod", source: "https://incompetech.com/", license: "https://creativecommons.org/licenses/by/4.0/", tempo: 1 }, duration: result.seconds }, null, 2));
     return { seconds: result.seconds, idea, formatVersion: 2 };
   }

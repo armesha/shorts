@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { MapPipelineService, type PipelineOptions } from "./service.ts";
+import { MapPipelineService, mapAnswerMode, type PipelineOptions } from "./service.ts";
 import { DAY_MS, CAMPAIGN_DAYS } from "./schedule.ts";
 import { withGlobalRenderSlot } from "../../infra/rate-limits.ts";
 
@@ -182,4 +182,11 @@ test("published videos receive one replacement without losing publication histor
     assert.equal(jobs.find(j => j.id === old.id)?.status, "published");
     assert.equal(jobs.find(j => j.replacementFor === old.id)?.themeId, old.themeId);
   } finally { await service.close(); await rm(f.root, { recursive: true, force: true }); }
+});
+
+
+test("daily videos alternate between binary and numeric answers", () => {
+  assert.equal(mapAnswerMode({ kind: "daily", day: 2 }), "binary");
+  assert.equal(mapAnswerMode({ kind: "daily", day: 3 }), "numeric");
+  assert.equal(mapAnswerMode({ kind: "daily", day: 4 }), "binary");
 });

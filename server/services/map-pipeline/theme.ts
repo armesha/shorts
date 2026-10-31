@@ -13,7 +13,7 @@ export function countryName(meta: CountryMeta): string {
   }
   return meta.name;
 }
-export function buildMapTheme(template: any, meta: Record<string, CountryMeta>, values: Record<string, Observation>, metric: Metric, idea: MapIdea, id: string) {
+export function buildMapTheme(template: any, meta: Record<string, CountryMeta>, values: Record<string, Observation>, metric: Metric, idea: MapIdea, id: string, mode: "binary" | "numeric" = "binary") {
   const theme = structuredClone(template);
   theme.id = id;
   theme.name = idea.title;
@@ -32,20 +32,21 @@ export function buildMapTheme(template: any, meta: Record<string, CountryMeta>, 
     metric.id === "gdp-person" ? "тысяч долларов на человека" : metric.id === "gdp-ppp" ? "тысяч международных долларов на человека" :
     metric.unit === "чел./км²" ? "человек на квадратный километр" : metric.unit === "дет./жен." ? "ребёнка на женщину" :
     metric.unit === "на 1000 чел." ? "на тысячу человек" : metric.unit === "на 100 чел." ? "на сто человек" : metric.unit;
-  idea.title = `Показатель «${metric.name}» выше ${thresholdText} ${unit}?`;
+  idea.title = mode === "numeric" ? `Какой показатель «${metric.name}» (${unit})?` : `Показатель «${metric.name}» выше ${thresholdText} ${unit}?`;
   idea.hook = idea.title;
   theme.name = idea.title;
   theme.countryStyles = Object.fromEntries(Object.entries(values).map(([key, o]) => {
     const bin = o.value > threshold ? 1 : 0;
-    const label = `${o.estimated ? "≈" : ""}${bin ? "ДА" : "НЕТ"}`;
-    return [key, { color: palette[bin], value: label, valueRu: label,
-      category: `bin${bin}`, markerBg: "#ffffff", textColor: "#183941", borderColor: palette[bin] }];
+    const label = mode === "numeric" ? displayNumber(o.value, metric, o.estimated) : `${o.estimated ? "≈" : ""}${bin ? "ДА" : "НЕТ"}`;
+    const color = mode === "numeric" ? palette[1] : palette[bin];
+    return [key, { color, value: label, valueRu: label,
+      category: `bin${bin}`, markerBg: "#ffffff", textColor: "#183941", borderColor: color }];
   }));
-  theme.legend = ["НЕТ", "ДА"].map((label, i) => ({ id: `bin${i}`, label, labelRu: label, color: palette[i] }));
+  theme.legend = mode === "numeric" ? [] : ["НЕТ", "ДА"].map((label, i) => ({ id: `bin${i}`, label, labelRu: label, color: palette[i] }));
   theme.winner = {
     showAt: VIDEO_SECONDS - 8,
     badge: { ru: "РЕЗУЛЬТАТЫ" },
-    title: { ru: "ОТВЕТЫ ПО СТРАНАМ" },
+    title: { ru: mode === "numeric" ? "ПОКАЗАТЕЛИ ПО СТРАНАМ" : "ОТВЕТЫ ПО СТРАНАМ" },
     caption: { ru: `Всемирный банк, ${metric.year}. ≈ — оценка.` },
     cta: { ru: "Какие страны сравнить дальше?" },
   };

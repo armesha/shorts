@@ -34,3 +34,24 @@ test("regional estimates are marked and both answers match the stated threshold"
   assert.ok(mapSubtitles(idea, METRICS[0], 3).includes("2023"));
   assert.throws(() => mapObservations(ids, meta, {}, 2023), /минимум 100/);
 });
+
+test("numeric maps show actual country values without a legend", () => {
+  const template = { duration: 156, stops: [{ time: 0 }, { time: 156 }], reveals: [], chapters: [{ start: 0, end: 156 }] };
+  const meta: Record<string, CountryMeta> = {
+    "001": { name: "A", continent: "Europe", center: [0, 0] },
+    "002": { name: "B", continent: "Europe", center: [1, 0] },
+  };
+  const observations = {
+    "001": { value: 73.6, year: 2023, iso3: "AAA", estimated: false },
+    "002": { value: 81.2, year: 2023, iso3: "BBB", estimated: true },
+  };
+  const idea = { themeId: "life", title: "Тест", hook: "Тест", reason: "Тест" };
+  const metric = METRICS.find(m => m.id === "life")!;
+  const theme = buildMapTheme(template, meta, observations, metric, idea, "numeric-test", "numeric");
+  assert.deepEqual(theme.legend, []);
+  assert.equal(theme.countryStyles["001"].value, "73,6");
+  assert.equal(theme.countryStyles["002"].value, "≈81,2");
+  assert.equal(theme.winner.title.ru, "ПОКАЗАТЕЛИ ПО СТРАНАМ");
+  assert.equal(idea.hook, idea.title);
+  assert.match(idea.title, /\?$/);
+});

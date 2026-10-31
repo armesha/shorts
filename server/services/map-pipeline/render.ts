@@ -21,6 +21,7 @@ export async function serveRenderScene(source: string, built: string, theme: any
     html.capture-mode .winner-banner{bottom:455px;width:88%;font-size:31px}
     html.capture-mode .floating-watermark{display:none!important}
     html.capture-mode .winner-banner .score-pct{display:none!important}
+    ${theme.legend?.length ? "" : "html.capture-mode .winner-scoreboard{display:none!important}"}
     html.capture-mode .score-rht .score-count{color:#ffbe55}
     html.capture-mode .score-lht .score-count{color:#36c9b0}
     html.capture-mode .score-rht .score-dot{background:#ffbe55!important}
@@ -147,7 +148,7 @@ export async function renderMapVideo(input: { source: string; built: string; dir
   const args = localPlannerArgs(reviewDir);
   args.splice(args.length - 1, 0, ...images.flatMap(file => ["--image", file]));
   await runCuttingProcess(mapPlannerExecutable(), args, { cwd: reviewDir, signal, timeoutMs: 240_000,
-    stdin: `Проверь реальные кадры ролика. Критерии: на метках только ДА или НЕТ (≈ допустимо для оценок), на легенде ровно два ответа; читаемый постоянный заголовок, карта и метки ответов без артефактов, в нижней выделенной полосе виден неподвижно расположенный баннер, не перекрывающий карту и заголовок. Первые кадры могут показывать ещё не раскрытую карту. Проверяй только наблюдаемое; не выдумывай проблемы из отсутствия звука на картинках. Верни passed=true только при отсутствии существенных видимых ошибок, иначе перечисли issues. Заголовок: ${idea.title}; показатель: ${metric.name}; единицы: ${metric.unit}; год: ${metric.year}. Полоса баннера: ${JSON.stringify(BANNER_SLOT)}. Вступление: ${idea.hook}.` });
+    stdin: `Проверь реальные кадры ролика. Критерии: ${theme.legend?.length ? "на метках только ДА или НЕТ (≈ допустимо для оценок), на легенде ровно два ответа" : "на метках реальные числа без знака процента и единиц, ≈ допустимо для оценок; легенда и счётчик категорий отсутствуют"}; читаемый постоянный заголовок, карта и метки ответов без артефактов, в нижней выделенной полосе виден неподвижно расположенный баннер, не перекрывающий карту и заголовок. Первые кадры могут показывать ещё не раскрытую карту. Проверяй только наблюдаемое; не выдумывай проблемы из отсутствия звука на картинках. Верни passed=true только при отсутствии существенных видимых ошибок, иначе перечисли issues. Заголовок: ${idea.title}; показатель: ${metric.name}; единицы: ${metric.unit}; год: ${metric.year}. Полоса баннера: ${JSON.stringify(BANNER_SLOT)}. Вступление: ${idea.hook}.` });
   const review = JSON.parse(await readFile(resolve(reviewDir, "plan-result.json"), "utf8"));
   await writeFile(resolve(directory, "qa.json"), JSON.stringify({ media, review, bannerSlot: BANNER_SLOT, speechSeconds, subtitleTiming: "word durations proportional to character lengths within measured audio interval", checkedAt: new Date().toISOString() }, null, 2));
   if (review.passed !== true || !Array.isArray(review.issues) || review.issues.length) throw new Error("Видео требует исправления после проверки кадров.");
