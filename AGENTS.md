@@ -13,8 +13,7 @@ Keep shared rules here. Do not duplicate them in `CLAUDE.md`; Claude Code import
 
 ## Safety boundaries
 
-- Never read, print, grep, cat, commit, or expose secrets: `.env*`, tokens, `client_secret_*.json`, or `*.apps.googleusercontent.com.json`.
-- The Google OAuth client secret is required at runtime, but agents must not inspect its contents.
+- Never commit or push secrets to a remote repository, including `.env*`, tokens, `client_secret_*.json`, or `*.apps.googleusercontent.com.json`.
 - Work only in `/home/davtian/Documents/shorts` unless the user explicitly asks otherwise.
 - Do not read-for-edit, edit, run, migrate, commit, or kill anything in `/home/davtian/Documents/casino`.
 - Do not use broad process-kill commands such as `pkill -f`, `fuser -k`, or kill-by-name. Inspect exact PIDs first and touch only Shorts-owned processes.
