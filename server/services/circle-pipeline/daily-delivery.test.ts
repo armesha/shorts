@@ -11,11 +11,11 @@ import { CircleSocialPublisher } from "./social-publisher.ts";
 import { CircleYouTubePublisher } from "./youtube-publisher.ts";
 import type { CirclePipelineService } from "./service.ts";
 
-test("the daily schedule sends three different approved circles once", async context => {
+test("two daily circles are each sent once to all three platforms", async context => {
   const root = mkdtempSync(join(tmpdir(), "circle-daily-"));
   const db = openDb(":memory:");
-  const morning = Date.parse("2026-11-02T11:00:00Z");
-  const posting = Date.parse("2026-11-02T15:00:00Z");
+  const morning = Date.parse("2026-11-01T22:00:00Z");
+  const posting = Date.parse("2026-11-02T07:00:00Z");
   context.mock.timers.enable({ apis: ["Date"], now: morning });
   try {
     const owner = db.createUser({ username: "owner", passHash: "x", role: "admin" });
@@ -23,7 +23,7 @@ test("the daily schedule sends three different approved circles once", async con
     const tiktok = db.createAccount({ userId: owner.id, platform: "tiktok", schedule: [] });
     const youtube = db.createAccount({ userId: owner.id, platform: "youtube", schedule: [] });
     const library = new CircleLibrary(join(root, "library"));
-    for (let slot = 0; slot < 3; slot++) {
+    for (let slot = 0; slot < 2; slot++) {
       const job = (await library.claim(owner.id, morning))!;
       assert.equal(job.slot, slot);
       await library.update(owner.id, job.id, "running");
@@ -57,8 +57,9 @@ test("the daily schedule sends three different approved circles once", async con
     const youtubePublisher = new CircleYouTubePublisher(db, pipeline, {
       verify: async () => ({ channelId: `UC${"a".repeat(22)}` }),
       publish: async (_cookies, _id, file, title, description, onSubmit) => {
-        assert.ok(title.includes("История номер 0")); assert.ok(description.includes("описание номера 0"));
-        delivered.set("youtube", readFileSync(file, "utf8")); onSubmit(); return "https://www.youtube.com/watch?v=abcdefghijk";
+        const content = readFileSync(file, "utf8");
+        assert.ok(title.includes(`История номер ${content.slice(-1)}`)); assert.ok(description.includes(`описание номера ${content.slice(-1)}`));
+        delivered.set("youtube", content); onSubmit(); return "https://www.youtube.com/watch?v=abcdefghijk";
       },
     }, join(root, "youtube-private"));
     youtubePublisher.importCookies(owner.id, youtube.id, [{ name: "LOGIN_INFO", value: "synthetic", domain: ".youtube.com", secure: true }]);
@@ -69,12 +70,17 @@ test("the daily schedule sends three different approved circles once", async con
     context.mock.timers.setTime(posting);
     await socialPublisher.tick(); await youtubePublisher.tick();
     await social.tick(); await social.tick();
-    assert.deepEqual(Object.fromEntries(delivered), { youtube: "circle-0", instagram: "circle-1", tiktok: "circle-2" });
+    assert.deepEqual(Object.fromEntries(delivered), { youtube: "circle-0", instagram: "circle-0", tiktok: "circle-0" });
     assert.equal(db.db.prepare("SELECT count(*) AS n FROM social_jobs WHERE state='published'").get()!.n, 2);
-    assert.equal(db.db.prepare("SELECT count(*) AS n FROM circle_youtube_publications WHERE state='published'").get()!.n, 1);
+    assert.equal(db.db.prepare("SELECT count(*) AS n FROM circle_youtube_publications_v2 WHERE state='published'").get()!.n, 1);
     await socialPublisher.tick(); await youtubePublisher.tick(); await social.tick();
     assert.equal(db.db.prepare("SELECT count(*) AS n FROM social_jobs").get()!.n, 2);
-    assert.equal(db.db.prepare("SELECT count(*) AS n FROM circle_youtube_publications").get()!.n, 1);
+    assert.equal(db.db.prepare("SELECT count(*) AS n FROM circle_youtube_publications_v2").get()!.n, 1);
+    context.mock.timers.setTime(Date.parse("2026-11-02T15:00:00Z"));
+    await socialPublisher.tick(); await youtubePublisher.tick(); await social.tick(); await social.tick();
+    assert.deepEqual(Object.fromEntries(delivered), { youtube: "circle-1", instagram: "circle-1", tiktok: "circle-1" });
+    assert.equal(db.db.prepare("SELECT count(*) AS n FROM social_jobs WHERE state='published'").get()!.n, 4);
+    assert.equal(db.db.prepare("SELECT count(*) AS n FROM circle_youtube_publications_v2 WHERE state='published'").get()!.n, 2);
     await socialPublisher.close(); await youtubePublisher.close();
   } finally { context.mock.timers.reset(); db.db.close(); rmSync(root, { recursive: true, force: true }); }
 });

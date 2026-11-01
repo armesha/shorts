@@ -18,7 +18,8 @@ def main() -> int:
     model_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
     staged = model_dir / "small-ready"
     model_name = str(staged) if args.model == "small" and (staged / "model.bin").is_file() else args.model
-    model = WhisperModel(model_name, device="cpu", compute_type="int8", download_root=str(model_dir))
+    model = WhisperModel(model_name, device="cpu", compute_type="int8", cpu_threads=2,
+                         num_workers=1, download_root=str(model_dir))
     segments, info = model.transcribe(args.audio, beam_size=5, vad_filter=False)
     result = []
     for segment in segments:

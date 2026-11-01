@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { mkdir, rename, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, resolve } from "node:path";
 import ffmpegPath from "ffmpeg-static";
+import { cuttingRenderCommand } from "../infra/cutting-render-resources.ts";
 import puppeteer from "puppeteer-core";
 import { chromePath } from "../../src/core/chrome.ts";
 import {
@@ -49,6 +50,7 @@ export interface CircleVideoRenderInput {
   encoderPreset?: "ultrafast" | "superfast" | "veryfast" | "faster" | "fast" | "medium";
   requireBanner?: boolean;
   ffmpegExecutable?: string;
+  cpuThreads?: number;
 }
 
 export interface CircleVideoRenderResult {
@@ -58,9 +60,10 @@ export interface CircleVideoRenderResult {
   puzzle: string;
 }
 
-function runFfmpeg(args: string[], cwd: string, executable = ffmpeg): Promise<string> {
+function runFfmpeg(args: string[], cwd: string, executable = ffmpeg, limitCpu = false): Promise<string> {
   return new Promise((resolvePromise, reject) => {
-    const child = spawn(executable, args, {
+    const command = limitCpu ? cuttingRenderCommand(executable, args) : { bin: executable, args };
+    const child = spawn(command.bin, command.args, {
       cwd,
       windowsHide: true,
       stdio: ["ignore", "ignore", "pipe"],
@@ -290,11 +293,15 @@ export async function renderCircleVideo(input: CircleVideoRenderInput): Promise<
 
   const args = [
     "-hide_banner", "-loglevel", "error", "-y",
+    ...(input.cpuThreads ? ["-threads", String(input.cpuThreads), "-filter_threads", "1", "-filter_complex_threads", "1"] : []),
     "-stream_loop", "-1", "-ss", seconds(gameplayStartSec), "-i", input.gameplayFile,
+    ...(input.cpuThreads ? ["-threads", String(input.cpuThreads)] : []),
     "-i", input.sourceFile,
+    ...(input.cpuThreads ? ["-threads", String(input.cpuThreads)] : []),
     "-loop", "1", "-framerate", "30", "-i", puzzleFile,
   ];
   if (banner) {
+    if (input.cpuThreads) args.push("-threads", String(input.cpuThreads));
     args.push(...bannerInput(banner.file));
   }
 
@@ -333,6 +340,7 @@ export async function renderCircleVideo(input: CircleVideoRenderInput): Promise<
   args.push(
     "-t", seconds(durationSec),
     "-c:v", "libx264",
+    ...(input.cpuThreads ? ["-threads", String(input.cpuThreads)] : []),
     "-preset", input.encoderPreset || "veryfast",
     "-crf", "20",
     "-pix_fmt", "yuv420p",
@@ -342,7 +350,7 @@ export async function renderCircleVideo(input: CircleVideoRenderInput): Promise<
   args.push("-movflags", "+faststart", temporaryOutput);
 
   try {
-    await runFfmpeg(args, root, input.ffmpegExecutable);
+    await runFfmpeg(args, root, input.ffmpegExecutable, !!input.cpuThreads);
     if (!existsSync(temporaryOutput)) throw new Error("FFmpeg не создал итоговый MP4.");
     await rename(temporaryOutput, input.outputFile);
   } finally {

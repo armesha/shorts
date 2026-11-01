@@ -7,7 +7,7 @@ import { openDb } from "../../db.ts";
 import { CircleSocialPublisher } from "./social-publisher.ts";
 import type { CirclePipelineService } from "./service.ts";
 
-test("queues distinct approved circles once per platform and Prague day", async () => {
+test("queues the same approved circle once per platform and Moscow slot", async () => {
   const dir = mkdtempSync(join(tmpdir(), "circle-social-"));
   const db = openDb(":memory:");
   try {
@@ -45,7 +45,7 @@ test("queues distinct approved circles once per platform and Prague day", async 
     assert.notEqual(rows[0].video_id, rows[1].video_id);
     assert.equal(rows[0].run_at, "2026-11-01T15:00:00.000Z");
     assert.equal(readFileSync(join(dir, db.getVideo(rows[0].video_id)!.videoRel), "utf8"), "video-1");
-    assert.equal(readFileSync(join(dir, db.getVideo(rows[1].video_id)!.videoRel), "utf8"), "video-2");
+    assert.equal(readFileSync(join(dir, db.getVideo(rows[1].video_id)!.videoRel), "utf8"), "video-1");
     await publisher.close();
     const restored = new CircleSocialPublisher(db, pipeline, social, dir, { now: () => now });
     await restored.tick();

@@ -4,7 +4,7 @@ import { join, resolve } from "node:path";
 import type { Cookie } from "playwright";
 import type { Db } from "../../db.ts";
 import { invalidateReadCache } from "../read-cache.ts";
-import { timePartsInTimeZone } from "../timezone.ts";
+import { circleDay, circlePublicationSlot } from "./schedule.ts";
 import type { CirclePipelineService } from "./service.ts";
 import { normalizeYouTubeCookies } from "./youtube-cookie-browser.ts";
 import { readCircleCaption } from "./caption.ts";
@@ -47,8 +47,8 @@ export class CircleYouTubePublisher {
       const target = JSON.parse(this.db.getSetting(TARGET_KEY) || "null");
       enabled = target?.ownerId === ownerId && target?.accountId === accountId;
     } catch { /* an invalid setting cannot activate publishing */ }
-    const latest = this.db.db.prepare("SELECT day_key,state,url,error FROM circle_youtube_publications WHERE account_id=? AND owner_id=? ORDER BY id DESC LIMIT 1")
-      .get(accountId, ownerId) as { day_key: string; state: string; url: string | null; error: string | null } | undefined;
+    const latest = this.db.db.prepare("SELECT day_key,state,url,error FROM (SELECT day_key,state,url,error,created_at FROM circle_youtube_publications WHERE account_id=? AND owner_id=? UNION ALL SELECT day_key,state,url,error,created_at FROM circle_youtube_publications_v2 WHERE account_id=? AND owner_id=?) ORDER BY created_at DESC LIMIT 1")
+      .get(accountId, ownerId, accountId, ownerId) as { day_key: string; state: string; url: string | null; error: string | null } | undefined;
     return { accountId, status: row?.status || "disconnected", channelId: row?.channel_id || null,
       checkedAt: row?.checked_at || null, error: row?.error || null, enabled, latest: latest || null };
   }
@@ -103,6 +103,8 @@ export class CircleYouTubePublisher {
   start() {
     this.db.db.prepare("UPDATE circle_youtube_publications SET state='needs_review',error=? WHERE state='uploading'")
       .run("Сервис перезапущен во время отправки. Проверьте канал перед повтором.");
+    this.db.db.prepare("UPDATE circle_youtube_publications_v2 SET state='needs_review',error=? WHERE state='uploading'")
+      .run("Сервис перезапущен во время отправки. Проверьте канал перед повтором.");
     if (!this.timer) { this.timer = setInterval(() => void this.tick(), 10_000); this.timer.unref(); }
     void this.tick();
   }
@@ -112,8 +114,8 @@ export class CircleYouTubePublisher {
     try { await this.active; } finally { this.active = undefined; }
   }
   private async work() {
-    const now = new Date((this.options.now || Date.now)()), local = timePartsInTimeZone(now, "Europe/Prague");
-    if (local.hhmm < "16:00" || local.hhmm > "16:04") return;
+    const now = new Date((this.options.now || Date.now)()), day = circleDay(now.getTime()), slot = circlePublicationSlot(now.getTime());
+    if (slot === null) return;
     let target: { ownerId: number; accountId: number };
     try { target = JSON.parse(this.db.getSetting(TARGET_KEY) || "null"); } catch { return; }
     if (!target || !Number.isSafeInteger(target.ownerId) || !Number.isSafeInteger(target.accountId)) return;
@@ -121,13 +123,13 @@ export class CircleYouTubePublisher {
     if (!account.enabled || connection?.status !== "connected" || !connection.channel_id || this.locks.has(account.id)) return;
     const state = await this.pipeline.status(target.ownerId);
     if (!state.enabled || this.stopped) return;
-    const job = state.jobs.find(item => item.day === local.day && item.slot === 0 && item.state === "ready" && item.messageId);
-    if (!job || this.db.db.prepare("SELECT 1 FROM circle_youtube_publications WHERE account_id=? AND day_key=?").get(account.id, local.day)) return;
+    const job = state.jobs.find(item => item.day === day && item.slot === slot && item.state === "ready" && item.messageId);
+    if (!job || this.db.db.prepare("SELECT 1 FROM circle_youtube_publications_v2 WHERE account_id=? AND day_key=? AND slot=?").get(account.id, day, slot)) return;
     const file = resolve(this.pipeline.library.directory(job), "video.mp4");
     if (!existsSync(file) || !lstatSync(file).isFile()) return;
     const caption = readCircleCaption(this.pipeline.library.directory(job));
-    const row = this.db.db.prepare("INSERT INTO circle_youtube_publications(owner_id,account_id,day_key,circle_job_id,state,created_at) VALUES(?,?,?,?,'uploading',?) RETURNING id")
-      .get(target.ownerId, account.id, local.day, job.id, now.toISOString()) as { id: number };
+    const row = this.db.db.prepare("INSERT INTO circle_youtube_publications_v2(owner_id,account_id,day_key,slot,circle_job_id,state,created_at) VALUES(?,?,?,?,?,'uploading',?) RETURNING id")
+      .get(target.ownerId, account.id, day, slot, job.id, now.toISOString()) as { id: number };
     let submitted = false;
     this.locks.add(account.id);
     try {
@@ -135,21 +137,21 @@ export class CircleYouTubePublisher {
       const url = await this.browser.publish(cookies, connection.channel_id, file, `${caption.title} #shorts`,
         `${caption.description}\n\n#кружочки #shorts`, () => {
           if (this.stopped || !this.db.getAccount(account.id)?.enabled || !this.status(target.ownerId, account.id).enabled) throw new Error("Публикация остановлена.");
-          this.db.db.prepare("UPDATE circle_youtube_publications SET submitted_at=? WHERE id=?").run(new Date().toISOString(), row.id);
+          this.db.db.prepare("UPDATE circle_youtube_publications_v2 SET submitted_at=? WHERE id=?").run(new Date().toISOString(), row.id);
           submitted = true;
         }, this.authuser(account.id));
       const match = /^https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})$/.exec(url);
       if (!match) throw new Error("Некорректная ссылка публикации.");
       this.db.db.exec("BEGIN IMMEDIATE");
       try {
-        this.db.db.prepare("UPDATE circle_youtube_publications SET state='published',url=? WHERE id=?").run(url, row.id);
+        this.db.db.prepare("UPDATE circle_youtube_publications_v2 SET state='published',url=? WHERE id=?").run(url, row.id);
         this.db.addHistory({ accountId: account.id, platform: "youtube", platformUrl: url, youtubeId: match[1],
           title: caption.title, description: caption.description, status: "published", publishedAt: new Date().toISOString(), deck: "telegram-circles" });
         this.db.db.exec("COMMIT");
       } catch (error) { this.db.db.exec("ROLLBACK"); throw error; }
     } catch {
       const error = submitted ? "Проверьте канал: результат отправки не подтверждён. Автоматический повтор отключён." : "Отправка не началась. Проверьте вход и редактор YouTube.";
-      this.db.db.prepare("UPDATE circle_youtube_publications SET state=?,error=? WHERE id=?").run(submitted ? "needs_review" : "failed", error, row.id);
+      this.db.db.prepare("UPDATE circle_youtube_publications_v2 SET state=?,error=? WHERE id=?").run(submitted ? "needs_review" : "failed", error, row.id);
     } finally { this.locks.delete(account.id); }
   }
   async close() { this.stopped = true; if (this.timer) clearInterval(this.timer); await this.active; }

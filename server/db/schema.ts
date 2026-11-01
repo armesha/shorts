@@ -20,6 +20,11 @@ export function applySchema(db: DatabaseSync): void {
       video_id INTEGER NOT NULL,
       PRIMARY KEY(account_id, day_key)
     );
+    CREATE TABLE IF NOT EXISTS circle_social_assignments_v2 (
+      owner_id INTEGER NOT NULL, account_id INTEGER NOT NULL, day_key TEXT NOT NULL,
+      slot INTEGER NOT NULL CHECK(slot IN (0,1)), circle_job_id TEXT NOT NULL, video_id INTEGER NOT NULL,
+      PRIMARY KEY(account_id,day_key,slot), UNIQUE(account_id,circle_job_id)
+    );
     CREATE TABLE IF NOT EXISTS circle_youtube_connections (
       account_id INTEGER PRIMARY KEY,
       owner_id INTEGER NOT NULL,
@@ -40,6 +45,12 @@ export function applySchema(db: DatabaseSync): void {
       error TEXT,
       created_at TEXT NOT NULL,
       UNIQUE(account_id,day_key)
+    );
+    CREATE TABLE IF NOT EXISTS circle_youtube_publications_v2 (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, owner_id INTEGER NOT NULL, account_id INTEGER NOT NULL,
+      day_key TEXT NOT NULL, slot INTEGER NOT NULL CHECK(slot IN (0,1)), circle_job_id TEXT NOT NULL,
+      state TEXT NOT NULL, submitted_at TEXT, url TEXT, error TEXT, created_at TEXT NOT NULL,
+      UNIQUE(account_id,day_key,slot), UNIQUE(account_id,circle_job_id)
     );
     CREATE TABLE IF NOT EXISTS map_publication_bindings (
       owner_id INTEGER PRIMARY KEY,

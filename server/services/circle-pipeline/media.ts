@@ -20,7 +20,7 @@ export async function prepareCircleEvidence(source: string, directory: string): 
   await mkdir(directory, { recursive: true, mode: 0o700 });
   const framesDir = resolve(directory, "frames");
   await mkdir(framesDir, { recursive: false, mode: 0o700 });
-  await exec(ffmpeg, ["-nostdin", "-hide_banner", "-loglevel", "error", "-i", source,
+  await exec(ffmpeg, ["-nostdin", "-hide_banner", "-loglevel", "error", "-threads", "2", "-filter_threads", "1", "-i", source,
     "-vf", "fps=1,scale=512:512:force_original_aspect_ratio=decrease", "-q:v", "3",
     resolve(framesDir, "%04d.jpg")], { timeout: 120_000, maxBuffer: 128_000 });
   const frames = (await readdir(framesDir)).filter(name => /^\d{4}\.jpg$/.test(name)).sort()
@@ -29,7 +29,7 @@ export async function prepareCircleEvidence(source: string, directory: string): 
   let audio: string | null = null;
   if (probe.streams.some(stream => stream.codec_type === "audio")) {
     audio = resolve(directory, "audio.wav");
-    await exec(ffmpeg, ["-nostdin", "-hide_banner", "-loglevel", "error", "-i", source,
+    await exec(ffmpeg, ["-nostdin", "-hide_banner", "-loglevel", "error", "-threads", "2", "-i", source,
       "-vn", "-ac", "1", "-ar", "16000", "-c:a", "pcm_s16le", audio],
     { timeout: 120_000, maxBuffer: 128_000 });
   }

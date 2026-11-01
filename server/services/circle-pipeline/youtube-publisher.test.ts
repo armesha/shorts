@@ -22,7 +22,7 @@ test("YouTube circle delivery keeps one durable receipt and does not retry an un
         uploads++; submit(); throw new Error("unknown result");
       } };
     const privateDir = join(root, "private");
-    const service = new CircleYouTubePublisher(db, pipeline, browser, privateDir, { now: () => Date.parse("2026-11-01T15:00:00Z") });
+    const service = new CircleYouTubePublisher(db, pipeline, browser, privateDir, { now: () => Date.parse("2026-11-01T07:00:00Z") });
     const cookies = [{ name: "LOGIN_INFO", value: "synthetic", domain: ".youtube.com", secure: true }];
     assert.throws(() => service.importCookies(stranger.id, account.id, cookies));
     assert.equal(service.importCookies(owner.id, account.id, cookies).status, "unchecked");
@@ -31,7 +31,7 @@ test("YouTube circle delivery keeps one durable receipt and does not retry an un
     service.configure(owner.id, account.id);
     await service.tick(); await service.tick();
     assert.equal(uploads, 1);
-    const row = db.db.prepare("SELECT state,submitted_at FROM circle_youtube_publications").get();
+    const row = db.db.prepare("SELECT state,submitted_at FROM circle_youtube_publications_v2").get();
     assert.equal(row?.state, "needs_review"); assert.ok(row?.submitted_at);
     assert.equal(service.disconnect(owner.id, account.id).status, "disconnected");
     assert.equal(existsSync(join(privateDir, `${owner.id}-account-${account.id}.json`)), false);

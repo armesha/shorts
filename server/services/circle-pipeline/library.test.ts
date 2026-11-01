@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { CircleLibrary } from "./library.ts";
 
-test("durably reserves three distinct slots and isolates owners", async () => {
+test("durably reserves two distinct slots and isolates owners", async () => {
   const dir = await mkdtemp(join(tmpdir(), "circle-library-"));
   try {
     const now = Date.parse("2026-10-31T12:00:00Z");
@@ -24,9 +24,6 @@ test("durably reserves three distinct slots and isolates owners", async () => {
     assert.equal((await restored.claim(1, now))?.id, second.id);
     await restored.update(1, second.id, "running");
     await restored.update(1, second.id, "ready", { messageId: 2 });
-    const third = (await restored.claim(1, now))!;
-    assert.equal(third.slot, 2);
-    const reloaded = new CircleLibrary(dir);
-    assert.equal((await reloaded.list(1)).find(j => j.id === third.id)?.state, "failed");
+    assert.equal(await restored.claim(1, now), null);
   } finally { await rm(dir, { recursive: true, force: true }); }
 });

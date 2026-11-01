@@ -80,6 +80,7 @@ test("circle renderer produces a vertical MP4 with audio and a duration-fitted a
       outputFile: output,
       durationOverrideSec: 0.45,
       encoderPreset: "ultrafast",
+      cpuThreads: 2,
       ffmpegExecutable: "ffmpeg",
       layout: {
         circle: { x: 130, y: 300, size: 820 },

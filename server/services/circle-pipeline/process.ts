@@ -45,7 +45,7 @@ export async function processCircleCandidate(input: {
     if (!gameplay) throw new Error("Circle background video is required");
     await withGlobalRenderSlot(() => renderCircleVideo({ sourceFile: source, gameplayFile: gameplay,
       outputFile: target, layout: template.layout, requireBanner: true,
-      ffmpegExecutable: process.env.FFMPEG_PATH?.trim() || "ffmpeg" }));
+      ffmpegExecutable: process.env.FFMPEG_PATH?.trim() || "ffmpeg", cpuThreads: 2 }));
   });
   await render(resolve(input.source), pending);
   await (deps.validate ?? validateRenderedCircle)(pending, evidence.duration, Boolean(evidence.audio));
