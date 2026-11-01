@@ -61,7 +61,7 @@ export function registerChannelGroupRoutes(
           .listChannelGroups(uid(req))
           .some(
             (g) =>
-              g.name.toLocaleLowerCase("ru-RU") ===
+              g.userId === uid(req) && g.name.toLocaleLowerCase("ru-RU") ===
               name.toLocaleLowerCase("ru-RU"),
           )
       )
@@ -97,7 +97,7 @@ export function registerChannelGroupRoutes(
           .listChannelGroups(uid(req))
           .some(
             (g) =>
-              g.id !== id &&
+              g.userId === uid(req) && g.id !== id &&
               g.name.toLocaleLowerCase("ru-RU") ===
                 name.toLocaleLowerCase("ru-RU"),
           )

@@ -270,13 +270,14 @@ function AccountsList() {
     return sortDir === "asc" ? ra - rb : rb - ra;
   });
 
-  const groupSections: {id:number|null;name:string;items:Account[]}[] = groups.map(group => ({
+  const groupSections: {id:number|null;name:string;items:Account[];owned:boolean}[] = groups.map(group => ({
     id:group.id,
     name:group.name,
+    owned:group.userId===user?.id,
     items:shownAccounts.filter(account=>account.groupId===group.id),
   }));
   const ungrouped = shownAccounts.filter(account=>!account.groupId || !groups.some(group=>group.id===account.groupId));
-  if(ungrouped.length) groupSections.push({id:null,name:"Без группы",items:ungrouped});
+  if(ungrouped.length) groupSections.push({id:null,name:"Без группы",items:ungrouped,owned:false});
 
   // Google-key grouping — only surfaced when the user actually has more than one key.
   const multiKey = clients.length > 1 && accounts.some(isYouTubeAccount);
@@ -440,7 +441,7 @@ function AccountsList() {
           </div>
 
           {groupSections.map(group=><section key={group.id??"ungrouped"} className="space-y-3">
-          <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-lg font-semibold"><button type="button" className="flex items-center gap-2 text-left" onClick={()=>toggleGroup(group.id)} aria-expanded={!collapsedGroups[String(group.id??"ungrouped")]} aria-controls={`channel-group-${group.id??"ungrouped"}`}><AppIcon name="chevron-right" size={18} className={collapsedGroups[String(group.id??"ungrouped")]?"":"rotate-90"}/>{group.name}<span className="ml-2 text-sm font-normal text-base-content/70">{group.items.length}</span></button></h2>{group.id!==null&&<div className="flex flex-wrap gap-1"><button className="btn btn-ghost btn-sm gap-1" onClick={()=>startAddAccount(group.id)}><Plus size={15}/>Добавить канал</button><button className="btn btn-ghost btn-sm gap-1" onClick={()=>{setGroupError("");setGroupEditor(groups.find(g=>g.id===group.id));}}><Pencil size={15}/>Изменить</button><button className="btn btn-ghost btn-sm text-error gap-1" onClick={()=>void deleteGroup(groups.find(g=>g.id===group.id)!)}><Trash2 size={15}/>Удалить группу</button></div>}</div>
+          <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-lg font-semibold"><button type="button" className="flex items-center gap-2 text-left" onClick={()=>toggleGroup(group.id)} aria-expanded={!collapsedGroups[String(group.id??"ungrouped")]} aria-controls={`channel-group-${group.id??"ungrouped"}`}><AppIcon name="chevron-right" size={18} className={collapsedGroups[String(group.id??"ungrouped")]?"":"rotate-90"}/>{group.name}<span className="ml-2 text-sm font-normal text-base-content/70">{group.items.length}</span></button></h2>{group.id!==null&&group.owned&&<div className="flex flex-wrap gap-1"><button className="btn btn-ghost btn-sm gap-1" onClick={()=>startAddAccount(group.id)}><Plus size={15}/>Добавить канал</button><button className="btn btn-ghost btn-sm gap-1" onClick={()=>{setGroupError("");setGroupEditor(groups.find(g=>g.id===group.id));}}><Pencil size={15}/>Изменить</button><button className="btn btn-ghost btn-sm text-error gap-1" onClick={()=>void deleteGroup(groups.find(g=>g.id===group.id)!)}><Trash2 size={15}/>Удалить группу</button></div>}</div>
           <div id={`channel-group-${group.id??"ungrouped"}`} hidden={!!collapsedGroups[String(group.id??"ungrouped")]}>
           {!group.items.length&&<p className="text-sm text-base-content/70">В группе пока нет каналов.</p>}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -482,8 +483,8 @@ function AccountsList() {
                       />
                     )
                   ) : (
-                    <div className="bg-primary/10 text-primary rounded-full w-12 h-12 flex items-center justify-center shrink-0">
-                      <AppIcon name="accounts" size={22} />
+                    <div className={`rounded-full w-12 h-12 flex items-center justify-center shrink-0 ${a.platform === "instagram" ? "bg-gradient-to-tr from-amber-400 via-pink-600 to-violet-700 text-white" : a.platform === "tiktok" ? "bg-black text-white" : "bg-red-600 text-white"}`}>
+                      <BrandIcon name={a.platform === "instagram" ? "instagram" : a.platform === "tiktok" ? "tiktok" : "youtube"} size={25} />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
@@ -512,7 +513,7 @@ function AccountsList() {
                   {t("accounts.schedule")}{" "}
                   <span className="font-medium text-base-content">{a.schedule.join(", ")}</span>
                 </div>
-                {groups.length>0&&<label className="form-control gap-1 mt-3 pointer-events-auto relative z-20"><span className="label-text">Группа</span><select aria-label={`Группа канала ${a.channelName}`} className="select select-bordered select-sm w-full" value={a.groupId??""} onChange={e=>void moveChannel(a,e.target.value?Number(e.target.value):null)}><option value="">Без группы</option>{groups.map(g=><option key={g.id} value={g.id}>{g.name}</option>)}</select></label>}
+                {groups.length>0&&a.userId===user?.id&&<label className="form-control gap-1 mt-3 pointer-events-auto relative z-20"><span className="label-text">Группа</span><select aria-label={`Группа канала ${a.channelName}`} className="select select-bordered select-sm w-full" value={a.groupId??""} onChange={e=>void moveChannel(a,e.target.value?Number(e.target.value):null)}><option value="">Без группы</option>{groups.filter(g=>g.userId===user?.id).map(g=><option key={g.id} value={g.id}>{g.name}</option>)}</select></label>}
                 <QueueInfo count={effectiveQueuedVideos(a) ?? queue[a.id]} runwayDays={runwayDays(a)} schedule={a.schedule} enabled={a.enabled} />
                 <SourceInfo sources={accountSourceStats(a)} />
                 {isYouTubeAccount(a) && multiKey && a.oauthClientId && clientById.get(a.oauthClientId) && (

@@ -77,6 +77,12 @@ test("channel groups contain several platforms and preserve channels when remove
       (await request("GET", "/api/channel-groups", undefined, other.id)).json(),
       [],
     );
+    db.shareAccountReadOnly(owner.id, channels[0].id, other.id);
+    const shared = (await request("GET", "/api/channel-groups", undefined, other.id)).json();
+    assert.equal(shared.length, 1);
+    assert.equal(shared[0].id, group.id);
+    assert.equal(shared[0].channelCount, 1);
+    assert.equal((await request("DELETE", `/api/channel-groups/${group.id}`, undefined, other.id)).statusCode, 404);
     assert.equal(
       (
         await request(

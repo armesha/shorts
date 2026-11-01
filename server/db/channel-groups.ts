@@ -22,9 +22,9 @@ export function channelGroupMethods(db: DatabaseSync) {
       return (
         db
           .prepare(
-            "SELECT g.*,count(a.id) AS channel_count FROM channel_groups g LEFT JOIN accounts a ON a.group_id=g.id AND a.user_id=g.user_id WHERE g.user_id=? GROUP BY g.id ORDER BY g.id",
+            "SELECT g.*,count(DISTINCT a.id) AS channel_count FROM channel_groups g LEFT JOIN accounts a ON a.group_id=g.id AND (a.user_id=? OR EXISTS (SELECT 1 FROM account_viewers av WHERE av.account_id=a.id AND av.user_id=?)) WHERE g.user_id=? OR EXISTS (SELECT 1 FROM accounts shared JOIN account_viewers av ON av.account_id=shared.id WHERE shared.group_id=g.id AND av.user_id=?) GROUP BY g.id ORDER BY g.id",
           )
-          .all(userId) as GroupRow[]
+          .all(userId, userId, userId, userId) as GroupRow[]
       ).map(mapGroup);
     },
     getChannelGroup(id: number): ChannelGroup | null {
