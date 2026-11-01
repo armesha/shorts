@@ -15,7 +15,7 @@ test("skips uncertain speech, stores approved output and never reuses reviewed m
     const history = new CircleHistory(join(root, "history"));
     const runner = new CircleRunner(library, history, {
       fetch: async input => {
-        const id = [9, 8, 7].find(value => !input.exclude.includes(value));
+        const id = [9, 8, 7, 6].find(value => !input.exclude.includes(value));
         return id ? { items: [{ id, date: new Date().toISOString(), file: "source.mp4" }], nextBefore: id } : { items: [], nextBefore: 0 };
       },
       process: async input => {
@@ -29,10 +29,11 @@ test("skips uncertain speech, stores approved output and never reuses reviewed m
     const now = Date.parse("2026-10-31T12:00:00Z");
     assert.equal(await runner.runOnce(1, now), true);
     assert.equal(await runner.runOnce(1, now), true);
+    assert.equal(await runner.runOnce(1, now), true);
     assert.equal(await runner.runOnce(1, now), false);
     const jobs = await library.list(1);
-    assert.deepEqual(jobs.map(job => job.messageId), [7, 8]);
+    assert.deepEqual(jobs.map(job => job.messageId), [6, 7, 8]);
     assert.equal(await readFile(join(library.directory(jobs[0]), "video.mp4"), "utf8"), "approved");
-    assert.deepEqual(await history.excluded(1), [9, 8, 7]);
+    assert.deepEqual(await history.excluded(1), [9, 8, 7, 6]);
   } finally { await rm(root, { recursive: true, force: true }); }
 });
