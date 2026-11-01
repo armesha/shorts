@@ -1,6 +1,6 @@
 /** Calendar days, rather than 24-hour intervals, keep the quota stable over DST. */
 export const CIRCLE_TIME_ZONE = "Europe/Prague";
-export const DAILY_CIRCLE_LIMIT = 2;
+export const DAILY_CIRCLE_LIMIT = 3;
 
 const dayFormatter = new Intl.DateTimeFormat("en-CA", {
   timeZone: CIRCLE_TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit",
@@ -14,7 +14,7 @@ export function circleDay(time: number): string {
 
 export type CircleScheduleEntry = {
   day: string;
-  slot: 0 | 1;
+  slot: 0 | 1 | 2;
   state: "queued" | "running" | "ready" | "failed";
 };
 
@@ -23,7 +23,7 @@ export function claimCircleSlot(entries: CircleScheduleEntry[], now: number): Ci
   const day = circleDay(now);
   const todays = entries.filter(entry => entry.day === day);
   if (todays.some(entry => entry.state === "queued" || entry.state === "running")) return null;
-  for (const slot of [0, 1] as const) {
+  for (const slot of [0, 1, 2] as const) {
     const existing = todays.find(entry => entry.slot === slot);
     if (existing?.state === "failed") {
       existing.state = "queued";

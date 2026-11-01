@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { circleDay, claimCircleSlot, type CircleScheduleEntry } from "./schedule.ts";
 
-test("claims at most two distinct slots per local calendar day", () => {
+test("claims at most three distinct slots per local calendar day", () => {
   const entries: CircleScheduleEntry[] = [];
   const now = Date.parse("2026-10-31T12:00:00Z");
   const first = claimCircleSlot(entries, now)!;
@@ -14,6 +14,9 @@ test("claims at most two distinct slots per local calendar day", () => {
   second.state = "failed";
   assert.equal(claimCircleSlot(entries, now), second);
   second.state = "ready";
+  const third = claimCircleSlot(entries, now)!;
+  assert.equal(third.slot, 2);
+  third.state = "ready";
   assert.equal(claimCircleSlot(entries, now), null);
   assert.equal(claimCircleSlot(entries, now + 86400000)!.slot, 0);
 });

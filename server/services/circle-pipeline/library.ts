@@ -6,7 +6,7 @@ import { claimCircleSlot, type CircleScheduleEntry } from "./schedule.ts";
 
 const JobSchema = z.object({
   id: z.string().uuid(), ownerId: z.number().int().positive(), day: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  slot: z.union([z.literal(0), z.literal(1)]), state: z.enum(["queued", "running", "ready", "failed"]),
+  slot: z.union([z.literal(0), z.literal(1), z.literal(2)]), state: z.enum(["queued", "running", "ready", "failed"]),
   createdAt: z.string().datetime(), messageId: z.number().int().positive().optional(),
   error: z.string().max(500).optional(),
 }).strict();
