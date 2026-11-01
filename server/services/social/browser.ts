@@ -20,6 +20,15 @@ export function postedTikTokItemId(raw: string): string | null {
 }
 
 export type SocialProfile = { handle: string; userId: string };
+
+export function instagramPageProfile(id: string, identities: string[], links: { href: string; alt: string }[]): SocialProfile | null {
+  if (!/^\d+$/.test(id) || !identities.includes(id)) return null;
+  const handles = new Set(links.flatMap(({ href, alt }) => {
+    const match = /^\/([a-zA-Z0-9._]+)\/$/.exec(href);
+    return match && alt === `${match[1]}'s profile picture` ? [match[1]] : [];
+  }));
+  return handles.size === 1 ? { handle: [...handles][0], userId: id } : null;
+}
 export interface SocialBrowser {
   confirmPublished?(platform: SocialPlatform, cookies: Cookie[], profile: SocialProfile, url: string): Promise<boolean>;
   verify(platform: SocialPlatform, cookies: Cookie[]): Promise<SocialProfile>;
@@ -62,6 +71,20 @@ async function sessionProfile(
       })
       .catch(() => null);
     if (result?.handle && result.userId === id) return result;
+    await page.goto("https://www.instagram.com/accounts/edit/", { waitUntil: "domcontentloaded", timeout: 60_000 });
+    await page.getByRole("textbox", { name: "Bio" }).waitFor({ timeout: 15_000 }).catch(() => {});
+    const pageIdentity = await page.evaluate(() => ({
+      identities: [...document.scripts].flatMap(script =>
+        [...(script.textContent || "").matchAll(/"appScopedIdentity"\s*:\s*"(\d+)"/g)].map(match => match[1])),
+      links: [...document.querySelectorAll("a")].flatMap(link => {
+        const image = link.querySelector("img[alt]");
+        return image ? [{ href: link.getAttribute("href") || "", alt: image.getAttribute("alt") || "" }] : [];
+      }),
+    })).catch(() => null);
+    if (pageIdentity) {
+      const profile = instagramPageProfile(id, pageIdentity.identities, pageIdentity.links);
+      if (profile) return profile;
+    }
   } else {
     const verified = await page.evaluate(async () => {
       try {

@@ -1,6 +1,14 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { createSocialBrowser, postedTikTokItemId } from "./browser.ts";
+import { createSocialBrowser, instagramPageProfile, postedTikTokItemId } from "./browser.ts";
+
+test("Instagram page identity must match the session and its own profile link", () => {
+  const links = [{ href: "/example/", alt: "example's profile picture" }];
+  assert.deepEqual(instagramPageProfile("123", ["123"], links), { handle: "example", userId: "123" });
+  assert.equal(instagramPageProfile("123", ["456"], links), null);
+  assert.equal(instagramPageProfile("123", ["123"], [{ href: "/other/", alt: "example's profile picture" }]), null);
+  assert.equal(instagramPageProfile("123", ["123"], [...links, { href: "/other/", alt: "other's profile picture" }]), null);
+});
 
 test("post receipts preserve large item IDs and reject ambiguous responses", () => {
   assert.equal(postedTikTokItemId('{"data":{"item_id":7000000000000000001}}'), "7000000000000000001");
