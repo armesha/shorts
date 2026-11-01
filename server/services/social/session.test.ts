@@ -81,7 +81,14 @@ test("Instagram uses the video picker and dismisses the first Reels notice", asy
     locator: (selector: string) => ({ first: () => selector.includes("input[type=\"file\"]") ?
       { setInputFiles: async () => { assert.match(selector, /accept\*=\"video\"/); events.push("video picker"); } } :
       { fill: async () => { assert.equal(notice, false); events.push("caption"); } } }),
-    waitForResponse: async () => ({ ok: () => true, json: async () => ({ status: "ok", media: { code: "abc123" } }) }),
+    waitForResponse: async (predicate: (response: any) => Promise<boolean>) => {
+      const response = (body: unknown) => ({ request: () => ({ method: () => "POST" }),
+        url: () => "https://www.instagram.com/api/v1/media/configure_to_clips/", ok: () => true, json: async () => body });
+      assert.equal(await predicate(response({ payload: {} })), false);
+      const final = response({ status: "ok", media: { code: "abc123" } });
+      assert.equal(await predicate(final), true);
+      return final;
+    },
   };
   const launch = async () => ({ newContext: async () => ({ addCookies: async () => {}, newPage: async () => page }), close: async () => {} });
   try {

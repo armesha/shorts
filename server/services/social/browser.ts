@@ -272,12 +272,15 @@ export function createSocialBrowser(
           onSubmit();
           const confirmation = page
             .waitForResponse(
-              (r) =>
-                r.request().method() === "POST" &&
-                /\/media\/configure(?:_to_clips)?\//.test(
-                  new URL(r.url()).pathname,
-                ),
-              { timeout: 120_000 },
+              async (r) => {
+                if (r.request().method() !== "POST" ||
+                    !/\/media\/configure(?:_to_clips)?\//.test(new URL(r.url()).pathname)) return false;
+                try {
+                  const body = await r.json();
+                  return r.ok() && body?.status === "ok" && typeof body?.media?.code === "string" && /^[\w-]+$/.test(body.media.code);
+                } catch { return false; }
+              },
+              { timeout: 180_000 },
             )
             .catch(() => null);
           await share.click();
