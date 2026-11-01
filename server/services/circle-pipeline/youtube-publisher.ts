@@ -10,8 +10,8 @@ import { normalizeYouTubeCookies } from "./youtube-cookie-browser.ts";
 import { readCircleCaption } from "./caption.ts";
 
 type Browser = {
-  verify(cookies: Cookie[]): Promise<{ channelId: string }>;
-  publish(cookies: Cookie[], channelId: string, file: string, title: string, description: string, onSubmit: () => void): Promise<string>;
+  verify(cookies: Cookie[], authuser?: number): Promise<{ channelId: string }>;
+  publish(cookies: Cookie[], channelId: string, file: string, title: string, description: string, onSubmit: () => void, authuser?: number): Promise<string>;
 };
 type Connection = { account_id: number; owner_id: number; status: string; channel_id: string | null; checked_at: string | null; error: string | null };
 const TARGET_KEY = "circle.youtube-publishing.target";
@@ -27,6 +27,10 @@ export class CircleYouTubePublisher {
     this.root = resolve(root); mkdirSync(this.root, { recursive: true, mode: 0o700 }); chmodSync(this.root, 0o700);
   }
   private path(ownerId: number, accountId: number) { return join(this.root, `${ownerId}-account-${accountId}.json`); }
+  private authuser(accountId: number): number | undefined {
+    const value = this.db.getSetting(`circle.youtube-authuser.${accountId}`);
+    return value && /^\d{1,2}$/.test(value) ? Number(value) : undefined;
+  }
   private account(ownerId: number, accountId: number) {
     const account = this.db.getAccount(accountId);
     if (!account || account.userId !== ownerId || account.platform !== "youtube") throw new Error("Канал YouTube не найден.");
@@ -70,7 +74,7 @@ export class CircleYouTubePublisher {
     if (this.locks.has(accountId)) throw new Error("Канал занят.");
     this.locks.add(accountId);
     try {
-      const profile = await this.browser.verify(normalizeYouTubeCookies(readFileSync(this.path(ownerId, accountId), "utf8")));
+      const profile = await this.browser.verify(normalizeYouTubeCookies(readFileSync(this.path(ownerId, accountId), "utf8")), this.authuser(accountId));
       this.db.db.prepare("UPDATE circle_youtube_connections SET status='connected',channel_id=?,checked_at=?,error=NULL WHERE account_id=? AND owner_id=?")
         .run(profile.channelId, new Date().toISOString(), accountId, ownerId);
     } catch {
@@ -133,7 +137,7 @@ export class CircleYouTubePublisher {
           if (this.stopped || !this.db.getAccount(account.id)?.enabled || !this.status(target.ownerId, account.id).enabled) throw new Error("Публикация остановлена.");
           this.db.db.prepare("UPDATE circle_youtube_publications SET submitted_at=? WHERE id=?").run(new Date().toISOString(), row.id);
           submitted = true;
-        });
+        }, this.authuser(account.id));
       const match = /^https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})$/.exec(url);
       if (!match) throw new Error("Некорректная ссылка публикации.");
       this.db.db.exec("BEGIN IMMEDIATE");

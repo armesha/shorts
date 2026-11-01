@@ -28,6 +28,16 @@ test("refuses upload when Studio opens a different channel", async () => {
   assert.equal(closed, true);
 });
 
+test("selects the requested Google account when opening Studio", async () => {
+  let visited = "";
+  const page = { setDefaultTimeout() {}, goto: async (url: string) => { visited = url; },
+    waitForURL: async () => {}, url: () => `https://studio.youtube.com/channel/${channel}` };
+  const browser = { newContext: async () => ({ addCookies: async () => {}, newPage: async () => page }), close: async () => {} };
+  const service = createYouTubeCookieBrowser("browser", (async () => browser) as any);
+  assert.equal((await service.verify(normalizeYouTubeCookies(cookies), 1)).channelId, channel);
+  assert.equal(new URL(visited).searchParams.get("authuser"), "1");
+});
+
 test("marks submission before the final click and requires public channel confirmation", async () => {
   const events: string[] = [];
   let url = `https://studio.youtube.com/channel/${channel}`;
@@ -37,10 +47,11 @@ test("marks submission before the final click and requires public channel confir
     goto: async (target: string) => { if (target.includes("upload")) url = `https://studio.youtube.com/channel/${channel}/videos/upload`; },
     waitForFunction: async () => {},
     locator: (selector: string) => ({ first() { return this; }, setInputFiles: async () => {}, fill: async () => {},
+      count: async () => 1,
       click: async () => { if (selector === "#done-button") events.push("click"); },
       getAttribute: async () => "https://youtu.be/abcdefghijk", waitFor: async () => {} }),
   };
-  const visitor = { goto: async () => {}, evaluate: async () => visible };
+  const visitor = { goto: async () => {}, waitForTimeout: async () => {}, evaluate: async () => visible };
   let contexts = 0;
   const browser = { newContext: async () => ++contexts % 2 ?
     { addCookies: async () => {}, newPage: async () => editor } : { newPage: async () => visitor, close: async () => {} },

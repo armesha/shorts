@@ -53,8 +53,10 @@ export function youtubeVideoId(url: string): string | null {
   } catch { return null; }
 }
 
-async function channelInStudio(page: Page): Promise<string> {
-  await page.goto("https://studio.youtube.com/?approve_browser_access=true", { waitUntil: "domcontentloaded", timeout: 60_000 });
+async function channelInStudio(page: Page, authuser?: number): Promise<string> {
+  const url = new URL("https://studio.youtube.com/?approve_browser_access=true");
+  if (authuser !== undefined) url.searchParams.set("authuser", String(authuser));
+  await page.goto(url.toString(), { waitUntil: "domcontentloaded", timeout: 60_000 });
   await page.waitForURL(url => !!studioChannelId(url.toString()), { timeout: 20_000 }).catch(() => {});
   const channelId = studioChannelId(page.url());
   if (!channelId) throw new YouTubeCookieError("Не удалось подтвердить канал YouTube Studio. Проверьте вход и наличие канала.");
@@ -74,16 +76,24 @@ export function createYouTubeCookieBrowser(chromePath: string, launch: typeof ch
     } finally { await browser.close(); }
   }
   return {
-    verify: (cookies: Cookie[]) => run(cookies, async page => ({ channelId: await channelInStudio(page) })),
-    publish: (cookies: Cookie[], expectedChannelId: string, file: string, title: string, description: string, onSubmit: () => void) =>
+    verify: (cookies: Cookie[], authuser?: number) => run(cookies, async page => ({ channelId: await channelInStudio(page, authuser) })),
+    publish: (cookies: Cookie[], expectedChannelId: string, file: string, title: string, description: string, onSubmit: () => void, authuser?: number) =>
       run(cookies, async (page, browser) => {
-        if (await channelInStudio(page) !== expectedChannelId) throw new YouTubeCookieError("Открыт другой канал YouTube.");
-        await page.goto("https://www.youtube.com/upload", { waitUntil: "domcontentloaded", timeout: 60_000 });
+        if (await channelInStudio(page, authuser) !== expectedChannelId) throw new YouTubeCookieError("Открыт другой канал YouTube.");
+        const upload = new URL("https://www.youtube.com/upload");
+        if (authuser !== undefined) upload.searchParams.set("authuser", String(authuser));
+        await page.goto(upload.toString(), { waitUntil: "domcontentloaded", timeout: 60_000 });
         if (studioChannelId(page.url()) !== expectedChannelId) throw new YouTubeCookieError("Не удалось подтвердить канал в редакторе YouTube.");
         const uploadUrl = new URL(page.url());
         uploadUrl.searchParams.set("approve_browser_access", "true");
         await page.goto(uploadUrl.toString(), { waitUntil: "domcontentloaded", timeout: 60_000 });
         if (studioChannelId(page.url()) !== expectedChannelId) throw new YouTubeCookieError("Не удалось подтвердить канал в редакторе YouTube.");
+        const fileInput = page.locator('input[type="file"]').first();
+        await fileInput.waitFor({ state: "attached", timeout: 5_000 }).catch(() => {});
+        if (!await fileInput.count()) {
+          await page.getByRole("button", { name: /^(Create|Utwórz|Создать)$/i }).first().click();
+          await page.locator("ytcp-text-menu").getByText(/^(Upload videos|Prześlij filmy|Добавить видео)$/i).first().click();
+        }
         await page.locator('input[type="file"]').first().setInputFiles(file, { timeout: 60_000 });
         await page.locator("#title-textarea #textbox").fill(title, { timeout: 120_000 });
         await page.locator("#description-textarea #textbox").fill(description);
@@ -108,11 +118,15 @@ export function createYouTubeCookieBrowser(chromePath: string, launch: typeof ch
         const visitor = await browser.newContext({ locale: "en-US" });
         try {
           const check = await visitor.newPage();
-          await check.goto(`https://www.youtube.com/watch?v=${videoId}`, { waitUntil: "domcontentloaded", timeout: 60_000 });
-          const visible = await check.evaluate(({ videoId, channelId }) => {
-            const data = (window as unknown as { ytInitialPlayerResponse?: { videoDetails?: { videoId?: string; channelId?: string }; playabilityStatus?: { status?: string } } }).ytInitialPlayerResponse;
-            return data?.videoDetails?.videoId === videoId && data.videoDetails.channelId === channelId && data.playabilityStatus?.status === "OK";
-          }, { videoId, channelId: expectedChannelId });
+          let visible = false;
+          for (let attempt = 0; attempt < 12 && !visible; attempt++) {
+            if (attempt) await check.waitForTimeout(5_000);
+            await check.goto(`https://www.youtube.com/watch?v=${videoId}`, { waitUntil: "domcontentloaded", timeout: 60_000 });
+            visible = await check.evaluate(({ videoId, channelId }) => {
+              const data = (window as unknown as { ytInitialPlayerResponse?: { videoDetails?: { videoId?: string; channelId?: string }; playabilityStatus?: { status?: string } } }).ytInitialPlayerResponse;
+              return data?.videoDetails?.videoId === videoId && data.videoDetails.channelId === channelId && data.playabilityStatus?.status === "OK";
+            }, { videoId, channelId: expectedChannelId });
+          }
           if (!visible) throw new YouTubeCookieError("Публикация не подтверждена. Проверьте канал перед повтором.");
         } finally { await visitor.close(); }
         return `https://www.youtube.com/watch?v=${videoId}`;
