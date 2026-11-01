@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { circleDay, claimCircleSlot, type CircleScheduleEntry } from "./schedule.ts";
+import { circleDay, circleGenerationStarted, claimCircleSlot, type CircleScheduleEntry } from "./schedule.ts";
 
 test("claims at most three distinct slots per local calendar day", () => {
   const entries: CircleScheduleEntry[] = [];
@@ -26,4 +26,11 @@ test("uses Prague midnight across summer and winter time changes", () => {
   assert.equal(circleDay(Date.parse("2026-03-29T22:00:00Z")), "2026-03-30");
   assert.equal(circleDay(Date.parse("2026-10-25T22:59:59Z")), "2026-10-25");
   assert.equal(circleDay(Date.parse("2026-10-25T23:00:00Z")), "2026-10-26");
+});
+
+test("starts generation at Prague noon in summer and winter", () => {
+  assert.equal(circleGenerationStarted(Date.parse("2026-07-01T09:59:59Z")), false);
+  assert.equal(circleGenerationStarted(Date.parse("2026-07-01T10:00:00Z")), true);
+  assert.equal(circleGenerationStarted(Date.parse("2026-11-01T10:59:59Z")), false);
+  assert.equal(circleGenerationStarted(Date.parse("2026-11-01T11:00:00Z")), true);
 });

@@ -5,6 +5,14 @@ export const DAILY_CIRCLE_LIMIT = 3;
 const dayFormatter = new Intl.DateTimeFormat("en-CA", {
   timeZone: CIRCLE_TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit",
 });
+const hourFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: CIRCLE_TIME_ZONE, hour: "2-digit", hourCycle: "h23",
+});
+
+export function circleGenerationStarted(time: number): boolean {
+  if (!Number.isFinite(time)) throw new Error("Invalid schedule time");
+  return Number(hourFormatter.format(new Date(time))) >= 12;
+}
 
 export function circleDay(time: number): string {
   if (!Number.isFinite(time)) throw new Error("Invalid schedule time");

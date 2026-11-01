@@ -5,6 +5,7 @@ import { CircleLibrary } from "./library.ts";
 import { CircleHistory } from "./history.ts";
 import { CircleRunner } from "./runner.ts";
 import { circleSourceConfigured } from "./source.ts";
+import { circleGenerationStarted } from "./schedule.ts";
 
 const Config = z.object({ version: z.literal(1), ownerId: z.number().int().positive().nullable(), enabled: z.boolean() }).strict();
 
@@ -19,16 +20,18 @@ export class CirclePipelineService {
   private mutation: Promise<unknown> = Promise.resolve();
   private nextAttempt = 0;
   private readonly root: string;
-  constructor(options: { root?: string; runner?: Pick<CircleRunner, "runOnce">; log?: (message: string) => void; checkReady?: () => boolean } = {}) {
+  constructor(options: { root?: string; runner?: Pick<CircleRunner, "runOnce">; log?: (message: string) => void; checkReady?: () => boolean; now?: () => number } = {}) {
     this.root = resolve(options.root || "data/output/circle-pipeline");
     this.library = new CircleLibrary(resolve(this.root, "library"));
     this.history = new CircleHistory(this.root);
     this.runner = options.runner || new CircleRunner(this.library, this.history);
     this.log = options.log || (() => {});
     this.checkReady = options.checkReady || circleSourceConfigured;
+    this.now = options.now || Date.now;
   }
   private log: (message: string) => void;
   private checkReady: () => boolean;
+  private now: () => number;
   private init() {
     this.initialized ??= (async () => {
       await mkdir(this.root, { recursive: true, mode: 0o700 });
@@ -86,7 +89,7 @@ export class CirclePipelineService {
   }
   async tick() {
     await this.init();
-    if (!this.config.enabled || !this.config.ownerId || this.active || Date.now() < this.nextAttempt) return;
+    if (!this.config.enabled || !this.config.ownerId || this.active || !circleGenerationStarted(this.now()) || Date.now() < this.nextAttempt) return;
     const ownerId = this.config.ownerId;
     this.active = (async () => {
       try { await this.runner.runOnce(ownerId); this.nextAttempt = Date.now() + 60_000; }

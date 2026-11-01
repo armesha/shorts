@@ -10,13 +10,13 @@ test("schedule activation and stopping survive a restart and remain owner scoped
   let count = 0;
   const runner = { runOnce: async () => { count++; return false; } };
   try {
-    const service = new CirclePipelineService({ root, runner, checkReady: () => true });
+    const service = new CirclePipelineService({ root, runner, checkReady: () => true, now: () => Date.parse("2026-10-31T12:00:00Z") });
     await service.start();
     assert.equal(count, 0);
     await service.enable(1);
     await service.close();
     assert.equal(count, 1);
-    const restored = new CirclePipelineService({ root, runner, checkReady: () => true });
+    const restored = new CirclePipelineService({ root, runner, checkReady: () => true, now: () => Date.parse("2026-10-31T12:00:00Z") });
     assert.equal((await restored.status(1)).enabled, true);
     assert.equal((await restored.status(2)).enabled, false);
     await assert.rejects(restored.disable(2));
