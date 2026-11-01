@@ -13,6 +13,7 @@ test("only an accepted transcript and visual review can reach rendering", async 
       prepare: async () => ({ duration: 2, frames: ["frame.jpg"], audio: "audio.wav" }),
       transcribe: async () => ({ text: "hello", language: "ru" }),
       review: async () => ({ verdict: "borderline" as const, reasons: ["uncertain"] }),
+      caption: async () => ({ title: "Название ролика", description: "Короткое описание ролика." }),
       render: async (_source: string, target: string) => { renders++; await writeFile(target, "video"); },
       validate: async () => {},
     };

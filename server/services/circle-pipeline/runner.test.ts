@@ -23,7 +23,7 @@ test("skips uncertain speech, stores approved output and never reuses reviewed m
         await mkdir(input.directory, { recursive: true });
         const video = join(input.directory, "video.mp4");
         await writeFile(video, "approved");
-        return { verdict: "accept", video };
+        return { verdict: "accept", video, caption: { title: `История ${input.messageId}`, description: `Содержание истории ${input.messageId}.` } };
       },
     });
     const now = Date.parse("2026-10-31T12:00:00Z");
@@ -34,6 +34,8 @@ test("skips uncertain speech, stores approved output and never reuses reviewed m
     const jobs = await library.list(1);
     assert.deepEqual(jobs.map(job => job.messageId), [6, 7, 8]);
     assert.equal(await readFile(join(library.directory(jobs[0]), "video.mp4"), "utf8"), "approved");
+    assert.deepEqual(JSON.parse(await readFile(join(library.directory(jobs[0]), "caption.json"), "utf8")),
+      { title: "История 6", description: "Содержание истории 6." });
     assert.deepEqual(await history.excluded(1), [9, 8, 7, 6]);
   } finally { await rm(root, { recursive: true, force: true }); }
 });

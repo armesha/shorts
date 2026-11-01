@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, rename } from "node:fs/promises";
+import { mkdir, rename, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { CircleLibrary } from "./library.ts";
 import { CircleHistory } from "./history.ts";
@@ -44,6 +44,7 @@ export class CircleRunner {
           }
           if (result.verdict === "accept") {
             if (!result.video) throw new Error("Accepted video is missing");
+            if (result.caption) await writeFile(resolve(dir, "caption.json"), JSON.stringify(result.caption), { mode: 0o600 });
             await rename(result.video, resolve(dir, "video.mp4"));
             await this.library.update(ownerId, job.id, "ready", { messageId: source.id });
             ready = true;

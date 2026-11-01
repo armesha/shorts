@@ -63,3 +63,31 @@ test("optional Studio prompts are dismissed before editing and the submission ca
     assert.deepEqual(events, ["upload", "Cancel", "Got it", "caption", "submitted", "Post"]);
   } finally { globalThis.fetch = original; }
 });
+
+test("Instagram uses the video picker and dismisses the first Reels notice", async () => {
+  const original = globalThis.fetch;
+  globalThis.fetch = async () => ({ ok: true, json: async () => ({ user: { username: "example", pk: "123" } }) }) as Response;
+  const events: string[] = [];
+  let notice = true;
+  const button = (name: string): any => ({ first() { return this; }, waitFor: async () => {}, click: async () => {
+    events.push(name); if (name === "OK") notice = false;
+  } });
+  const page = {
+    setDefaultTimeout() {}, goto: async () => {}, waitForLoadState: async () => {}, url: () => "https://www.instagram.com/",
+    evaluate: async (fn: () => unknown) => fn(),
+    getByText: () => ({ isVisible: async () => false }),
+    getByRole: (role: string, options: { name: string | RegExp }) => role === "heading" ?
+      { waitFor: async () => {}, isVisible: async () => notice } : button(typeof options.name === "string" ? options.name : role === "link" ? "Create" : options.name.source.includes("9:16") ? "9:16" : "NextOrShare"),
+    locator: (selector: string) => ({ first: () => selector.includes("input[type=\"file\"]") ?
+      { setInputFiles: async () => { assert.match(selector, /accept\*=\"video\"/); events.push("video picker"); } } :
+      { fill: async () => { assert.equal(notice, false); events.push("caption"); } } }),
+    waitForResponse: async () => ({ ok: () => true, json: async () => ({ status: "ok", media: { code: "abc123" } }) }),
+  };
+  const launch = async () => ({ newContext: async () => ({ addCookies: async () => {}, newPage: async () => page }), close: async () => {} });
+  try {
+    const url = await createSocialBrowser("test-browser", launch as any).publish("instagram", [{ name: "ds_user_id", value: "123" }] as any,
+      { handle: "example", userId: "123" }, "/tmp/example.mp4", "Caption", () => { events.push("submitted"); });
+    assert.equal(url, "https://www.instagram.com/reel/abc123/");
+    assert.deepEqual(events, ["Create", "video picker", "OK", "Select crop", "9:16", "NextOrShare", "NextOrShare", "caption", "submitted", "NextOrShare"]);
+  } finally { globalThis.fetch = original; }
+});

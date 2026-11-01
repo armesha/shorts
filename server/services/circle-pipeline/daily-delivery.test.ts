@@ -29,14 +29,17 @@ test("the daily schedule sends three different approved circles once", async con
       await library.update(owner.id, job.id, "running");
       mkdirSync(library.directory(job), { recursive: true });
       writeFileSync(join(library.directory(job), "video.mp4"), `circle-${slot}`);
+      writeFileSync(join(library.directory(job), "caption.json"), JSON.stringify({ title: `История номер ${slot}`, description: `Понятное описание номера ${slot}.` }));
       await library.update(owner.id, job.id, "ready", { messageId: 100 + slot });
     }
     const pipeline = { library, status: async () => ({ enabled: true, jobs: await library.list(owner.id) }) } as unknown as CirclePipelineService;
     const delivered = new Map<string, string>();
     const socialBrowser: SocialBrowser = {
       verify: async platform => ({ handle: `profile_${platform}`, userId: "123" }),
-      publish: async (platform, _cookies, _profile, file, _caption, onSubmit) => {
-        delivered.set(platform, readFileSync(file, "utf8")); onSubmit();
+      publish: async (platform, _cookies, _profile, file, caption, onSubmit) => {
+        const content = readFileSync(file, "utf8");
+        assert.ok(caption.includes(`описание номера ${content.slice(-1)}`));
+        delivered.set(platform, content); onSubmit();
         return platform === "instagram" ? "https://www.instagram.com/reel/example/" : "https://www.tiktok.com/@profile_tiktok/video/1234567890123456789";
       },
     };
@@ -53,7 +56,8 @@ test("the daily schedule sends three different approved circles once", async con
     const socialPublisher = new CircleSocialPublisher(db, pipeline, social, root);
     const youtubePublisher = new CircleYouTubePublisher(db, pipeline, {
       verify: async () => ({ channelId: `UC${"a".repeat(22)}` }),
-      publish: async (_cookies, _id, file, _title, _description, onSubmit) => {
+      publish: async (_cookies, _id, file, title, description, onSubmit) => {
+        assert.ok(title.includes("История номер 0")); assert.ok(description.includes("описание номера 0"));
         delivered.set("youtube", readFileSync(file, "utf8")); onSubmit(); return "https://www.youtube.com/watch?v=abcdefghijk";
       },
     }, join(root, "youtube-private"));

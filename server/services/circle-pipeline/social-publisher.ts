@@ -4,6 +4,7 @@ import type { Db } from "../../db.ts";
 import type { SocialService } from "../social/store.ts";
 import { timePartsInTimeZone } from "../timezone.ts";
 import type { CirclePipelineService } from "./service.ts";
+import { readCircleCaption } from "./caption.ts";
 
 type Target = { ownerId: number; accountId: number; platform: "instagram" | "tiktok"; slot: 1 | 2 };
 const CONFIG_KEY = "circle.social-publishing.targets";
@@ -52,6 +53,7 @@ export class CircleSocialPublisher {
       if (!state.enabled) continue;
       const job = state.jobs.find(item => item.day === local.day && item.slot === target.slot && item.state === "ready" && item.messageId);
       if (!job) continue;
+      const caption = readCircleCaption(this.pipeline.library.directory(job));
       let assignment = this.db.db.prepare("SELECT video_id FROM circle_social_assignments WHERE account_id=? AND day_key=?")
         .get(target.accountId, local.day) as { video_id: number } | undefined;
       if (!assignment) {
@@ -68,7 +70,7 @@ export class CircleSocialPublisher {
             this.db.db.exec("ROLLBACK");
             continue;
           }
-          const video = this.db.createVideo({ accountId: target.accountId, title: "Кружочки — случайные истории",
+          const video = this.db.createVideo({ accountId: target.accountId, title: caption.title,
             text: "", bg: "", music: "", deck: "telegram-circles", videoRel: relative, imageRel: null });
           this.db.db.prepare("INSERT INTO circle_social_assignments(owner_id,account_id,day_key,circle_job_id,video_id) VALUES(?,?,?,?,?)")
             .run(target.ownerId, target.accountId, local.day, job.id, video.id);
@@ -80,7 +82,7 @@ export class CircleSocialPublisher {
       if (this.db.db.prepare("SELECT 1 FROM social_jobs WHERE account_id=? AND video_id=?").get(target.accountId, assignment.video_id)) continue;
       try {
         this.social.enqueueForAccount(target.ownerId, target.accountId, assignment.video_id,
-          "Кружочки — случайные истории 📹 #кружочки #истории", now.toISOString());
+          `${caption.description}\n\n#кружочки`, now.toISOString());
       } catch { this.options.log?.("Не удалось поставить кружочек в очередь площадки."); }
     }
   }

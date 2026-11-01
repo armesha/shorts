@@ -7,6 +7,7 @@ import { invalidateReadCache } from "../read-cache.ts";
 import { timePartsInTimeZone } from "../timezone.ts";
 import type { CirclePipelineService } from "./service.ts";
 import { normalizeYouTubeCookies } from "./youtube-cookie-browser.ts";
+import { readCircleCaption } from "./caption.ts";
 
 type Browser = {
   verify(cookies: Cookie[]): Promise<{ channelId: string }>;
@@ -120,14 +121,15 @@ export class CircleYouTubePublisher {
     if (!job || this.db.db.prepare("SELECT 1 FROM circle_youtube_publications WHERE account_id=? AND day_key=?").get(account.id, local.day)) return;
     const file = resolve(this.pipeline.library.directory(job), "video.mp4");
     if (!existsSync(file) || !lstatSync(file).isFile()) return;
+    const caption = readCircleCaption(this.pipeline.library.directory(job));
     const row = this.db.db.prepare("INSERT INTO circle_youtube_publications(owner_id,account_id,day_key,circle_job_id,state,created_at) VALUES(?,?,?,?,'uploading',?) RETURNING id")
       .get(target.ownerId, account.id, local.day, job.id, now.toISOString()) as { id: number };
     let submitted = false;
     this.locks.add(account.id);
     try {
       const cookies = normalizeYouTubeCookies(readFileSync(this.path(target.ownerId, account.id), "utf8"));
-      const url = await this.browser.publish(cookies, connection.channel_id, file, "Кружочки — случайные истории #shorts",
-        "Случайные истории и эмоции. #кружочки #shorts", () => {
+      const url = await this.browser.publish(cookies, connection.channel_id, file, `${caption.title} #shorts`,
+        `${caption.description}\n\n#кружочки #shorts`, () => {
           if (this.stopped || !this.db.getAccount(account.id)?.enabled || !this.status(target.ownerId, account.id).enabled) throw new Error("Публикация остановлена.");
           this.db.db.prepare("UPDATE circle_youtube_publications SET submitted_at=? WHERE id=?").run(new Date().toISOString(), row.id);
           submitted = true;
@@ -138,7 +140,7 @@ export class CircleYouTubePublisher {
       try {
         this.db.db.prepare("UPDATE circle_youtube_publications SET state='published',url=? WHERE id=?").run(url, row.id);
         this.db.addHistory({ accountId: account.id, platform: "youtube", platformUrl: url, youtubeId: match[1],
-          title: "Кружочки — случайные истории", status: "published", publishedAt: new Date().toISOString(), deck: "telegram-circles" });
+          title: caption.title, description: caption.description, status: "published", publishedAt: new Date().toISOString(), deck: "telegram-circles" });
         this.db.db.exec("COMMIT");
       } catch (error) { this.db.db.exec("ROLLBACK"); throw error; }
     } catch {

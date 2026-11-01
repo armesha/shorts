@@ -8,6 +8,7 @@ import { activeCircleTemplateId, getCircleTemplate } from "../circle-templates.t
 import { circleAdvertiserState } from "../circle-advertisers.ts";
 import { listCircleGameplays, resolveCircleGameplay } from "../circle-gameplay-library.ts";
 import { withGlobalRenderSlot } from "../../infra/rate-limits.ts";
+import { generateCircleCaption, type CircleCaption } from "./caption.ts";
 
 /** A failed or uncertain review cannot reach the renderer. */
 export async function processCircleCandidate(input: {
@@ -16,7 +17,8 @@ export async function processCircleCandidate(input: {
   prepare?: typeof prepareCircleEvidence; transcribe?: typeof transcribeCircle;
   review?: typeof reviewCircleEvidence; render?: (source: string, output: string) => Promise<void>;
   validate?: typeof validateRenderedCircle;
-} = {}): Promise<{ verdict: "accept" | "borderline" | "reject"; video?: string; reasons?: string[] }> {
+  caption?: typeof generateCircleCaption;
+} = {}): Promise<{ verdict: "accept" | "borderline" | "reject"; video?: string; reasons?: string[]; caption?: CircleCaption }> {
   if (!Number.isSafeInteger(input.messageId) || input.messageId <= 0) throw new Error("Invalid source message");
   const dir = resolve(input.directory);
   await mkdir(dir, { recursive: true, mode: 0o700 });
@@ -28,6 +30,8 @@ export async function processCircleCandidate(input: {
     transcript, review, checkedAt: new Date().toISOString(), model: "gpt-6.1-terra", reasoning: "medium" };
   await writeFile(resolve(dir, "review.json"), JSON.stringify(record, null, 2), { mode: 0o600 });
   if (review.verdict !== "accept") return { verdict: review.verdict, reasons: review.reasons };
+  const caption = await (deps.caption ?? generateCircleCaption)({ directory: resolve(dir, "caption"),
+    frames: evidence.frames, transcript: transcript?.text ?? "", signal: input.signal });
   const pending = resolve(dir, "video.pending.mp4");
   const output = resolve(dir, "video.mp4");
   const render = deps.render ?? (async (source: string, target: string) => {
@@ -46,5 +50,5 @@ export async function processCircleCandidate(input: {
   await render(resolve(input.source), pending);
   await (deps.validate ?? validateRenderedCircle)(pending, evidence.duration, Boolean(evidence.audio));
   await rename(pending, output);
-  return { verdict: "accept", video: output };
+  return { verdict: "accept", video: output, caption };
 }

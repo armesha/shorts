@@ -250,7 +250,13 @@ export function createSocialBrowser(
           const postChoice = page.getByText("Post", { exact: true });
           if (await postChoice.isVisible().catch(() => false))
             await postChoice.click();
-          await page.locator('input[type="file"]').first().setInputFiles(file);
+          await page.locator('[role="dialog"] input[type="file"][accept*="video"]').first().setInputFiles(file);
+          const reelsNotice = page.getByRole("heading", { name: "Video posts are now shared as reels" });
+          await reelsNotice.waitFor({ state: "visible", timeout: 3000 }).catch(() => {});
+          if (await reelsNotice.isVisible().catch(() => false))
+            await page.getByRole("button", { name: "OK", exact: true }).click();
+          await page.getByRole("button", { name: "Select crop" }).first().click();
+          await page.getByRole("button", { name: /^9:16/ }).click();
           for (let i = 0; i < 2; i++)
             await page
               .getByRole("button", { name: /^Next$/i })
