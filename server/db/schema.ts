@@ -20,6 +20,27 @@ export function applySchema(db: DatabaseSync): void {
       video_id INTEGER NOT NULL,
       PRIMARY KEY(account_id, day_key)
     );
+    CREATE TABLE IF NOT EXISTS circle_youtube_connections (
+      account_id INTEGER PRIMARY KEY,
+      owner_id INTEGER NOT NULL,
+      status TEXT NOT NULL,
+      channel_id TEXT,
+      checked_at TEXT,
+      error TEXT
+    );
+    CREATE TABLE IF NOT EXISTS circle_youtube_publications (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      owner_id INTEGER NOT NULL,
+      account_id INTEGER NOT NULL,
+      day_key TEXT NOT NULL,
+      circle_job_id TEXT NOT NULL UNIQUE,
+      state TEXT NOT NULL,
+      submitted_at TEXT,
+      url TEXT,
+      error TEXT,
+      created_at TEXT NOT NULL,
+      UNIQUE(account_id,day_key)
+    );
     CREATE TABLE IF NOT EXISTS map_publication_bindings (
       owner_id INTEGER PRIMARY KEY,
       account_id INTEGER NOT NULL UNIQUE,

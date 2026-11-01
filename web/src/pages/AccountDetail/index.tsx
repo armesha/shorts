@@ -42,6 +42,7 @@ import {
 import VideoPreviewModal from "./VideoPreviewModal";
 import NoticeToast from "./NoticeToast";
 import YouTubeConnectionCard from "./YouTubeConnectionCard";
+import CircleYouTubeCookieCard from "./CircleYouTubeCookieCard";
 import SocialConnectionCard from "./SocialConnectionCard";
 import LibrarySection from "./LibrarySection";
 import SlotDeckAssignments from "./SlotDeckAssignments";
@@ -90,6 +91,8 @@ export default function AccountDetail() {
   const justConnected = params.get("connected") === "1";
   const connectError = params.get("error");
   const [account, setAccount] = useState<Account | null>(null);
+  const [circleYouTubeConnected, setCircleYouTubeConnected] = useState(false);
+  useEffect(() => { setCircleYouTubeConnected(false); }, [id]);
   const isYouTube = !account?.platform || account.platform === "youtube";
   const platformName = account?.platform === "instagram" ? "Instagram" : account?.platform === "tiktok" ? "TikTok" : "YouTube";
   const [accountLoading, setAccountLoading] = useState(true);
@@ -889,7 +892,7 @@ export default function AccountDetail() {
           <span className="badge badge-error gap-1">
             <AppIcon name="warning" size={13} /> {t("account.reconnectBadge")}
           </span>
-        ) : account.status === "connected" ? (
+        ) : account.status === "connected" || circleYouTubeConnected ? (
           <span className="badge badge-success">{t("account.connected")}</span>
         ) : (
           <span className="badge badge-warning">{t("account.needsAuth")}</span>
@@ -897,7 +900,7 @@ export default function AccountDetail() {
       </header>
 
       <div id="channel-connection" className="scroll-mt-20">
-        {isYouTube ? <YouTubeConnectionCard
+        {isYouTube ? !circleYouTubeConnected && <YouTubeConnectionCard
           account={account}
           clients={clients}
           boundClient={boundClient}
@@ -912,6 +915,7 @@ export default function AccountDetail() {
           setAccount(updated);setChannelName(current => current === account.channelName ? updated.channelName : current);
           await reloadVideos();
         }} notify={notify}/>}
+        {isYouTube && <CircleYouTubeCookieCard key={`circle-youtube-${account.id}`} accountId={account.id} onConnected={setCircleYouTubeConnected} canManage={user?.isSuperAdmin === true && ownedByMeForLimits} />}
       </div>
 
       {readiness && (

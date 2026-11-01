@@ -24,6 +24,7 @@ export interface Account {
   schedule: string[];
   template: string;
   status: "connected" | "needs_auth" | string;
+  circleYouTubeStatus?: string | null;
   enabled: boolean;
   uploadsToday: number;
   createdAt: string;

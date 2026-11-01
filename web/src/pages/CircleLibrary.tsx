@@ -31,7 +31,7 @@ export default function CircleLibrary() {
         <h1 className="text-2xl font-bold">Библиотека кружков</h1>
         <button type="button" className="btn btn-ghost btn-sm gap-2" onClick={() => void refresh()}><RefreshCw size={16} />Обновить</button>
       </div>
-      <p className="max-w-2xl text-base-content/75">До двух роликов в день с выбранным шаблоном и баннером. Кадры и речь проверяются до сборки.</p>
+      <p className="max-w-2xl text-base-content/75">До трёх роликов в день с выбранным шаблоном и баннером. Подготовка начинается в 12:00 по Праге; кадры и речь проверяются до сборки.</p>
     </header>
     {error && <div role="alert" className="alert alert-error">{error}</div>}
     {!data && !error && <p role="status">Загрузка библиотеки…</p>}
@@ -40,7 +40,7 @@ export default function CircleLibrary() {
         <h2 id="circle-schedule-title" className="text-lg font-semibold">Ежедневная генерация</h2>
         <p>{data.enabled ? "Расписание включено" : "Расписание остановлено"}{data.running ? " · Подготавливаем ролик" : ""}</p>
         {!data.configured && <p className="text-sm text-warning-content">Источник Telegram пока не подключён.</p>}
-        <p className="text-sm text-base-content/70">Готовые ролики сохраняются здесь. Публикация не включается автоматически.</p>
+        <p className="text-sm text-base-content/70">Готовые ролики сохраняются здесь. Для настроенных каналов отдельные ролики отправляются в 16:00 по Праге.</p>
         {data.canGenerate && <button type="button" className="btn btn-outline" disabled={busy || (!data.enabled && !data.configured)} onClick={() => void toggle()}>{data.enabled ? "Остановить" : "Запустить"}</button>}
       </section>
       <section className="space-y-4" aria-labelledby="circle-library-title">

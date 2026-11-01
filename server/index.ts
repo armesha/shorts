@@ -72,6 +72,8 @@ import { registerCircleEditorRoutes } from "./routes/circle-editor.ts";
 import { registerCirclePipelineRoutes } from "./routes/circle-pipeline.ts";
 import { CirclePipelineService } from "./services/circle-pipeline/service.ts";
 import { CircleSocialPublisher } from "./services/circle-pipeline/social-publisher.ts";
+import { CircleYouTubePublisher } from "./services/circle-pipeline/youtube-publisher.ts";
+import { createYouTubeCookieBrowser } from "./services/circle-pipeline/youtube-cookie-browser.ts";
 import { registerSignalsRoutes } from "./routes/signals.ts";
 
 import { registerSocialRoutes } from "./routes/social.ts";
@@ -365,6 +367,9 @@ const deps = makeRouteDeps({
 // ---- Register every route module (composition only — handlers live in routes/) ----
 // Self-service password change (logic in a separate file → minimal footprint in this shared module).
 const socialService = createSocialService(db, resolve(process.cwd(), "data/social-private"), resolve(process.cwd(), base.outputDir), createSocialBrowser(base.chromePath));
+const circlePipeline = new CirclePipelineService({ log: message => app.log.info(message) });
+const circlePublisher = new CircleSocialPublisher(db, circlePipeline, socialService, resolve(process.cwd(), base.outputDir), { log: message => app.log.info(message) });
+const circleYouTube = new CircleYouTubePublisher(db, circlePipeline, createYouTubeCookieBrowser(base.chromePath), resolve(process.cwd(), "data/social-private/youtube-circles"), { log: message => app.log.info(message) });
 registerPasswordRoutes(app, db);
 registerPsychCardsRoutes(app, db);
 registerPacksRoutes(app, db);
@@ -383,7 +388,7 @@ registerAuthRoutes(app, db, deps);
 registerFilesRoutes(app, db, deps);
 registerSettingsKeysRoutes(app, db, { ...deps, chromePath: base.chromePath });
 registerAdminRoutes(app, db, deps);
-registerAccountsRoutes(app, db, deps, socialService);
+registerAccountsRoutes(app, db, deps, socialService, circleYouTube);
 registerChannelGroupRoutes(app, db, deps);
 registerMapStudioRoutes(app, db);
 const mapPipelineService = new MapPipelineService({ readOwners: viewerId => mapLibraryOwners(db, viewerId), log: message => app.log.info(message) });
@@ -409,9 +414,7 @@ registerMemesRoutes(app, deps);
 registerIdeasRoutes(app, db, deps);
 registerSocialRoutes(app, socialService, deps);
 registerCircleEditorRoutes(app, db);
-const circlePipeline = new CirclePipelineService({ log: message => app.log.info(message) });
-const circlePublisher = new CircleSocialPublisher(db, circlePipeline, socialService, resolve(process.cwd(), base.outputDir), { log: message => app.log.info(message) });
-registerCirclePipelineRoutes(app, circlePipeline, ownerId => isSuperAdminUser(db.getUserById(ownerId)));
+registerCirclePipelineRoutes(app, circlePipeline, ownerId => isSuperAdminUser(db.getUserById(ownerId)), circleYouTube);
 
 app
   .listen({ port: base.port, host: "0.0.0.0" })
@@ -419,6 +422,7 @@ app
     app.log.info(`Shorts Factory API on :${base.port}`);
     const socialRunner = socialService.start();
     circlePublisher.start();
+    circleYouTube.start();
     const scheduler = startScheduler({
       db,
       outputDir: resolve(process.cwd(), base.outputDir),
@@ -456,8 +460,9 @@ app
             void mapPipeline.close();
             void mapPublisher.close();
             void circlePublisher.close();
+            void circleYouTube.close();
           },
-          drainQueue: async () => { await Promise.all([genDrainQueue(), socialRunner.drain(), circlePublisher.close()]); },
+          drainQueue: async () => { await Promise.all([genDrainQueue(), socialRunner.drain(), circlePublisher.close(), circleYouTube.close()]); },
           activeCounts: () => metrics.activeCounts(),
           closeServer: () => app.close(),
           closeDb: () => {

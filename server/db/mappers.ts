@@ -70,6 +70,7 @@ export const rowToAccount = (r: Row): Account => ({
   schedule: JSON.parse(r.schedule),
   template: r.template,
   status: r.auth_error ? "needs_auth" : (!r.platform || r.platform === "youtube") && r.yt_refresh_token ? "connected" : r.status || "needs_auth",
+  circleYouTubeStatus: r.circle_youtube_status ?? null,
   enabled: !!r.enabled,
   uploadsToday: 0, // wired to history once the pipeline runs
   createdAt: r.created_at,

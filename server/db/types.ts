@@ -24,6 +24,7 @@ export interface Account {
   schedule: string[];
   template: string;
   status: string;
+  circleYouTubeStatus?: string | null;
   enabled: boolean;
   uploadsToday: number;
   createdAt: string;

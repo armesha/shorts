@@ -23,6 +23,7 @@ export function accountMethods(db: DatabaseSync) {
       db
         .prepare(
           `SELECT a.*, COALESCE(today.uploads_today, 0) AS uploads_today
+                  , (SELECT status FROM circle_youtube_connections cy WHERE cy.account_id=a.id) AS circle_youtube_status
                   , u.username AS owner_username, u.role AS owner_role, u.is_super_admin AS owner_is_super_admin
              FROM accounts a
              LEFT JOIN users u ON u.id = a.user_id
@@ -62,7 +63,7 @@ export function accountMethods(db: DatabaseSync) {
     getAccount(id: number): Account | null {
       const r = db
         .prepare(
-          `SELECT a.*, u.username AS owner_username, u.role AS owner_role, u.is_super_admin AS owner_is_super_admin
+          `SELECT a.*, (SELECT status FROM circle_youtube_connections cy WHERE cy.account_id=a.id) AS circle_youtube_status, u.username AS owner_username, u.role AS owner_role, u.is_super_admin AS owner_is_super_admin
              FROM accounts a
              LEFT JOIN users u ON u.id = a.user_id
             WHERE a.id = ?`,

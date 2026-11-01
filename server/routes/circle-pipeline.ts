@@ -4,9 +4,10 @@ import { resolve } from "node:path";
 import type { FastifyInstance } from "fastify";
 import { uid } from "../infra/auth-session.ts";
 import { CirclePipelineService } from "../services/circle-pipeline/service.ts";
+import type { CircleYouTubePublisher } from "../services/circle-pipeline/youtube-publisher.ts";
 
 export function registerCirclePipelineRoutes(app: FastifyInstance, service: CirclePipelineService,
-  canGenerate: (ownerId: number) => boolean) {
+  canGenerate: (ownerId: number) => boolean, youtube?: CircleYouTubePublisher) {
   app.addHook("onReady", async () => {
     try { await service.start(); }
     catch { app.log.error("[circles] Не удалось запустить библиотеку кружков."); }
@@ -27,6 +28,30 @@ export function registerCirclePipelineRoutes(app: FastifyInstance, service: Circ
     try { return action === "start" ? await service.enable(uid(req)) : await service.disable(uid(req)); }
     catch { return reply.code(400).send({ error: "Не удалось изменить расписание." }); }
   });
+  if (youtube) {
+    app.get("/api/circle-pipeline/youtube/:id", async (req, reply) => {
+      const ownerId = uid(req), id = Number((req.params as { id: string }).id);
+      if (!ownerId) return reply.code(401).send({ error: "Не авторизован" });
+      try { reply.header("Cache-Control", "private, no-store"); return youtube.visibleStatus(ownerId, id); }
+      catch { return reply.code(404).send({ error: "Канал не найден." }); }
+    });
+    for (const action of ["cookies", "verify", "enable", "disable", "disconnect"] as const) app.post(`/api/circle-pipeline/youtube/:id/${action}`, { bodyLimit: 520_000 }, async (req, reply) => {
+      const ownerId = uid(req), id = Number((req.params as { id: string }).id);
+      if (!ownerId) return reply.code(401).send({ error: "Не авторизован" });
+      if (!canGenerate(ownerId)) return reply.code(403).send({ error: "Недостаточно прав." });
+      if (req.headers.origin) {
+        try { if (new URL(req.headers.origin).host !== req.headers.host) return reply.code(403).send({ error: "Запрос с другого сайта запрещён." }); }
+        catch { return reply.code(403).send({ error: "Некорректный источник запроса." }); }
+      }
+      try {
+        if (action === "cookies") return youtube.importCookies(ownerId, id, (req.body as { cookies?: unknown } | null)?.cookies);
+        if (action === "verify") return await youtube.verify(ownerId, id);
+        if (action === "disconnect") return youtube.disconnect(ownerId, id);
+        if (action === "disable") youtube.disable(ownerId, id); else youtube.configure(ownerId, id);
+        return youtube.status(ownerId, id);
+      } catch { return reply.code(400).send({ error: "Не удалось настроить подключение YouTube." }); }
+    });
+  }
   app.get("/api/circle-pipeline/jobs/:id/video", async (req, reply) => {
     if (!uid(req)) return reply.code(401).send({ error: "Не авторизован" });
     const job = (await service.library.list(uid(req))).find(item => item.id === (req.params as { id: string }).id && item.state === "ready");

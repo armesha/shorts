@@ -6,10 +6,11 @@ import type { Db, Account } from "../db.ts";
 import { MANUAL_VIDEO_DECK } from "../../src/anecdotes/decks.ts";
 import { uid } from "../infra/auth-session.ts";
 import type { SocialService } from "../services/social/store.ts";
+import type { CircleYouTubePublisher } from "../services/circle-pipeline/youtube-publisher.ts";
 import type { RouteDeps } from "./deps.ts";
 import { thematicBlockSlotDecksForAccount } from "./super-admin-channel-blocks.ts";
 
-export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: RouteDeps, social?: SocialService) {
+export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: RouteDeps, social?: SocialService, circleYouTube?: CircleYouTubePublisher) {
   const {
     accessibleAccount,
     rejectScheduleLimit,
@@ -155,6 +156,7 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
     const account=accessibleAccount(req, reply, id);
     if (!account) return;
     if (account.platform !== "youtube" && social) await social.cleanupAccount(account.userId ?? uid(req), id);
+    if (account.platform === "youtube" && circleYouTube) circleYouTube.disconnect(account.userId ?? uid(req), id);
     db.deleteAccount(id);
     return { ok: true };
   });

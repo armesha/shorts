@@ -496,7 +496,7 @@ function AccountsList() {
                     <span className="badge badge-error badge-sm gap-1" title={a.authError}>
                       <AppIcon name="warning" size={12} /> {t("accounts.reconnectBadge")}
                     </span>
-                  ) : a.status === "connected" ? (
+                  ) : a.status === "connected" || a.circleYouTubeStatus === "connected" ? (
                     <span className="badge badge-success badge-sm">{t("accounts.connected")}</span>
                   ) : (
                     <span className="badge badge-warning badge-sm">{t("accounts.needsAuth")}</span>
