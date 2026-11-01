@@ -12,6 +12,14 @@ export function applySchema(db: DatabaseSync): void {
       user_id INTEGER NOT NULL,
       PRIMARY KEY(account_id,user_id)
     );
+    CREATE TABLE IF NOT EXISTS circle_social_assignments (
+      owner_id INTEGER NOT NULL,
+      account_id INTEGER NOT NULL,
+      day_key TEXT NOT NULL,
+      circle_job_id TEXT NOT NULL UNIQUE,
+      video_id INTEGER NOT NULL,
+      PRIMARY KEY(account_id, day_key)
+    );
     CREATE TABLE IF NOT EXISTS map_publication_bindings (
       owner_id INTEGER PRIMARY KEY,
       account_id INTEGER NOT NULL UNIQUE,

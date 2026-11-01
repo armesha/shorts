@@ -71,6 +71,7 @@ import { registerIdeasRoutes } from "./routes/ideas.ts";
 import { registerCircleEditorRoutes } from "./routes/circle-editor.ts";
 import { registerCirclePipelineRoutes } from "./routes/circle-pipeline.ts";
 import { CirclePipelineService } from "./services/circle-pipeline/service.ts";
+import { CircleSocialPublisher } from "./services/circle-pipeline/social-publisher.ts";
 import { registerSignalsRoutes } from "./routes/signals.ts";
 
 import { registerSocialRoutes } from "./routes/social.ts";
@@ -408,13 +409,16 @@ registerMemesRoutes(app, deps);
 registerIdeasRoutes(app, db, deps);
 registerSocialRoutes(app, socialService, deps);
 registerCircleEditorRoutes(app, db);
-registerCirclePipelineRoutes(app, new CirclePipelineService({ log: message => app.log.info(message) }), ownerId => isSuperAdminUser(db.getUserById(ownerId)));
+const circlePipeline = new CirclePipelineService({ log: message => app.log.info(message) });
+const circlePublisher = new CircleSocialPublisher(db, circlePipeline, socialService, resolve(process.cwd(), base.outputDir), { log: message => app.log.info(message) });
+registerCirclePipelineRoutes(app, circlePipeline, ownerId => isSuperAdminUser(db.getUserById(ownerId)));
 
 app
   .listen({ port: base.port, host: "0.0.0.0" })
   .then(() => {
     app.log.info(`Shorts Factory API on :${base.port}`);
     const socialRunner = socialService.start();
+    circlePublisher.start();
     const scheduler = startScheduler({
       db,
       outputDir: resolve(process.cwd(), base.outputDir),
@@ -451,8 +455,9 @@ app
             geminiTtsLocalJobs.stop();
             void mapPipeline.close();
             void mapPublisher.close();
+            void circlePublisher.close();
           },
-          drainQueue: async () => { await Promise.all([genDrainQueue(), socialRunner.drain()]); },
+          drainQueue: async () => { await Promise.all([genDrainQueue(), socialRunner.drain(), circlePublisher.close()]); },
           activeCounts: () => metrics.activeCounts(),
           closeServer: () => app.close(),
           closeDb: () => {
