@@ -73,6 +73,9 @@ export class NixlyCharacter {
       hasTie: false,
       tieColor: '#3C4550',
       hasBadge: false, // police / guard badge
+      hasJacket: false,
+      jacketColor: '#1A1C22',
+      hasSkirt: false,
       showCompanion: false, // piggyback survivor
       wireframe: false,
     }, options);
@@ -124,6 +127,14 @@ export class NixlyCharacter {
       metalness: 0.02,
       wireframe: wf,
       name: 'PantsMat'
+    });
+
+    this.materials.jacket = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(this.options.jacketColor),
+      roughness: 0.55,
+      metalness: 0.12,
+      wireframe: wf,
+      name: 'JacketMat'
     });
 
     this.materials.shoes = new THREE.MeshStandardMaterial({
@@ -375,6 +386,25 @@ export class NixlyCharacter {
     this.parts.badge.add(badgeMesh);
     j.chest.add(this.parts.badge);
 
+    // Open jacket shell. Hidden unless a street preset turns it on.
+    this.parts.jacket = new THREE.Group();
+    const jacketGeom = new THREE.CylinderGeometry(0.2, 0.17, 0.42, 8);
+    jacketGeom.scale(1.35, 1, 0.95);
+    const jacketMesh = new THREE.Mesh(jacketGeom, m.jacket);
+    jacketMesh.position.y = 0.08;
+    jacketMesh.castShadow = true;
+    this.parts.jacket.add(jacketMesh);
+    j.chest.add(this.parts.jacket);
+
+    // Skirt cone sits on the hips and replaces long trousers.
+    this.parts.skirt = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.2, 0.26, 0.28, 8),
+      m.pants
+    );
+    this.parts.skirt.position.y = -0.16;
+    this.parts.skirt.castShadow = true;
+    j.hips.add(this.parts.skirt);
+
     // --- 4. NECK & COLLAR ---
     const neckGeom = new THREE.CylinderGeometry(0.055, 0.065, 0.10, 8);
     const neckMesh = new THREE.Mesh(neckGeom, m.skin);
@@ -611,6 +641,8 @@ export class NixlyCharacter {
       thighMesh.castShadow = true;
       thighMesh.receiveShadow = true;
       hipGroup.add(thighMesh);
+      this.parts.thighs = this.parts.thighs || [];
+      this.parts.thighs.push(thighMesh);
 
       // Knee joint
       const kneeGeom = new THREE.SphereGeometry(0.063, 6, 6);
@@ -624,12 +656,16 @@ export class NixlyCharacter {
       shinMesh.castShadow = true;
       shinMesh.receiveShadow = true;
       kneeGroup.add(shinMesh);
+      this.parts.shins = this.parts.shins || [];
+      this.parts.shins.push(shinMesh);
 
       // Trouser cuff
       const pantCuffGeom = new THREE.CylinderGeometry(0.058, 0.062, 0.05, 8);
       const pantCuffMesh = new THREE.Mesh(pantCuffGeom, m.pants);
       pantCuffMesh.position.y = -0.38;
       kneeGroup.add(pantCuffMesh);
+      this.parts.cuffs = this.parts.cuffs || [];
+      this.parts.cuffs.push(pantCuffMesh);
 
       // Shoe / Foot (stylized classic business oxford shoe)
       const shoeGroup = new THREE.Group();
@@ -864,11 +900,25 @@ export class NixlyCharacter {
     if (this.companion) {
       this.companion.visible = !!this.options.showCompanion;
     }
+    if (this.parts.jacket) {
+      this.parts.jacket.visible = !!this.options.hasJacket;
+    }
+    const skirtOn = !!this.options.hasSkirt;
+    if (this.parts.skirt) this.parts.skirt.visible = skirtOn;
+    (this.parts.thighs || []).forEach((mesh) => {
+      mesh.material = skirtOn ? this.materials.skin : this.materials.pants;
+    });
+    (this.parts.shins || []).forEach((mesh) => {
+      mesh.material = skirtOn ? this.materials.skin : this.materials.pants;
+    });
+    (this.parts.cuffs || []).forEach((mesh) => {
+      mesh.visible = !skirtOn;
+    });
   }
 
   setOption(key, value) {
     this.options[key] = value;
-    if (key === 'hasBandana' || key === 'hasTie' || key === 'hasBadge' || key === 'showCompanion') {
+    if (key === 'hasBandana' || key === 'hasTie' || key === 'hasBadge' || key === 'hasJacket' || key === 'hasSkirt' || key === 'showCompanion') {
       this.updateVisibility();
       return;
     }
@@ -884,6 +934,8 @@ export class NixlyCharacter {
       this.materials.shirt.color.set(value);
     } else if (key === 'pantsColor') {
       this.materials.pants.color.set(value);
+    } else if (key === 'jacketColor') {
+      this.materials.jacket.color.set(value);
     } else if (key === 'shoesColor') {
       this.materials.shoes.color.set(value);
     } else if (key === 'bandanaColor') {
@@ -911,6 +963,8 @@ export class NixlyCharacter {
         bandanaColor: '#C9232B',
         hasTie: false,
         hasBadge: false,
+        hasJacket: false,
+        hasSkirt: false,
         showCompanion: false,
       },
       office_worker: {
@@ -924,6 +978,8 @@ export class NixlyCharacter {
         hasTie: true,
         tieColor: '#3F4A56',
         hasBadge: false,
+        hasJacket: false,
+        hasSkirt: false,
         showCompanion: false,
       },
       officer: {
@@ -936,6 +992,8 @@ export class NixlyCharacter {
         hasBandana: false,
         hasTie: false,
         hasBadge: true,
+        hasJacket: false,
+        hasSkirt: false,
         showCompanion: false,
       },
       survivor_woman: {
@@ -948,6 +1006,8 @@ export class NixlyCharacter {
         hasBandana: false,
         hasTie: false,
         hasBadge: false,
+        hasJacket: false,
+        hasSkirt: false,
         showCompanion: false,
       },
       running_civilian: {
@@ -960,6 +1020,52 @@ export class NixlyCharacter {
         hasBandana: false,
         hasTie: false,
         hasBadge: false,
+        hasJacket: false,
+        hasSkirt: false,
+        showCompanion: false,
+      },
+      street_sweater: {
+        skinColor: '#E4C2A4',
+        hairColor: '#3A2416',
+        hairStyle: 'welles',
+        shirtColor: '#16181E',
+        pantsColor: '#2C4C86',
+        shoesColor: '#1A1C20',
+        hasBandana: false,
+        hasTie: false,
+        hasBadge: false,
+        hasJacket: false,
+        hasSkirt: false,
+        showCompanion: false,
+      },
+      street_leather: {
+        skinColor: '#C99678',
+        hairColor: '#2A211C',
+        hairStyle: 'welles',
+        shirtColor: '#2A2E36',
+        pantsColor: '#C6B59A',
+        shoesColor: '#1C1A18',
+        jacketColor: '#12141A',
+        hasBandana: false,
+        hasTie: false,
+        hasBadge: false,
+        hasJacket: true,
+        hasSkirt: false,
+        showCompanion: false,
+      },
+      street_skirt: {
+        skinColor: '#E8C6AE',
+        hairColor: '#C4A06A',
+        hairStyle: 'female_long',
+        shirtColor: '#6B3A2A',
+        pantsColor: '#5C3A2A',
+        shoesColor: '#2A1C16',
+        jacketColor: '#1E4D5C',
+        hasBandana: false,
+        hasTie: false,
+        hasBadge: false,
+        hasJacket: true,
+        hasSkirt: true,
         showCompanion: false,
       }
     };
@@ -1065,6 +1171,9 @@ export class NixlyCharacter {
       hasBandana,
       hasTie,
       hasBadge,
+      hasJacket: Math.random() < 0.35,
+      jacketColor: pick(['#12141A', '#2A2420', '#1E4D5C', '#3A2A22', '#4A3030']),
+      hasSkirt: Math.random() < 0.2,
       showCompanion: false,
     };
 

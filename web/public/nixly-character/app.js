@@ -387,6 +387,20 @@ function setupUI() {
     });
   }
 
+  const jacketToggle = document.getElementById('opt-jacket');
+  if (jacketToggle) {
+    jacketToggle.addEventListener('change', (e) => {
+      character.setOption('hasJacket', e.target.checked);
+    });
+  }
+
+  const skirtToggle = document.getElementById('opt-skirt');
+  if (skirtToggle) {
+    skirtToggle.addEventListener('change', (e) => {
+      character.setOption('hasSkirt', e.target.checked);
+    });
+  }
+
   // Badge Toggle
   const badgeToggle = document.getElementById('opt-badge');
   if (badgeToggle) {
@@ -410,6 +424,7 @@ function setupUI() {
   bindColorPicker('col-skin', 'skinColor');
   bindColorPicker('col-hair', 'hairColor');
   bindColorPicker('col-shoes', 'shoesColor');
+  bindColorPicker('col-jacket', 'jacketColor');
 
   // Export Buttons
   document.getElementById('btn-export-glb').addEventListener('click', exportToGLB);
@@ -458,6 +473,8 @@ function syncUIWithCharacter() {
   setCheck('opt-companion', opt.showCompanion);
   setCheck('opt-tie', opt.hasTie);
   setCheck('opt-badge', opt.hasBadge);
+  setCheck('opt-jacket', opt.hasJacket);
+  setCheck('opt-skirt', opt.hasSkirt);
   setCheck('opt-wireframe', opt.wireframe);
 
   setVal('col-bandana', opt.bandanaColor);
@@ -466,6 +483,7 @@ function syncUIWithCharacter() {
   setVal('col-skin', opt.skinColor);
   setVal('col-hair', opt.hairColor);
   setVal('col-shoes', opt.shoesColor);
+  setVal('col-jacket', opt.jacketColor);
 
   // Hair style select
   const hairSel = document.getElementById('sel-hair-style');

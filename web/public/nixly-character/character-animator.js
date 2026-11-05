@@ -66,6 +66,15 @@ export class CharacterAnimator {
       case 'shock_look_up':
         this.animateShockLookUp(t, j);
         break;
+      case 'street_walk':
+        this.animateStreetWalk(t, j);
+        break;
+      case 'talk_hands':
+        this.animateTalkHands(t, j);
+        break;
+      case 'clutch_run':
+        this.animateClutchRun(t, j);
+        break;
       default:
         this.animateIdle(t, j);
     }
@@ -270,5 +279,53 @@ export class CharacterAnimator {
     j.leftKnee.rotation.set(0.08, 0, 0);
     j.rightThigh.rotation.set(-0.05, 0, -0.08);
     j.rightKnee.rotation.set(0.10, 0, 0);
+  }
+
+  animateStreetWalk(t, j) {
+    const phase = t * 4.2;
+    const sinP = Math.sin(phase);
+    j.hips.position.y = this.rest.hipsY + Math.abs(Math.sin(phase * 2)) * 0.02;
+    j.spine.rotation.x = 0.06;
+    j.head.rotation.x = -0.04;
+    j.head.rotation.y = Math.sin(t * 0.7) * 0.12;
+    j.leftUpperArm.rotation.set(sinP * 0.45, 0, 0.12);
+    j.leftElbow.rotation.x = -0.25;
+    j.rightUpperArm.rotation.set(-sinP * 0.45, 0, -0.12);
+    j.rightElbow.rotation.x = -0.25;
+    j.leftThigh.rotation.x = -sinP * 0.5;
+    j.leftKnee.rotation.x = Math.max(0, -sinP * 0.7);
+    j.rightThigh.rotation.x = sinP * 0.5;
+    j.rightKnee.rotation.x = Math.max(0, sinP * 0.7);
+  }
+
+  animateTalkHands(t, j) {
+    const pulse = Math.sin(t * 3.2);
+    j.hips.position.y = this.rest.hipsY;
+    j.spine.rotation.x = 0.04;
+    j.head.rotation.y = pulse * 0.08;
+    j.leftUpperArm.rotation.set(-0.9, 0.35, 0.25);
+    j.leftElbow.rotation.x = -0.7 + pulse * 0.15;
+    j.rightUpperArm.rotation.set(-0.85, -0.3, -0.2);
+    j.rightElbow.rotation.x = -0.65 - pulse * 0.12;
+    j.leftThigh.rotation.set(0.05, 0, 0.06);
+    j.rightThigh.rotation.set(-0.02, 0, -0.06);
+    j.leftKnee.rotation.x = 0.06;
+    j.rightKnee.rotation.x = 0.08;
+  }
+
+  animateClutchRun(t, j) {
+    const phase = t * 7.5;
+    const sinP = Math.sin(phase);
+    j.hips.position.y = this.rest.hipsY + Math.abs(Math.sin(phase * 2)) * 0.04;
+    j.spine.rotation.x = 0.28;
+    j.head.rotation.x = 0.12;
+    j.leftUpperArm.rotation.set(-0.7, 0.45, 0.35);
+    j.leftElbow.rotation.x = -1.35;
+    j.rightUpperArm.rotation.set(-0.75, -0.4, -0.3);
+    j.rightElbow.rotation.x = -1.4;
+    j.leftThigh.rotation.x = -sinP * 0.9;
+    j.leftKnee.rotation.x = Math.max(0.1, -sinP * 1.2);
+    j.rightThigh.rotation.x = sinP * 0.9;
+    j.rightKnee.rotation.x = Math.max(0.1, sinP * 1.2);
   }
 }

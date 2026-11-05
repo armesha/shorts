@@ -53,6 +53,9 @@
           <button class="btn" data-preset="survivor_woman">Спасенная женщина</button>
           <button class="btn" data-preset="officer">Офицер в конкорсе</button>
           <button class="btn" data-preset="running_civilian">Бегущий житель</button>
+          <button class="btn" data-preset="street_sweater">Улица: свитер и джинсы</button>
+          <button class="btn" data-preset="street_leather">Улица: кожанка</button>
+          <button class="btn" data-preset="street_skirt">Улица: юбка и жилет</button>
           <button class="btn btn-random" id="btn-randomize">🎲 Рандом</button>
         </div>
       </div>
@@ -67,6 +70,9 @@
           <button class="btn" data-anim="carry_piggyback">Переноска на спине</button>
           <button class="btn" data-anim="directing">Команда («This way!»)</button>
           <button class="btn" data-anim="shock_look_up">Шок (Взгляд вверх)</button>
+          <button class="btn" data-anim="street_walk">Шаг по улице</button>
+          <button class="btn" data-anim="talk_hands">Разговор руками</button>
+          <button class="btn" data-anim="clutch_run">Рывок из дверей</button>
         </div>
 
         <div style="margin-top: 12px; display: flex; align-items: center; gap: 10px;">
@@ -90,6 +96,21 @@
       <!-- Character Elements Customizer -->
       <div class="panel-section">
         <div class="section-title">Элементы и экипировка</div>
+
+        <div class="ctrl-row">
+          <label class="toggle-label">
+            <input type="checkbox" id="opt-jacket">
+            <span>Куртка / жилет</span>
+          </label>
+          <input type="color" id="col-jacket" value="#12141a">
+        </div>
+
+        <div class="ctrl-row">
+          <label class="toggle-label">
+            <input type="checkbox" id="opt-skirt">
+            <span>Юбка вместо брюк</span>
+          </label>
+        </div>
 
         <div class="ctrl-row">
           <label class="toggle-label">
