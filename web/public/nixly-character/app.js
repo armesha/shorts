@@ -40,7 +40,7 @@ export function initApp() {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 1.28;
   container.appendChild(renderer.domElement);
 
   // 4. Controls
@@ -58,6 +58,7 @@ export function initApp() {
 
   // 6. Character & Animator
   character = new NixlyCharacter();
+  character.applyPreset('street_sweater');
   scene.add(character.group);
   animator = new CharacterAnimator(character);
 
@@ -67,6 +68,7 @@ export function initApp() {
   // 7. Event Listeners
   window.addEventListener('resize', onWindowResize);
   setupUI();
+  syncUIWithCharacter();
 
   // 8. Start Loop
   animate();
@@ -98,7 +100,7 @@ function setupLighting() {
   lights.rim.position.set(0, 3, -3);
   scene.add(lights.rim);
 
-  applyEnvironmentPreset('stairwell');
+  applyEnvironmentPreset('daylight');
 }
 
 function buildStairwellScene() {
@@ -201,9 +203,9 @@ export function applyEnvironmentPreset(preset) {
     scene.background = new THREE.Color(0x18191D);
     scene.fog = null;
     lights.ambient.color.set(0xFFFFFF);
-    lights.ambient.intensity = 0.55;
+    lights.ambient.intensity = 0.95;
     lights.mainDir.color.set(0xFFFFFF);
-    lights.mainDir.intensity = 1.3;
+    lights.mainDir.intensity = 1.8;
     lights.mainDir.position.set(2.5, 4.0, 3.0);
     lights.fillDir.intensity = 0.5;
     lights.rim.intensity = 0.7;
@@ -212,13 +214,13 @@ export function applyEnvironmentPreset(preset) {
     // NYC Church St bright sunlight
     scene.background = new THREE.Color(0x7EA5D8);
     scene.fog = new THREE.Fog(0x8AB5E8, 10, 35);
-    lights.ambient.color.set(0xB8D4F0);
-    lights.ambient.intensity = 0.7;
-    lights.mainDir.color.set(0xFFF5E4);
-    lights.mainDir.intensity = 1.6;
+    lights.ambient.color.set(0xFFFFFF);
+    lights.ambient.intensity = 1.15;
+    lights.mainDir.color.set(0xFFF8EE);
+    lights.mainDir.intensity = 2.1;
     lights.mainDir.position.set(4.0, 6.0, 3.5);
-    lights.fillDir.intensity = 0.4;
-    lights.rim.intensity = 0.5;
+    lights.fillDir.intensity = 0.85;
+    lights.rim.intensity = 0.7;
     if (stairwellEnvironmentGroup) stairwellEnvironmentGroup.visible = false;
   }
 }
