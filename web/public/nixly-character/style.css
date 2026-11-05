@@ -1,0 +1,355 @@
+:root {
+  --bg-dark: #121418;
+  --panel-bg: #1c1f26;
+  --panel-border: #2d333f;
+  --accent: #e53e3e;
+  --accent-hover: #c53030;
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --btn-bg: #272c36;
+  --btn-hover: #323846;
+  --btn-active: #3b82f6;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+}
+
+#app-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+#viewport-wrapper {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+}
+
+#canvas-container {
+  width: 100%;
+  height: 100%;
+}
+
+/* 9:16 Shorts Phone Frame Overlay */
+#phone-frame-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 94%;
+  aspect-ratio: 9 / 16;
+  border: 2px dashed rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  pointer-events: none;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+#phone-frame-overlay.hidden {
+  display: none;
+}
+
+.overlay-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.overlay-date {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #d1d5db;
+}
+
+.overlay-time {
+  font-size: 20px;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.overlay-loc {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #e5e7eb;
+}
+
+.overlay-badge {
+  display: inline-block;
+  align-self: flex-start;
+  background-color: #dc2626;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.overlay-footer {
+  text-align: center;
+  color: #fbbf24;
+  font-size: 15px;
+  font-weight: 800;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+}
+
+/* Floating Viewport Controls */
+.viewport-floating-bar {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  gap: 8px;
+  background: rgba(28, 31, 38, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--panel-border);
+  z-index: 10;
+}
+
+.viewport-hint {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(18, 20, 24, 0.65);
+  padding: 6px 12px;
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+/* Sidebar Panel */
+#sidebar {
+  width: 380px;
+  height: 100%;
+  background: var(--panel-bg);
+  border-left: 1px solid var(--panel-border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  z-index: 20;
+}
+
+.panel-header {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--panel-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-header h1 {
+  font-size: 17px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-tag {
+  font-size: 11px;
+  background: #dc2626;
+  color: white;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.panel-section {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.section-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+/* Button Grids */
+.btn-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.btn-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.btn {
+  background: var(--btn-bg);
+  color: var(--text-main);
+  border: 1px solid var(--panel-border);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.btn:hover {
+  background: var(--btn-hover);
+  border-color: #4b5563;
+}
+
+.btn.active {
+  background: #2563eb;
+  border-color: #3b82f6;
+  color: #ffffff;
+}
+
+.btn-accent {
+  background: #dc2626;
+  border-color: #ef4444;
+}
+
+.btn-accent:hover {
+  background: #b91c1c;
+}
+
+.btn-success {
+  background: #059669;
+  border-color: #10b981;
+}
+
+.btn-success:hover {
+  background: #047857;
+}
+
+.btn-warning {
+  background: #d97706;
+  border-color: #f59e0b;
+}
+
+/* Control rows */
+.ctrl-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.ctrl-row:last-child {
+  margin-bottom: 0;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+input[type="color"] {
+  -webkit-appearance: none;
+  border: 1px solid var(--panel-border);
+  width: 34px;
+  height: 26px;
+  border-radius: 4px;
+  cursor: pointer;
+  background: none;
+  padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 3px;
+}
+
+input[type="range"] {
+  flex: 1;
+  max-width: 160px;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+.speed-display {
+  font-size: 12px;
+  color: var(--text-muted);
+  width: 32px;
+  text-align: right;
+}
+
+.export-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.desc-box {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--panel-border);
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #d1d5db;
+}
+
+.desc-box strong {
+  color: #ffffff;
+}
+
+/* Scrollbar styling */
+#sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+#sidebar::-webkit-scrollbar-track {
+  background: var(--panel-bg);
+}
+
+#sidebar::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 3px;
+}
+
+#sidebar::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}

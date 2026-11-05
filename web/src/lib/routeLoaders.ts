@@ -27,6 +27,7 @@ const routeLoaders = {
   signals: () => import("../pages/Signals"),
   signalsAnalysis: () => import("../pages/SignalsAnalysis"),
   stasReport: () => import("../pages/StasReport"),
+  characterStudio: () => import("../pages/CharacterStudio/CharacterStudio"),
 };
 
 export const pageLoaders = routeLoaders;
@@ -67,6 +68,9 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
       return "videoCutting";
     case "/templates/maps":
       return "mapStudio";
+    case "/characters":
+    case "/templates/characters":
+      return "characterStudio";
     case "/studio":
       return "studio";
     case "/gallery":

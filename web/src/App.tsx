@@ -38,6 +38,7 @@ const Ideas = lazy(pageLoaders.ideas);
 const Signals = lazy(pageLoaders.signals);
 const SignalsAnalysis = lazy(pageLoaders.signalsAnalysis);
 const StasReport = lazy(pageLoaders.stasReport);
+const CharacterStudio = lazy(pageLoaders.characterStudio);
 
 function CreatorExternalRedirect() {
   useEffect(() => {
@@ -80,6 +81,8 @@ function Gate() {
             <Route path="/studio" element={<Studio />} />
             <Route path="/templates/maps" element={<MapStudio />} />
             <Route path="/templates/maps/library" element={<MapLibrary />} />
+            <Route path="/templates/characters" element={<CharacterStudio />} />
+            <Route path="/characters" element={<Navigate to="/templates/characters" replace />} />
             <Route path="/templates/montage" element={<Navigate to="/cutting" replace />} />
             <Route path="/cutting" element={<VideoCutting />} />
             <Route path="/ideas" element={realAdmin ? <Ideas /> : <Navigate to="/statistics" replace />} />

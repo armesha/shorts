@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nixly 3D Character Studio — Welles Crowther (Web)</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three.module.js",
+      "three/addons/controls/OrbitControls.js": "./vendor/controls/OrbitControls.js",
+      "three/addons/exporters/GLTFExporter.js": "./vendor/exporters/GLTFExporter.js",
+      "three/addons/exporters/OBJExporter.js": "./vendor/exporters/OBJExporter.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="app-container">
+    <!-- 3D Viewport -->
+    <div id="viewport-wrapper">
+      <div id="canvas-container"></div>
+
+      <!-- Floating Controls on Top -->
+      <div class="viewport-floating-bar">
+        <button class="btn active" data-cam="full">Полный рост</button>
+        <button class="btn" data-cam="portrait">Портрет (Лицо)</button>
+        <button class="btn" data-cam="profile">Профиль</button>
+        <button class="btn" data-cam="top34">3/4 Изометрия</button>
+      </div>
+
+      <!-- 9:16 Shorts Mobile Screen Overlay -->
+      <div id="phone-frame-overlay">
+        <div class="overlay-header">
+          <div class="overlay-date">SEPT 11, 2001</div>
+          <div class="overlay-time">9:24:15 AM</div>
+          <div class="overlay-loc">SOUTH TOWER • STAIRWELL A • 61</div>
+          <div class="overlay-badge">TRUE STORY</div>
+        </div>
+        <div class="overlay-footer">
+          "Stairwell A! Follow me! Go! Go!"
+        </div>
+      </div>
+
+      <div class="viewport-hint">
+        ЛКМ: Вращение &bull; ПКМ: Панорамирование &bull; Колесико: Зум
+      </div>
+    </div>
+
+    <!-- Sidebar Controls -->
+    <div id="sidebar">
+      <div class="panel-header">
+        <h1>
+          Nixly 3D Studio
+          <span class="badge-tag">Welles Crowther</span>
+        </h1>
+      </div>
+
+      <!-- Presets -->
+      <div class="panel-section">
+        <div class="section-title">Шаблоны персонажей (из видео)</div>
+        <div class="btn-grid">
+          <button class="btn active" data-preset="welles">Уэллс Краузер (Бандана)</button>
+          <button class="btn" data-preset="office_worker">Офисный сотрудник</button>
+          <button class="btn" data-preset="survivor_woman">Спасенная женщина</button>
+          <button class="btn" data-preset="officer">Офицер в конкорсе</button>
+          <button class="btn" data-preset="running_civilian" style="grid-column: span 2;">Бегущий житель (Костюм)</button>
+        </div>
+      </div>
+
+      <!-- Animations & Poses -->
+      <div class="panel-section">
+        <div class="section-title">Анимации и позы</div>
+        <div class="btn-grid">
+          <button class="btn active" data-anim="idle">Дыхание (Idle)</button>
+          <button class="btn" data-anim="run">Бег (Спринт)</button>
+          <button class="btn" data-anim="stairwell_walk">Шаг по лестнице</button>
+          <button class="btn" data-anim="carry_piggyback">Переноска на спине</button>
+          <button class="btn" data-anim="directing">Команда («This way!»)</button>
+          <button class="btn" data-anim="shock_look_up">Шок (Взгляд вверх)</button>
+        </div>
+
+        <div style="margin-top: 12px; display: flex; align-items: center; gap: 10px;">
+          <button id="btn-play-pause" class="btn" style="flex: 0 0 70px;">Пауза</button>
+          <span style="font-size: 12px; color: var(--text-muted);">Скорость:</span>
+          <input type="range" id="anim-speed" min="0.2" max="2.0" step="0.1" value="1.0">
+          <span id="anim-speed-val" class="speed-display">1.0x</span>
+        </div>
+      </div>
+
+      <!-- Environment & Lighting -->
+      <div class="panel-section">
+        <div class="section-title">Окружение и освещение</div>
+        <div class="btn-grid-3 btn-grid">
+          <button class="btn active" data-env="stairwell">Лестница 9/11</button>
+          <button class="btn" data-env="studio">Студия 3D</button>
+          <button class="btn" data-env="daylight">День (Улица)</button>
+        </div>
+      </div>
+
+      <!-- Character Elements Customizer -->
+      <div class="panel-section">
+        <div class="section-title">Элементы и экипировка</div>
+
+        <div class="ctrl-row">
+          <label class="toggle-label">
+            <input type="checkbox" id="opt-bandana" checked>
+            <span>Красная бандана Уэллса</span>
+          </label>
+          <input type="color" id="col-bandana" value="#c9232b">
+        </div>
+
+        <div class="ctrl-row">
+          <label class="toggle-label">
+            <input type="checkbox" id="opt-companion">
+            <span>Спасенная женщина на спине</span>
+          </label>
+        </div>
+
+        <div class="ctrl-row">
+          <label class="toggle-label">
+            <input type="checkbox" id="opt-tie">
+            <span>Офисный галстук</span>
+          </label>
+        </div>
+
+        <div class="ctrl-row">
+          <label class="toggle-label">
+            <input type="checkbox" id="opt-badge">
+            <span>Значок офицера охраны</span>
+          </label>
+        </div>
+
+        <div class="ctrl-row">
+          <label class="toggle-label">
+            <input type="checkbox" id="opt-phone-frame" checked>
+            <span>Рамка Shorts (9:16)</span>
+          </label>
+        </div>
+
+        <div class="ctrl-row">
+          <label class="toggle-label">
+            <input type="checkbox" id="opt-wireframe">
+            <span>Сетка полигонов (Wireframe)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Color Palette -->
+      <div class="panel-section">
+        <div class="section-title">Цветовая палитра материалов</div>
+
+        <div class="ctrl-row">
+          <span>Цвет рубашки / верха</span>
+          <input type="color" id="col-shirt" value="#f3f4f6">
+        </div>
+
+        <div class="ctrl-row">
+          <span>Цвет брюк</span>
+          <input type="color" id="col-pants" value="#262a33">
+        </div>
+
+        <div class="ctrl-row">
+          <span>Тон кожи</span>
+          <input type="color" id="col-skin" value="#e2be9f">
+        </div>
+
+        <div class="ctrl-row">
+          <span>Цвет волос</span>
+          <input type="color" id="col-hair" value="#422817">
+        </div>
+
+        <div class="ctrl-row">
+          <span>Цвет обуви</span>
+          <input type="color" id="col-shoes" value="#18191b">
+        </div>
+      </div>
+
+      <!-- Export for Blender & Engine -->
+      <div class="panel-section">
+        <div class="section-title">Экспорт для Blender / Веб</div>
+        <div class="export-group">
+          <button id="btn-export-glb" class="btn btn-accent">
+            Скачать 3D-модель (.GLB)
+          </button>
+          <button id="btn-export-obj" class="btn">
+            Скачать геометрию (.OBJ)
+          </button>
+          <button id="btn-screenshot" class="btn btn-success">
+            Сделать скриншот (PNG)
+          </button>
+        </div>
+
+        <div class="desc-box" style="margin-top: 12px;">
+          <strong>Для совместной работы:</strong>
+          Экспортированный <strong>.GLB</strong> можно сразу передать напарнику для Blender (File &rarr; Import &rarr; glTF 2.0) или использовать напрямую в Three.js на веб-сцене.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

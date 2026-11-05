@@ -1,4 +1,4 @@
-import { Film, Map, Video, ArrowUpRight } from "lucide-react";
+import { Film, Map, Video, ArrowUpRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 const templates = [
   {
@@ -9,12 +9,13 @@ const templates = [
   },
   { id: "maps", name: "Карты", to: "/templates/maps", Icon: Map },
   { id: "circles", name: "Кружочки Telegram", to: "/circles", Icon: Video },
+  { id: "characters", name: "3D Персонажи (Nixly AI)", to: "/templates/characters", Icon: Sparkles },
 ];
 export default function VideoTemplateTiles() {
   return (
     <section
       aria-label="Шаблоны видео"
-      className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+      className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
     >
       {templates.map(({ id, name, to, Icon }) => (
         <Link
@@ -23,7 +24,15 @@ export default function VideoTemplateTiles() {
           className="group overflow-hidden border border-base-300 bg-base-100 transition-colors hover:border-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
         >
           <div
-            className={`relative h-44 grid place-items-center ${id === "maps" ? "bg-emerald-100 text-emerald-900" : id === "circles" ? "bg-amber-100 text-amber-900" : "bg-sky-100 text-sky-900"}`}
+            className={`relative h-44 grid place-items-center ${
+              id === "maps"
+                ? "bg-emerald-100 text-emerald-900"
+                : id === "circles"
+                  ? "bg-amber-100 text-amber-900"
+                  : id === "characters"
+                    ? "bg-purple-100 text-purple-900"
+                    : "bg-sky-100 text-sky-900"
+            }`}
           >
             <Icon size={56} strokeWidth={1.5} />
             {id === "montage" && (
