@@ -403,14 +403,6 @@ function setupUI() {
     });
   }
 
-  // Phone Frame Guide Toggle
-  const frameToggle = document.getElementById('opt-phone-frame');
-  if (frameToggle) {
-    frameToggle.addEventListener('change', (e) => {
-      document.getElementById('phone-frame-overlay').classList.toggle('hidden', !e.target.checked);
-    });
-  }
-
   // Color Pickers
   bindColorPicker('col-bandana', 'bandanaColor');
   bindColorPicker('col-shirt', 'shirtColor');

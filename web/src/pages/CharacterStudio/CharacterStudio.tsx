@@ -614,29 +614,16 @@ export default function CharacterStudio() {
         </div>
       </div>
 
-      {/* Collaboration Note for Sas and Armen */}
       <div className="bg-base-200/50 p-5 rounded-2xl border border-base-300 space-y-3">
         <h3 className="font-bold text-sm flex items-center gap-2">
           <FileCode className="w-4 h-4 text-info" />
-          Инструкция по интеграции для Саса и Армена
+          Как отдать модель Сасу в Blender
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-base-content/80">
-          <div className="space-y-1.5 bg-base-100 p-3.5 rounded-xl border border-base-200">
-            <span className="font-semibold text-primary">1. Для Саса (Blender-локация):</span>
-            <p>
-              Нажмите кнопку <b>«Скачать .GLB (в Blender)»</b>. Модель скачивается в бинарном стандарте glTF со всеми материалами,
-              иерархией суставов и цветами. В Блендере Сас делает <code>File → Import → glTF 2.0 (.glb)</code> и персонаж
-              встаёт прямо в его готовую локацию (Скай-Лобби, лестницу или улицу).
-            </p>
-          </div>
-          <div className="space-y-1.5 bg-base-100 p-3.5 rounded-xl border border-base-200">
-            <span className="font-semibold text-secondary">2. Для Армена (Автоматизация и веб):</span>
-            <p>
-              Персонажи генерируются процедурно через Three.js, поэтому их можно не только выгружать в Блендер, но и напрямую
-              рендерить в браузере или через headless Puppeteer/Canvas для видеогенератора шортсов без необходимости запускать тяжёлый Блендер на сервере.
-            </p>
-          </div>
-        </div>
+        <p className="text-xs text-base-content/80 bg-base-100 p-3.5 rounded-xl border border-base-200">
+          Нажмите кнопку <b>«Скачать .GLB (в Blender)»</b>. Модель скачивается в бинарном стандарте glTF со всеми материалами,
+          иерархией суставов и цветами. В Блендере: <code>File → Import → glTF 2.0 (.glb)</code> — персонаж
+          встаёт в готовую локацию (Скай-Лобби, лестницу или улицу).
+        </p>
       </div>
     </div>
   );
