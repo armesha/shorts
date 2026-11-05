@@ -1,0 +1,4 @@
+import {DatabaseSync} from 'node:sqlite';import {randomBytes} from 'node:crypto';
+const db=new DatabaseSync('data/app.db');const u=db.prepare('SELECT id FROM users WHERE username=?').get('armen');const session=randomBytes(32).toString('hex');
+db.prepare('INSERT INTO sessions(token,user_id,expires_at) VALUES(?,?,?)').run(session,u.id,new Date(Date.now()+600000).toISOString());
+try{const r=await fetch('http://127.0.0.1:8080/api/map-pipeline/publishing',{method:'POST',headers:{cookie:'sid='+session,'content-type':'application/json',origin:'http://127.0.0.1:8080'},body:JSON.stringify({accountId:132,enabled:process.argv[2]!=="off"})});console.log(JSON.stringify({status:r.status,...await r.json()}));if(!r.ok)process.exitCode=1;}finally{db.prepare('DELETE FROM sessions WHERE token=?').run(session);db.close()}

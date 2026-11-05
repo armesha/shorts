@@ -1,0 +1,3 @@
+import {DatabaseSync} from 'node:sqlite';import {setTimeout as delay} from 'node:timers/promises';
+const db=new DatabaseSync('data/app.db',{readOnly:true});let previous='';
+try{const deadline=Date.now()+12*60000;while(Date.now()<deadline){const row=db.prepare('SELECT id,map_job_id,state,url,error,submitted_at,cleaned_at FROM map_publications WHERE map_job_id=?').get('eef1f1c6-bb1a-4412-be26-762b37a2cb0e');const marker=JSON.stringify(row||{state:'waiting'});if(marker!==previous){console.log(marker);previous=marker;}if(row?.state==='published'&&row.cleaned_at){console.log('Confirmed publication and cleanup');break;}if(row?.state==='failed'||row?.state==='needs_review'){process.exitCode=1;break;}await delay(10000);}}finally{db.close()}

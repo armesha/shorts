@@ -1,0 +1,15 @@
+{
+  "id": 1,
+  "map_job_id": "39567d04-01a6-40eb-bb4f-a465468df5e9",
+  "account_id": 132,
+  "owner_id": 1,
+  "day_key": "2026-10-29",
+  "state": "failed",
+  "caption": "Какую часть стран занимают леса?\nДанные: Всемирный банк, 2023; перевод, округление; ≈ — региональная оценка.\nhttps://api.worldbank.org/v2/country/all/indicator/AG.LND.FRST.ZS?source=2&format=json&date=2023&per_page=400\nCarefree — Kevin MacLeod (incompetech.com), CC BY 4.0, темп 1.15×.\nhttps://creativecommons.org/licenses/by/4.0/\n#карты #география #странымира",
+  "created_at": "2026-10-29T17:35:39.108Z",
+  "submitted_at": null,
+  "published_at": null,
+  "url": null,
+  "error": "Отправка не началась. Проверьте вход и доступность редактора TikTok. Файлы сохранены.",
+  "cleaned_at": null
+}

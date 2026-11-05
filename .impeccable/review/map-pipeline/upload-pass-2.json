@@ -1,0 +1,197 @@
+{
+  "text": "Upload\nMANAGE\nHome\nPosts\nAnalytics\nComments\nGROWTH\nInspiration\nCreator Academy\nTOOLS\nMonetization\nRoyalty-free sounds\nSmart Split\nOTHERS\nFeedback\nBack to TikTok\nvideo.mp4\n1080P\nUploaded（25.5MB）\nReplace\nDetails\nDescription\nvideo\nHashtags\nMention\n5/4000\nCover \nEdit cover\nLocation \nEnteria arena\nRestaurace Nejen55\nskatepark Pardubice\nLTC Pardubice\nLonkova Caffé\n🧿ZÊR KEBAB🧿\nStadion Arnošta Košťála\nTvoje Máma Coffee Shop\nChe's café-bar\nClub Ponorka\nSettings\nWhen to post\nNow\nSchedule\nWho can see this post\nEveryone\nHigh-quality uploads\nHD by default when you post from Web Studio\nShow more\nChecks\nContent check lite\nWe'll check your content for For You Feed eligibility.You can also set automatic checks\nFeed\nProfile\nWeb\nPlay\n00:00:00 / 00:01:30\nMute\nExpand view\nМировая борьба\nvideo\n\nOriginal sound - Мировая борьба\n\nOriginal sound - Мировая борьба\n\nEdit\nSounds\nText\nPost\nSave draft\nDiscard\nNew editing features added\nNow it's easier than ever before to create professional and engaging videos.\nGot it\nTurn on automatic content checks?\nWe'll automatically check your video for copyright and other potential violations. You can adjust these settings anytime in Profile > Settings\nContent check lite\nWe'll automatically check your content for For You feed eligibility.\nCancel\nTurn on",
+  "editors": [
+    {
+      "tag": "DIV",
+      "role": "combobox",
+      "editable": "true",
+      "placeholder": null
+    }
+  ],
+  "inputs": [
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "placeholder": "Search locations"
+    },
+    {
+      "tag": "INPUT",
+      "type": "radio",
+      "placeholder": null
+    },
+    {
+      "tag": "INPUT",
+      "type": "radio",
+      "placeholder": null
+    },
+    {
+      "tag": "INPUT",
+      "type": "checkbox",
+      "placeholder": null
+    },
+    {
+      "tag": "INPUT",
+      "type": "checkbox",
+      "placeholder": null
+    },
+    {
+      "tag": "INPUT",
+      "type": "checkbox",
+      "placeholder": null
+    },
+    {
+      "tag": "INPUT",
+      "type": "checkbox",
+      "placeholder": null
+    },
+    {
+      "tag": "INPUT",
+      "type": "checkbox",
+      "placeholder": null
+    },
+    {
+      "tag": "INPUT",
+      "type": "checkbox",
+      "placeholder": null
+    },
+    {
+      "tag": "INPUT",
+      "type": "checkbox",
+      "placeholder": null
+    }
+  ],
+  "buttons": [
+    {
+      "text": "",
+      "disabled": false
+    },
+    {
+      "text": "Upload",
+      "disabled": false
+    },
+    {
+      "text": "",
+      "disabled": false
+    },
+    {
+      "text": "Home",
+      "disabled": false
+    },
+    {
+      "text": "Posts",
+      "disabled": false
+    },
+    {
+      "text": "Analytics",
+      "disabled": false
+    },
+    {
+      "text": "Comments",
+      "disabled": false
+    },
+    {
+      "text": "Inspiration",
+      "disabled": false
+    },
+    {
+      "text": "Creator Academy",
+      "disabled": false
+    },
+    {
+      "text": "Monetization",
+      "disabled": false
+    },
+    {
+      "text": "Royalty-free sounds",
+      "disabled": false
+    },
+    {
+      "text": "Smart Split",
+      "disabled": false
+    },
+    {
+      "text": "Feedback",
+      "disabled": false
+    },
+    {
+      "text": "",
+      "disabled": false
+    },
+    {
+      "text": "Replace",
+      "disabled": false
+    },
+    {
+      "text": "Hashtags",
+      "disabled": false
+    },
+    {
+      "text": "Mention",
+      "disabled": false
+    },
+    {
+      "text": "",
+      "disabled": false
+    },
+    {
+      "text": "",
+      "disabled": true
+    },
+    {
+      "text": "",
+      "disabled": false
+    },
+    {
+      "text": "Everyone",
+      "disabled": false
+    },
+    {
+      "text": "",
+      "disabled": false
+    },
+    {
+      "text": "Edit",
+      "disabled": false
+    },
+    {
+      "text": "Sounds",
+      "disabled": false
+    },
+    {
+      "text": "Text",
+      "disabled": false
+    },
+    {
+      "text": "Post",
+      "disabled": false
+    },
+    {
+      "text": "Save draft",
+      "disabled": false
+    },
+    {
+      "text": "Discard",
+      "disabled": false
+    },
+    {
+      "text": "Got it",
+      "disabled": false
+    },
+    {
+      "text": "Last",
+      "disabled": false
+    },
+    {
+      "text": "",
+      "disabled": false
+    },
+    {
+      "text": "Cancel",
+      "disabled": false
+    },
+    {
+      "text": "Turn on",
+      "disabled": false
+    }
+  ]
+}

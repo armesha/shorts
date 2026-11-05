@@ -1,0 +1,9 @@
+import {readFile} from 'node:fs/promises';import {homedir} from 'node:os';import {resolve} from 'node:path';import {chromium} from 'playwright';import {normalizeSocialCookies} from '../../../server/services/social/cookies.ts';
+let browser;
+try{const cookies=normalizeSocialCookies(JSON.parse(await readFile(resolve(homedir(),'.local/share/codex-private/tiktok-cookies.json'),'utf8')),'tiktok');browser=await chromium.launch({headless:true,executablePath:'/usr/bin/google-chrome',args:['--no-sandbox']});const context=await browser.newContext({locale:'en-US',viewport:{width:1440,height:1000}});await context.addCookies(cookies);const page=await context.newPage();await page.goto('https://www.tiktok.com/tiktokstudio/content',{waitUntil:'domcontentloaded',timeout:60000});
+ const post=page.locator('a[href*="7702147482125339926"]').first();await post.waitFor({timeout:30000});
+ const row=post.locator('xpath=ancestor::div[.//button[@data-tt="components_ActionCell_Clickable"]][1]');await row.locator('button[data-tt="components_ActionCell_Clickable"]').click();
+ await page.getByText('Delete',{exact:true}).last().click();
+ console.log('CONFIRMATION',JSON.stringify({dialogs:await page.getByRole('dialog').allTextContents(),deleteButtons:await page.getByRole('button',{name:'Delete',exact:true}).count(),text:(await page.locator('body').innerText()).slice(-1000)}));
+ if(process.argv.includes('--confirm')){await page.getByRole('button',{name:'Delete',exact:true}).last().click();await post.waitFor({state:'detached',timeout:30000});console.log('TARGET_POST_REMOVED_FROM_STUDIO');await page.reload({waitUntil:'domcontentloaded'});await page.waitForTimeout(4000);console.log(JSON.stringify({targetStillListed:await page.locator('a[href*="7702147482125339926"]').count()}));}
+}catch{console.log('Target deletion could not be confirmed');process.exitCode=1}finally{await browser?.close()}

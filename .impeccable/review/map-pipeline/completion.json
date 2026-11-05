@@ -1,0 +1,66 @@
+{
+  "checkedAt": "2026-10-29T12:36:03.039Z",
+  "campaign": {
+    "ownerId": 1,
+    "startedAt": "2026-10-29T12:28:52.583Z",
+    "endsAt": "2026-11-28T12:28:52.583Z",
+    "runs": [
+      {
+        "day": 0,
+        "startedAt": "2026-10-29T12:29:07.340Z",
+        "state": "ready",
+        "finishedAt": "2026-10-29T12:32:42.310Z",
+        "video": "59941e40-eb31-4d32-8ae6-e518609a82d3"
+      }
+    ]
+  },
+  "videos": [
+    {
+      "id": "39567d04-01a6-40eb-bb4f-a465468df5e9",
+      "kind": "sample",
+      "title": "Какую часть стран занимают леса?",
+      "video": "/home/davtian/Documents/map/exports/daily-library/u1/39567d04-01a6-40eb-bb4f-a465468df5e9/video.mp4",
+      "review": {
+        "passed": true,
+        "issues": []
+      }
+    },
+    {
+      "id": "51f67aa1-1adf-4d19-98f7-23a1172f81c6",
+      "kind": "sample",
+      "title": "Продолжительность жизни по странам: 2023",
+      "video": "/home/davtian/Documents/map/exports/daily-library/u1/51f67aa1-1adf-4d19-98f7-23a1172f81c6/video.mp4",
+      "review": {
+        "passed": true,
+        "issues": []
+      }
+    },
+    {
+      "id": "59941e40-eb31-4d32-8ae6-e518609a82d3",
+      "kind": "daily",
+      "title": "Насколько плотно заселены страны?",
+      "video": "/home/davtian/Documents/map/exports/daily-library/u1/59941e40-eb31-4d32-8ae6-e518609a82d3/video.mp4",
+      "review": {
+        "passed": true,
+        "issues": []
+      }
+    }
+  ],
+  "sourceCoverage": 35,
+  "publicLibrary": "https://shareboard.live/templates/maps/library",
+  "checks": [
+    "typecheck",
+    "web build",
+    "focused pipeline tests",
+    "default tests",
+    "live smoke",
+    "desktop and mobile public browser",
+    "authenticated MP4 playback",
+    "full sample audio/video decode",
+    "state preserved after production restart"
+  ],
+  "commits": [
+    "f572006",
+    "81bd1a6"
+  ]
+}
