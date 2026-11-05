@@ -65,7 +65,8 @@
           <button class="btn" data-preset="office_worker">Офисный сотрудник</button>
           <button class="btn" data-preset="survivor_woman">Спасенная женщина</button>
           <button class="btn" data-preset="officer">Офицер в конкорсе</button>
-          <button class="btn" data-preset="running_civilian" style="grid-column: span 2;">Бегущий житель (Костюм)</button>
+          <button class="btn" data-preset="running_civilian">Бегущий житель</button>
+          <button class="btn btn-random" id="btn-randomize">🎲 Рандом</button>
         </div>
       </div>
 
@@ -130,6 +131,18 @@
             <input type="checkbox" id="opt-badge">
             <span>Значок офицера охраны</span>
           </label>
+        </div>
+
+        <div class="ctrl-row">
+          <span>Причёска</span>
+          <select id="sel-hair-style">
+            <option value="welles">Короткая (сторона)</option>
+            <option value="pompadour">Помпадур</option>
+            <option value="female_long">Длинные (женские)</option>
+            <option value="buzz">Военная (Buzz)</option>
+            <option value="curly">Кудри (Afro)</option>
+            <option value="bald">Лысый</option>
+          </select>
         </div>
 
         <div class="ctrl-row">

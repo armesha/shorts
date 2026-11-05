@@ -353,3 +353,35 @@ input[type="range"] {
 #sidebar::-webkit-scrollbar-thumb:hover {
   background: #4b5563;
 }
+
+/* Random Button */
+.btn-random {
+  background: linear-gradient(135deg, #7c3aed, #c026d3);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  border: none;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn-random:hover {
+  opacity: 0.88;
+  transform: scale(1.03);
+}
+.btn-random:active {
+  transform: scale(0.97);
+}
+
+/* Hair style select */
+#sel-hair-style {
+  flex: 1;
+  background: var(--ctrl-bg, #1f2937);
+  color: var(--text-secondary, #d1d5db);
+  border: 1px solid #374151;
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+#sel-hair-style:focus {
+  outline: 1px solid #6366f1;
+}

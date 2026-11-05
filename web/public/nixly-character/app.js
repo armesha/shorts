@@ -423,6 +423,24 @@ function setupUI() {
   document.getElementById('btn-export-glb').addEventListener('click', exportToGLB);
   document.getElementById('btn-export-obj').addEventListener('click', exportToOBJ);
   document.getElementById('btn-screenshot').addEventListener('click', takeScreenshot);
+
+  // Randomize Button
+  const randomBtn = document.getElementById('btn-randomize');
+  if (randomBtn) {
+    randomBtn.addEventListener('click', () => {
+      document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove('active'));
+      character.randomize();
+      syncUIWithCharacter();
+    });
+  }
+
+  // Hair Style Select
+  const hairSel = document.getElementById('sel-hair-style');
+  if (hairSel) {
+    hairSel.addEventListener('change', (e) => {
+      character.setOption('hairStyle', e.target.value);
+    });
+  }
 }
 
 function bindColorPicker(elemId, optKey) {
@@ -456,6 +474,10 @@ function syncUIWithCharacter() {
   setVal('col-skin', opt.skinColor);
   setVal('col-hair', opt.hairColor);
   setVal('col-shoes', opt.shoesColor);
+
+  // Hair style select
+  const hairSel = document.getElementById('sel-hair-style');
+  if (hairSel && opt.hairStyle) hairSel.value = opt.hairStyle;
 }
 
 function animate() {

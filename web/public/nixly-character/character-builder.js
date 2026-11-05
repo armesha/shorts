@@ -721,6 +721,64 @@ export class NixlyCharacter {
       const buzz = new THREE.Mesh(buzzGeom, m.hair);
       buzz.position.set(0, 0.21, -0.005);
       g.add(buzz);
+
+    } else if (style === 'pompadour') {
+      // Classic pompadour — high swept-back front volume
+      const baseGeom = new THREE.BoxGeometry(0.19, 0.08, 0.20);
+      const base = new THREE.Mesh(baseGeom, m.hair);
+      base.position.set(0, 0.185, -0.01);
+      g.add(base);
+      // High front crest
+      const crestGeom = new THREE.BoxGeometry(0.17, 0.10, 0.07);
+      crestGeom.rotateZ(0.12);
+      const crest = new THREE.Mesh(crestGeom, m.hair);
+      crest.position.set(-0.01, 0.255, 0.065);
+      g.add(crest);
+      // Side sweep left
+      const sideL = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.09, 0.19), m.hair);
+      sideL.position.set(0.096, 0.17, -0.01);
+      g.add(sideL);
+      // Side sweep right
+      const sideR = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.09, 0.19), m.hair);
+      sideR.position.set(-0.096, 0.17, -0.01);
+      g.add(sideR);
+      // Back taper
+      const backGeom = new THREE.BoxGeometry(0.17, 0.08, 0.04);
+      const back = new THREE.Mesh(backGeom, m.hair);
+      back.position.set(0, 0.14, -0.105);
+      g.add(back);
+
+    } else if (style === 'curly') {
+      // Low-poly afro / curly — round puffy cap with volume
+      const capGeom = new THREE.SphereGeometry(0.125, 7, 5);
+      const cap = new THREE.Mesh(capGeom, m.hair);
+      cap.scale.set(1.0, 0.85, 1.0);
+      cap.position.set(0, 0.235, -0.01);
+      g.add(cap);
+      // Extra puff sides
+      const puffL = new THREE.Mesh(new THREE.SphereGeometry(0.07, 5, 4), m.hair);
+      puffL.position.set(0.1, 0.19, 0.0);
+      g.add(puffL);
+      const puffR = new THREE.Mesh(new THREE.SphereGeometry(0.07, 5, 4), m.hair);
+      puffR.position.set(-0.1, 0.19, 0.0);
+      g.add(puffR);
+      // Front fringe puff
+      const frontPuff = new THREE.Mesh(new THREE.SphereGeometry(0.055, 5, 4), m.hair);
+      frontPuff.position.set(0, 0.21, 0.09);
+      g.add(frontPuff);
+
+    } else if (style === 'bald') {
+      // No hair — just a subtle stubble strip on sides
+      const stubbleMat = new THREE.MeshStandardMaterial({
+        color: new THREE.Color(this.options.hairColor).multiplyScalar(0.5),
+        roughness: 0.95
+      });
+      const stubbleL = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.08, 0.17), stubbleMat);
+      stubbleL.position.set(0.096, 0.145, -0.01);
+      g.add(stubbleL);
+      const stubbleR = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.08, 0.17), stubbleMat);
+      stubbleR.position.set(-0.096, 0.145, -0.01);
+      g.add(stubbleR);
     }
   }
 
@@ -911,5 +969,109 @@ export class NixlyCharacter {
     Object.entries(p).forEach(([k, v]) => {
       this.setOption(k, v);
     });
+  }
+
+  /**
+   * Генерирует случайный внешний вид персонажа.
+   * Перебирает широкие палитры тона кожи, цвета одежды и стили причёски.
+   */
+  randomize() {
+    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    // Широкая палитра тонов кожи
+    const skinTones = [
+      '#FDDBB4', '#F5C9A0', '#E8BA8C', '#E2BE9F', '#D4A574',
+      '#C89A6A', '#B07D52', '#8B5E3C', '#6B4226', '#4A2C17',
+      '#FAEBD7', '#F0D5B0', '#D8A87C', '#C4845C', '#9E6040',
+    ];
+
+    // Палитры волос — реалистичные и стилизованные
+    const hairColors = [
+      '#1A0A00', '#2C1A0E', '#3B2314', '#422817', '#5C3D1E',
+      '#7B4F27', '#9C6B3C', '#B8860B', '#C8A045', '#D4B060',
+      '#8B0000', '#6B0F1A', '#4A0E0E',  // рыжие/бордо
+      '#808080', '#A0A0A0', '#C8C8C8', '#E8E8E8',  // серые/седые
+      '#1C1C1C', '#111111',              // очень тёмные
+      '#E8C87A', '#D4A020', '#B8820A',   // блонд
+    ];
+
+    const hairStyles = ['welles', 'pompadour', 'female_long', 'buzz', 'curly', 'bald'];
+
+    // Палитры одежды — реалистичные цвета
+    const shirtColors = [
+      '#FFFFFF', '#F5F5F0', '#F0E8DC', '#E8E0D0',
+      '#B8D4E8', '#8BAEC0', '#6B9AB2', '#4A7A96',  // голубые
+      '#C8E8C0', '#A0C898', '#6B9E6B',              // зелёные
+      '#E8C8B0', '#D4A880', '#B88860',              // бежевые/коричневые
+      '#E8D0C0', '#D4A090', '#C87060',              // персиковые
+      '#D0C8E8', '#A898CC', '#8878B0',              // фиолетовые
+      '#C8D0D8', '#A0A8B0', '#787F88',              // серые
+      '#E8E0C0', '#D4C880', '#B8A840',              // жёлтые
+      '#E8C0C0', '#D09090', '#B06060',              // красноватые
+      '#1A1A2E', '#16213E', '#0F3460',              // тёмно-синие
+      '#2D2D2D', '#3D3D3D', '#4A4A4A',              // тёмно-серые
+    ];
+
+    const pantsColors = [
+      '#1E2128', '#262A33', '#333740', '#3D3D3D',
+      '#2A3040', '#1A2535', '#0F1E30',  // тёмно-синие
+      '#3A3028', '#4A3E30', '#5A4A38',  // коричневые
+      '#5A5A5A', '#6A6A6A', '#7A7A7A',  // серые
+      '#2A3A2A', '#1E2E1E', '#3A4E3A',  // оливковые/тёмно-зелёные
+      '#4A2A1E', '#6A3A28',              // тёмно-коричневые
+      '#1A1A3A', '#252550',              // тёмно-фиолетовые
+      '#F5F5F0', '#E8E0D0', '#D0C8B8',  // светлые (кремовые/бежевые брюки)
+    ];
+
+    const shoeColors = [
+      '#111215', '#1A1A1E', '#282828',
+      '#3A2A1E', '#4A3828', '#5A4A38',  // коричневые
+      '#8B6940', '#A07840',              // светло-коричневые
+      '#FFFFFF', '#F0F0F0',              // белые (кроссовки)
+      '#CC3300', '#8B0000',              // красные
+      '#1A3A6A', '#0F2A4A',              // тёмно-синие
+    ];
+
+    // Случайный цвет банданы (если будет показана)
+    const bandanaColors = [
+      '#C9232B', '#E63030', '#CC1A1A',  // красный (канонический)
+      '#1A3A8A', '#1E4DB0', '#2255CC',  // синий
+      '#1A6A1A', '#228B22', '#2E8B57',  // зелёный
+      '#8B6914', '#B8860B', '#DAA520',  // золотой
+      '#4A1A6A', '#6A2A8A', '#8B2FC9',  // фиолетовый
+      '#1A5A5A', '#1E8080', '#20B2AA',  // бирюзовый
+      '#3D1A00', '#5A2A00', '#8B4513',  // коричневый
+    ];
+
+    const chosenSkin = pick(skinTones);
+    const chosenHairColor = pick(hairColors);
+    const chosenHairStyle = pick(hairStyles);
+    const chosenShirt = pick(shirtColors);
+    const chosenPants = pick(pantsColors);
+    const chosenShoes = pick(shoeColors);
+    const chosenBandana = pick(bandanaColors);
+    const hasBandana = Math.random() < 0.25;  // 25% шанс банданы
+    const hasTie = !hasBandana && Math.random() < 0.2;
+    const hasBadge = Math.random() < 0.15;
+
+    const opts = {
+      skinColor: chosenSkin,
+      hairColor: chosenHairColor,
+      hairStyle: chosenHairStyle,
+      shirtColor: chosenShirt,
+      pantsColor: chosenPants,
+      shoesColor: chosenShoes,
+      bandanaColor: chosenBandana,
+      hasBandana,
+      hasTie,
+      hasBadge,
+      showCompanion: false,
+    };
+
+    Object.entries(opts).forEach(([k, v]) => {
+      this.setOption(k, v);
+    });
+
+    return opts; // возвращаем чтобы UI мог синхронизироваться
   }
 }
