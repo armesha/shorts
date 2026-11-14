@@ -24,6 +24,12 @@ const clip = z.object({
 const schema = z.object({ detected_mode: z.enum(["serial", "highlights"]), detected_ads_to_exclude: z.array(ad), clips: z.array(clip).min(1).max(200) }).strict();
 export type DailyClip = CutPart & z.infer<typeof clip>;
 export type DailyPlan = { plan: DailyClip[]; ads: z.infer<typeof ad>[]; detectedMode: "serial" | "highlights" };
+export function addDailySourceDescriptions(plan: DailyClip[], channel: string): DailyClip[] {
+  return plan.map(clip => ({
+    ...clip,
+    caption_and_tags: `Автор / канал: ${channel}\nЧасть ${clip.part}/${clip.total_parts}\n${clip.caption_and_tags}`,
+  }));
+}
 type PlanInput = { title: string; duration: number; words: TimedWord[]; anchors: CuttingTimecode[] };
 
 export async function dailyPlanFingerprint(input: PlanInput) {

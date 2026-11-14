@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { dailyCuttingPrompt, validateDailyPlan, dailyPlanFingerprint, readPreparedDailyPlan } from "./daily-cutting-plan.ts";
+import { addDailySourceDescriptions, dailyCuttingPrompt, validateDailyPlan, dailyPlanFingerprint, readPreparedDailyPlan } from "./daily-cutting-plan.ts";
 import { parseVideoVtt } from "./video-cutting-plan.ts";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -8,6 +8,12 @@ import { resolve } from "node:path";
 const segment = (start: number, end: number) => ({ start_seconds: start, end_seconds: end, start_time: "00:00", end_time: "00:00" });
 const clip = (part: number, start: number, end: number) => ({ clip_id: part, clip_type: "series_part", story_title: "История", part, total_parts: 2,
   segments: [segment(start, end)], total_duration_seconds: end - start, first_phrase: "Начало", last_phrase: "Конец", cut_reason: "Переход", viral_title: "История", on_screen_hook: "Часть", caption_and_tags: "Описание #тег", viral_score: 8, trigger: "mystery" });
+
+test("daily descriptions identify the source channel and story part", () => {
+  const plan = validateDailyPlan({ detected_mode: "serial", detected_ads_to_exclude: [], clips: [clip(1, 0, 180), clip(2, 176, 320)] }, 320).plan;
+  const described = addDailySourceDescriptions(plan, "Канал автора");
+  assert.equal(described[1].caption_and_tags, "Автор / канал: Канал автора\nЧасть 2/2\nОписание #тег");
+});
 
 test("series permits only a three to five second overlap", () => {
   const first = clip(1, 0, 180), second = clip(2, 176, 320);

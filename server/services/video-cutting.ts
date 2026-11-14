@@ -17,7 +17,7 @@ import { setTimeout as delay } from "node:timers/promises";
 import type { Db } from "../db.ts";
 import { cuttingBannerFilter, cuttingBannerHash } from "./cutting-banner.ts";
 import { cuttingRenderCommand } from "../infra/cutting-render-resources.ts";
-import { DAILY_CUTTING_EFFORT, DAILY_CUTTING_MODEL, planDailyCuts, readPreparedDailyPlan, type DailyClip } from "./daily-cutting-plan.ts";
+import { DAILY_CUTTING_EFFORT, DAILY_CUTTING_MODEL, addDailySourceDescriptions, planDailyCuts, readPreparedDailyPlan, type DailyClip } from "./daily-cutting-plan.ts";
 import {
   extractCuttingTimecodes,
   cleanCuttingTimecodes,
@@ -901,7 +901,9 @@ export class VideoCuttingService {
       const input = { title: job.title!, duration: cleanDuration, words, anchors: timecodes };
       const result = await readPreparedDailyPlan(resolve(this.root, "prefetch", videoId, "prepared.json"), input)
         || await planDailyCuts({ ...input, cwd: dir, signal });
-      job.plan = result.plan;
+      const channel = [metadata.channel, metadata.uploader].find(value => typeof value === "string" && value.trim());
+      if (!channel) throw new Error("Не удалось определить автора или канал исходного видео.");
+      job.plan = addDailySourceDescriptions(result.plan, channel.trim());
       dailyAds = result.ads;
       detectedMode = result.detectedMode;
       job.detectedMode = result.detectedMode;
@@ -1025,7 +1027,7 @@ export class VideoCuttingService {
         templateType: "montage",
         cardIndex: part.number - 1,
         title: part.title,
-        text: part.reason,
+        text: dailyPart?.caption_and_tags || part.reason,
         format: "mp4",
         videoRel: rel,
         durationSec: partDuration,
