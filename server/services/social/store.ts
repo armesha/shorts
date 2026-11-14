@@ -73,7 +73,8 @@ export function createSocialService(
 ) {
   const sessions = join(root, "sessions");
   const media = join(root, "media");
-  for (const dir of [root, sessions, media]) {
+  const profiles = join(root, "profiles");
+  for (const dir of [root, sessions, media, profiles]) {
     mkdirSync(dir, { recursive: true, mode: 0o700 });
     chmodSync(dir, 0o700);
   }
@@ -82,6 +83,8 @@ export function createSocialService(
   let active: Promise<void> | null = null;
   const sessionPath = (uid: number, accountId: number) =>
     join(sessions, `${uid}-account-${accountId}.json`);
+  const profileDir = (uid: number, accountId: number) =>
+    join(profiles, `${uid}-account-${accountId}`);
   const jobPath = (id: number) => join(media, `${id}.mp4`);
   const connection = (accountId: number) =>
     db.db
@@ -106,6 +109,13 @@ export function createSocialService(
   function deleteFile(path: string) {
     try {
       rmSync(path, { force: true });
+    } catch {
+      /* cleanup is best-effort */
+    }
+  }
+  function deleteProfile(uid: number, accountId: number) {
+    try {
+      rmSync(profileDir(uid, accountId), { recursive: true, force: true });
     } catch {
       /* cleanup is best-effort */
     }
@@ -216,6 +226,7 @@ export function createSocialService(
       );
     const cookies = normalizeSocialCookies(input, account.platform);
     writeCookies(uid, accountId, cookies);
+    deleteProfile(uid, accountId);
     db.db
       .prepare(
         "INSERT INTO social_channel_connections(account_id,user_id,platform,status) VALUES (?,?,?,'unchecked') ON CONFLICT(account_id) DO UPDATE SET status='unchecked',handle=NULL,profile_id=NULL,checked_at=NULL,error=NULL",
@@ -236,6 +247,7 @@ export function createSocialService(
         const profile = await browser.verify(
           account.platform,
           readCookies(account),
+          profileDir(uid, accountId),
         );
         const previous = connection(accountId);
         if (previous?.profile_id && previous.profile_id !== profile.userId)
@@ -280,6 +292,7 @@ export function createSocialService(
     if (locks.has(accountId))
       throw new SocialError("Дождитесь окончания отправки или проверки.", 409);
     deleteFile(sessionPath(uid, accountId));
+    deleteProfile(uid, accountId);
     db.db
       .prepare(
         "DELETE FROM social_channel_connections WHERE account_id=? AND user_id=?",
@@ -540,12 +553,12 @@ export function createSocialService(
     if (account.platform !== "tiktok" || c?.status !== "connected" || !c.handle || !c.profile_id)
       throw new SocialError("Подтвердите вход в TikTok для канала карт.", 409);
     return locked(accountId, () => metrics.track("upload", () => browser.publish("tiktok", readCookies(account),
-      { handle: c.handle!, userId: c.profile_id! }, file, caption, onSubmit)));
+      { handle: c.handle!, userId: c.profile_id! }, file, caption, onSubmit, profileDir(uid, accountId))));
   }
   async function confirmMapPublication(uid: number, accountId: number, url: string): Promise<boolean> {
     const account = ownedAccount(uid, accountId), c = connection(accountId);
     if (!browser.confirmPublished || c?.status !== "connected" || !c.handle || !c.profile_id) return false;
-    return locked(accountId, () => browser.confirmPublished!("tiktok", readCookies(account), { handle: c.handle!, userId: c.profile_id! }, url));
+    return locked(accountId, () => browser.confirmPublished!("tiktok", readCookies(account), { handle: c.handle!, userId: c.profile_id! }, url, profileDir(uid, accountId)));
   }
   async function tick() {
     if (stopped || active) return;
@@ -578,6 +591,7 @@ export function createSocialService(
               () => {
                 submitted = true;
               },
+              profileDir(job.user_id, job.account_id),
             ),
           ),
         );

@@ -24,10 +24,18 @@ test("TikTok verifies account info without the retired app-state login flag and 
   let closed = false;
   globalThis.fetch = async () => ({ ok: true, json: async () => ({ message: "success", data: { username: "test", user_id_str: "7000000000000000001", user_id: 7000000000000000000 } }) }) as Response;
   const page = { setDefaultTimeout() {}, goto: async () => {}, waitForLoadState: async () => {}, url: () => "https://www.tiktok.com/", evaluate: async (fn: () => unknown) => fn() };
-  const launch = async () => ({ newContext: async () => ({ addCookies: async () => {}, newPage: async () => page }), close: async () => { closed = true; } });
+  let profileDir = "";
+  const launch = async (dir: string, options: { headless: boolean; viewport: { width: number }; args: string[] }) => {
+    profileDir = dir;
+    assert.equal(options.headless, true);
+    assert.equal(options.viewport.width, 1400);
+    assert.ok(options.args.includes("--disable-blink-features=AutomationControlled"));
+    return { addCookies: async () => {}, pages: () => [page], newPage: async () => page, close: async () => { closed = true; } };
+  };
   try {
-    const profile = await createSocialBrowser("test-browser", launch as any).verify("tiktok", []);
+    const profile = await createSocialBrowser("test-browser", launch as any).verify("tiktok", [], "/tmp/shorts-social-profile");
     assert.deepEqual(profile, { handle: "test", userId: "7000000000000000001" });
+    assert.equal(profileDir, "/tmp/shorts-social-profile");
     assert.equal(closed, true);
   } finally { globalThis.fetch = original; }
 });
@@ -56,7 +64,7 @@ test("optional Studio prompts are dismissed before editing and the submission ca
       assert.equal(await predicate(response), true); return response;
     },
   };
-  const launch = async () => ({ newContext: async () => ({ addCookies: async () => {}, newPage: async () => page }), close: async () => {} });
+  const launch = async () => ({ addCookies: async () => {}, pages: () => [page], newPage: async () => page, close: async () => {} });
   try {
     const url = await createSocialBrowser("test-browser", launch as any).publish("tiktok", [], { handle: "test", userId: "7000000000000000001" }, "/tmp/synthetic.mp4", "Test caption", () => { events.push("submitted"); });
     assert.equal(url, "https://www.tiktok.com/@test/video/7000000000000000002");
@@ -90,7 +98,7 @@ test("Instagram uses the video picker and dismisses the first Reels notice", asy
       return final;
     },
   };
-  const launch = async () => ({ newContext: async () => ({ addCookies: async () => {}, newPage: async () => page }), close: async () => {} });
+  const launch = async () => ({ addCookies: async () => {}, pages: () => [page], newPage: async () => page, close: async () => {} });
   try {
     const url = await createSocialBrowser("test-browser", launch as any).publish("instagram", [{ name: "ds_user_id", value: "123" }] as any,
       { handle: "example", userId: "123" }, "/tmp/example.mp4", "Caption", () => { events.push("submitted"); });

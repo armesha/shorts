@@ -1,3 +1,7 @@
+import { chmodSync, mkdirSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { randomUUID } from "node:crypto";
 import { chromium, type Cookie, type Page } from "playwright";
 import { SocialError, type SocialPlatform } from "./cookies.ts";
 
@@ -30,8 +34,8 @@ export function instagramPageProfile(id: string, identities: string[], links: { 
   return handles.size === 1 ? { handle: [...handles][0], userId: id } : null;
 }
 export interface SocialBrowser {
-  confirmPublished?(platform: SocialPlatform, cookies: Cookie[], profile: SocialProfile, url: string): Promise<boolean>;
-  verify(platform: SocialPlatform, cookies: Cookie[]): Promise<SocialProfile>;
+  confirmPublished?(platform: SocialPlatform, cookies: Cookie[], profile: SocialProfile, url: string, profileDir?: string): Promise<boolean>;
+  verify(platform: SocialPlatform, cookies: Cookie[], profileDir?: string): Promise<SocialProfile>;
   publish(
     platform: SocialPlatform,
     cookies: Cookie[],
@@ -39,8 +43,27 @@ export interface SocialBrowser {
     file: string,
     caption: string,
     onSubmit: () => void,
+    profileDir?: string,
   ): Promise<string>;
 }
+
+type PersistentSession = {
+  addCookies(cookies: Cookie[]): Promise<void>;
+  pages(): Page[];
+  newPage(): Promise<Page>;
+  close(): Promise<void>;
+};
+
+type PersistentLaunch = (
+  userDataDir: string,
+  options: {
+    executablePath: string;
+    headless: boolean;
+    viewport: { width: number; height: number };
+    locale: string;
+    args: string[];
+  },
+) => Promise<PersistentSession>;
 
 async function sessionProfile(
   page: Page,
@@ -122,30 +145,35 @@ async function sessionProfile(
 
 export function createSocialBrowser(
   chromePath: string,
-  launch: typeof chromium.launch = chromium.launch.bind(chromium),
+  launchPersistent: PersistentLaunch = (dir, options) => chromium.launchPersistentContext(dir, options),
 ): SocialBrowser {
   let activeBrowsers = 0;
   async function run<T>(
     platform: SocialPlatform,
     cookies: Cookie[],
+    profileDir: string | undefined,
     action: (page: Page) => Promise<T>,
   ): Promise<T> {
     if (activeBrowsers >= 2)
       throw new SocialError("Проверки заняты. Повторите через минуту.", 429);
     activeBrowsers++;
-    let browser;
+    const persistent = Boolean(profileDir);
+    const dir = profileDir || join(tmpdir(), `shorts-social-${randomUUID()}`);
+    let context: PersistentSession | undefined;
     try {
-      browser = await launch({
+      mkdirSync(dir, { recursive: true, mode: 0o700 });
+      chmodSync(dir, 0o700);
+      for (const name of ["SingletonLock", "SingletonSocket", "SingletonCookie"])
+        rmSync(join(dir, name), { force: true });
+      context = await launchPersistent(dir, {
         executablePath: chromePath,
         headless: true,
-        args: ["--no-sandbox"],
-      });
-      const context = await browser.newContext({
+        viewport: { width: 1400, height: 1000 },
         locale: "en-US",
-        viewport: { width: 1440, height: 1000 },
+        args: ["--no-sandbox", "--disable-blink-features=AutomationControlled"],
       });
-      await context.addCookies(cookies);
-      const page = await context.newPage();
+      if (cookies.length) await context.addCookies(cookies);
+      const page = context.pages()[0] ?? await context.newPage();
       page.setDefaultTimeout(30_000);
       await page.goto(`https://www.${platform}.com/`, {
         waitUntil: "domcontentloaded",
@@ -156,12 +184,13 @@ export function createSocialBrowser(
         .catch(() => {});
       return await action(page);
     } finally {
-      await browser?.close();
+      await context?.close();
+      if (!persistent) rmSync(dir, { recursive: true, force: true });
       activeBrowsers--;
     }
   }
   return {
-    confirmPublished: (platform, cookies, profile, url) => run(platform, cookies, async page => {
+    confirmPublished: (platform, cookies, profile, url, profileDir) => run(platform, cookies, profileDir, async page => {
       if (platform !== "tiktok") return false;
       const match = /^https:\/\/www\.tiktok\.com\/@([a-zA-Z0-9_.]+)\/video\/(\d+)$/.exec(url);
       if (!match || match[1] !== profile.handle) return false;
@@ -180,10 +209,10 @@ export function createSocialBrowser(
         } catch { return false; }
       }, { id: match[2], handle: profile.handle, url });
     }),
-    verify: (platform, cookies) =>
-      run(platform, cookies, (page) => sessionProfile(page, platform, cookies)),
-    publish: (platform, cookies, profile, file, caption, onSubmit) =>
-      run(platform, cookies, async (page) => {
+    verify: (platform, cookies, profileDir) =>
+      run(platform, cookies, profileDir, (page) => sessionProfile(page, platform, cookies)),
+    publish: (platform, cookies, profile, file, caption, onSubmit, profileDir) =>
+      run(platform, cookies, profileDir, async (page) => {
         const actual = await sessionProfile(page, platform, cookies);
         if (actual.userId !== profile.userId)
           throw new SocialError(
