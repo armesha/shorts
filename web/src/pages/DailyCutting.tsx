@@ -77,6 +77,7 @@ export default function DailyCutting() {
         <video className="max-h-[32rem] w-full bg-black" controls preload="metadata" src={clip.videoUrl} poster={clip.imageUrl} />
         {clip.caption_and_tags && <p className="whitespace-pre-wrap text-sm">{clip.caption_and_tags}</p>}
         <a className="link link-primary text-sm" href={clip.videoUrl} download>Скачать ролик</a>
+        {clip.imageUrl && <a className="link link-primary ml-3 text-sm" href={clip.imageUrl} download>Скачать превью</a>}
         <button type="button" className="btn btn-ghost btn-error btn-sm ml-2" disabled={busy || !["completed", "failed", "cancelled"].includes(job.status)} onClick={() => void remove(clip.number)}>Удалить часть</button>
       </article>)}</div>
     </div> : <p className="mt-4 text-sm text-base-content/70">Готовых нарезок пока нет.</p>}
