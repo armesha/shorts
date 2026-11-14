@@ -47,6 +47,26 @@ const request = () =>
     sponsorBlock: false,
   });
 
+test("manual publication marks persist separately for source and clip", async () => {
+  const root = await temporary();
+  const id = "d448ff68-d6c7-44c2-9c84-652ec37a6c37";
+  const dir = resolve(root, "u1", id);
+  await mkdir(dir, { recursive: true });
+  await writeFile(resolve(dir, "job.json"), JSON.stringify({ id, userId: 1, input: request(), status: "completed", stage: "Готово", progress: 100, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), clips: [{ number: 1, start: 0, end: 3, title: "Тест", reason: "Тест", videoUrl: "/test.mp4", duration: 3 }] }));
+  const service = new VideoCuttingService({ root, outputDir: root });
+  try {
+    await service.setMark(1, id, null, "SR", true);
+    await service.setMark(1, id, 1, "SM", true);
+    const restored = new VideoCuttingService({ root, outputDir: root });
+    const job = await restored.get(1, id);
+    assert.equal(job?.marks?.SR, true);
+    assert.equal(job?.clips[0].marks?.SM, true);
+    assert.equal(job?.clips[0].marks?.SR, undefined);
+    await assert.rejects(service.setMark(2, id, null, "SR", true));
+    await restored.close();
+  } finally { await service.close(); await rm(root, { recursive: true, force: true }); }
+});
+
 test("video links are canonicalized and cannot address local or arbitrary hosts", () => {
   assert.equal(
     normalizeVideoUrl("https://youtu.be/iJH6dAG9NVk?si=123"),

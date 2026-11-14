@@ -331,10 +331,6 @@ export default function VideoCutting() {
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Нарезка видео</h1>
-          <p className="mt-2 max-w-2xl text-sm text-base-content/75">
-            Вставьте ссылку. ИИ разделит видео на законченные смысловые части, а
-            затем добавит ваш баннер.
-          </p>
         </div>
         {job && (
           <button
@@ -354,9 +350,6 @@ export default function VideoCutting() {
             <label htmlFor="cutting-job" className="block font-semibold">
               Мои нарезки
             </label>
-            <p className="mt-1 text-xs text-base-content/70">
-              Выберите видео, чтобы открыть его части
-            </p>
           </div>
           <div className="flex min-w-0 flex-wrap gap-2 sm:flex-nowrap"><select
             id="cutting-job"
@@ -410,9 +403,6 @@ export default function VideoCutting() {
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5 select-none">
             <span>
               <span className="block font-semibold">Создать новую нарезку</span>
-              <span className="mt-1 block text-xs text-base-content/70">
-                Ссылка, количество частей и оформление
-              </span>
             </span>
             <ChevronDown
               aria-hidden
@@ -526,10 +516,6 @@ export default function VideoCutting() {
                   </span>
                 </span>
               </label>
-              <p className="text-xs leading-relaxed text-base-content/70">
-                Нарезка по смыслу: учитываются речь, главы и таймкоды автора.
-                Длинную главу можно разделить, короткие — объединить.
-              </p>
             </fieldset>
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-2">
@@ -583,18 +569,6 @@ export default function VideoCutting() {
               />
               Удалять рекламу (SponsorBlock)
             </label>
-            <p className="text-xs leading-relaxed text-base-content/70">
-              Удаляются только спонсорские вставки с подходящей{" "}
-              <a
-                href="https://sponsor.ajay.app/"
-                target="_blank"
-                rel="noreferrer"
-                className="link"
-              >
-                разметкой SponsorBlock
-              </a>
-              . Если разметки нет, видео остаётся без изменений.
-            </p>
             <label className="flex cursor-pointer items-center gap-3 border border-base-300 bg-base-200/50 p-3 text-sm hover:border-primary">
               <input
                 type="checkbox"
@@ -663,11 +637,6 @@ export default function VideoCutting() {
               <h2 className="text-lg font-semibold">
                 Здесь появятся готовые части
               </h2>
-              <p className="mt-3 max-w-lg text-sm leading-relaxed text-base-content/75">
-                Добавьте ссылку слева и запустите нарезку. Можно закрыть
-                страницу: задача продолжит выполняться, а результат сохранится
-                здесь.
-              </p>
             </div>
           ) : (
             <>

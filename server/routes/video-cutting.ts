@@ -96,6 +96,15 @@ export function registerVideoCuttingRoutes(
     const job = await service.get(userId, (req.params as { id: string }).id);
     return job || reply.code(404).send({ error: "Задача не найдена." });
   });
+  app.post("/api/video-cutting/jobs/:id/marks", async (req, reply) => {
+    const userId = uid(req);
+    if (!userId) return reply.code(401).send({ error: "Не авторизован" });
+    if (!isSuperAdminUser(db.getUserById(userId))) return reply.code(403).send({ error: "Недостаточно прав." });
+    const parsed = z.object({ part: z.number().int().positive().nullable(), mark: z.enum(["SR", "SM"]), checked: z.boolean() }).strict().safeParse(req.body);
+    if (!parsed.success) return reply.code(400).send({ error: "Некорректная отметка." });
+    try { return await service.setMark(userId, (req.params as { id: string }).id, parsed.data.part, parsed.data.mark, parsed.data.checked); }
+    catch (error) { return reply.code(400).send({ error: error instanceof Error ? error.message : "Не удалось сохранить отметку." }); }
+  });
   app.delete("/api/video-cutting/jobs/:id", async (req, reply) => {
     const userId = uid(req);
     if (!userId) return reply.code(401).send({ error: "Не авторизован" });

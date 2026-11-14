@@ -57,6 +57,7 @@ test("cutting API requires authentication and isolates jobs including cancellati
     });
     assert.equal(created.statusCode, 202, created.body);
     const id = created.json().id;
+    assert.equal((await app.inject({ method: "POST", url: `/api/video-cutting/jobs/${id}/marks`, headers: { "x-test-user": "7" }, payload: { part: null, mark: "SR", checked: true } })).statusCode, 403);
     assert.equal((await app.inject({ method: "DELETE", url: `/api/video-cutting/jobs/${id}`, headers: { "x-test-user": "7" } })).statusCode, 400);
     assert.equal(
       (

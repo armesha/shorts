@@ -75,6 +75,7 @@ export type CutClip = CutPart & {
   videoUrl: string;
   duration: number;
   sourceRanges?: SourceRange[];
+  marks?: { SR?: boolean; SM?: boolean };
 };
 export type CutJob = {
   id: string;
@@ -97,6 +98,7 @@ export type CutJob = {
   deletedParts?: number[];
   daily?: boolean;
   detectedMode?: "serial" | "highlights";
+  marks?: { SR?: boolean; SM?: boolean };
 };
 export type ProcessInput = {
   cwd: string;
@@ -617,6 +619,18 @@ export class VideoCuttingService {
           job.channelAdds.push(row);
       await this.save(job);
       return { ...result, job: structuredClone(job) };
+    });
+  }
+  async setMark(userId: number, id: string, part: number | null, mark: "SR" | "SM", checked: boolean) {
+    await this.ready;
+    const job = this.jobs.get(id);
+    if (!job || job.userId !== userId) throw new Error("Нарезка не найдена.");
+    return withActiveLimit(`cutting-edit:${userId}:${id}`, 1, async () => {
+      const target = part === null ? job : job.clips.find(clip => clip.number === part);
+      if (!target) throw new Error("Часть не найдена.");
+      target.marks = { ...target.marks, [mark]: checked };
+      await this.save(job);
+      return this.snapshot(job);
     });
   }
   async deletePart(userId: number, id: string, part: number) {
