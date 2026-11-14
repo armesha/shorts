@@ -27,6 +27,7 @@ export type DailyPlan = { plan: DailyClip[]; ads: z.infer<typeof ad>[]; detected
 export function addDailySourceDescriptions(plan: DailyClip[], channel: string): DailyClip[] {
   return plan.map(clip => ({
     ...clip,
+    on_screen_hook: `ЧАСТЬ ${clip.number}/${plan.length}`,
     caption_and_tags: `Автор: ${channel} · Часть ${clip.number}/${plan.length}\n${clip.caption_and_tags}`,
   }));
 }

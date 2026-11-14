@@ -1011,7 +1011,7 @@ export class VideoCuttingService {
               run: this.run,
               timeline,
               segments: sections,
-              hook: dailyPart?.on_screen_hook,
+              hook: `ЧАСТЬ ${part.number}/${job.plan!.length}`,
             }),
           );
           break;

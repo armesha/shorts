@@ -13,6 +13,7 @@ test("daily descriptions identify the source channel and story part", () => {
   const plan = validateDailyPlan({ detected_mode: "serial", detected_ads_to_exclude: [], clips: [clip(1, 0, 180), clip(2, 176, 320)] }, 320).plan;
   const described = addDailySourceDescriptions(plan, "Канал автора");
   assert.equal(described[1].caption_and_tags, "Автор: Канал автора · Часть 2/2\nОписание #тег");
+  assert.equal(described[1].on_screen_hook, "ЧАСТЬ 2/2");
   const separate = plan.map(part => ({ ...part, part: 1, total_parts: 1 }));
   assert.match(addDailySourceDescriptions(separate, "Канал автора")[1].caption_and_tags, /Часть 2\/2/);
 });
