@@ -53,10 +53,12 @@ test("manual publication marks persist separately for source and clip", async ()
   const dir = resolve(root, "u1", id);
   await mkdir(dir, { recursive: true });
   await writeFile(resolve(dir, "job.json"), JSON.stringify({ id, userId: 1, input: request(), status: "completed", stage: "Готово", progress: 100, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), clips: [{ number: 1, start: 0, end: 3, title: "Тест", reason: "Тест", videoUrl: "/test.mp4", duration: 3 }] }));
-  const service = new VideoCuttingService({ root, outputDir: root });
+  const db = { listCreatorGalleryItems: () => [{ videoRel: `creator/cutting-u1/${id}/part-1.mp4`, imageRel: `creator/cutting-u1/${id}/cover-1.jpg` }] } as unknown as Db;
+  const service = new VideoCuttingService({ root, outputDir: root, db });
   try {
     await service.setMark(1, id, null, "SR", true);
     await service.setMark(1, id, 1, "SM", true);
+    assert.equal((await service.get(1, id))?.clips[0].imageUrl, `/files/creator/cutting-u1/${id}/cover-1.jpg`);
     const restored = new VideoCuttingService({ root, outputDir: root });
     const job = await restored.get(1, id);
     assert.equal(job?.marks?.SR, true);

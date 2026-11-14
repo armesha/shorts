@@ -73,6 +73,7 @@ export type CutStatus =
   | "cancelled";
 export type CutClip = CutPart & {
   videoUrl: string;
+  imageUrl?: string;
   duration: number;
   sourceRanges?: SourceRange[];
   marks?: { SR?: boolean; SM?: boolean };
@@ -477,8 +478,11 @@ export class VideoCuttingService {
   private snapshot(job: CutJob) {
     const copy = structuredClone(job);
     if (!Array.isArray(copy.clips)) return copy;
+    const gallery = this.options.db?.listCreatorGalleryItems?.(job.userId) || [];
     for (const clip of copy.clips) {
       const expected = `/files/creator/cutting-u${job.userId}/${job.id}/part-${clip.number}.mp4`;
+      const imageRel = gallery.find(item => item.videoRel === expected.slice("/files/".length))?.imageRel;
+      if (imageRel) clip.imageUrl = `/files/${imageRel}`;
       if (typeof clip.videoUrl !== "string" || clip.videoUrl.split("?")[0] !== expected) continue;
       try {
         const file = statSync(resolve(this.options.outputDir, `creator/cutting-u${job.userId}/${job.id}/part-${clip.number}.mp4`));
