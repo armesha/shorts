@@ -27,7 +27,7 @@ export type DailyPlan = { plan: DailyClip[]; ads: z.infer<typeof ad>[]; detected
 export function addDailySourceDescriptions(plan: DailyClip[], channel: string): DailyClip[] {
   return plan.map(clip => ({
     ...clip,
-    caption_and_tags: `Автор / канал: ${channel}\nЧасть ${clip.number}/${plan.length}\n${clip.caption_and_tags}`,
+    caption_and_tags: `Автор: ${channel} · Часть ${clip.number}/${plan.length}\n${clip.caption_and_tags}`,
   }));
 }
 type PlanInput = { title: string; duration: number; words: TimedWord[]; anchors: CuttingTimecode[] };
