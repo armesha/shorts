@@ -22,7 +22,8 @@ type Part = {
   title: string;
   reason: string;
 };
-type Clip = Part & { videoUrl: string; duration: number };
+type Marks = { SR?: boolean; SM?: boolean };
+type Clip = Part & { videoUrl: string; imageUrl?: string; duration: number; marks?: Marks; caption_and_tags?: string };
 type Job = {
   id: string;
   input: {
@@ -96,6 +97,8 @@ export default function VideoCutting() {
   const [channelNotice, setChannelNotice] = useState("");
   const [deletingPart, setDeletingPart] = useState<number | null>(null);
   const [deletingJob, setDeletingJob] = useState(false);
+  const [markError, setMarkError] = useState("");
+  const [markBusy, setMarkBusy] = useState(false);
   const channels = workspace.channels || [];
   const validChannel = channels.some(
     (channel) => String(channel.id) === channelId,
@@ -278,6 +281,15 @@ export default function VideoCutting() {
       setDeletingPart(null);
     }
   }
+  async function setMark(part: number, mark: "SR" | "SM", checked: boolean) {
+    if (!job) return;
+    setMarkBusy(true); setMarkError("");
+    try {
+      const next = await send<Job>(`/video-cutting/jobs/${job.id}/marks`, "POST", { part, mark, checked });
+      setWorkspace(current => ({ ...current, jobs: current.jobs.map(item => item.id === next.id ? next : item) }));
+    } catch (e) { setMarkError(e instanceof Error ? e.message : "Не удалось сохранить отметку."); }
+    finally { setMarkBusy(false); }
+  }
   async function deleteJob() {
     if (!job || !(await confirmDialog("Нарезка и её части будут удалены из галереи. Копии в библиотеках каналов останутся.", { title: "Удалить нарезку?", confirmText: "Удалить", danger: true }))) return;
     setDeletingJob(true);
@@ -330,7 +342,7 @@ export default function VideoCutting() {
     <div className="route-page space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Нарезка видео</h1>
+          <h1 className="text-2xl font-bold">Нарезки</h1>
         </div>
         {job && (
           <button
@@ -343,39 +355,7 @@ export default function VideoCutting() {
           </button>
         )}
       </header>
-      <DailyCutting />
-      {!!workspace.jobs.length && (
-        <section className="grid gap-3 rounded-lg border border-base-300 bg-base-100 p-4 sm:grid-cols-[220px_minmax(0,1fr)] sm:items-center">
-          <div>
-            <label htmlFor="cutting-job" className="block font-semibold">
-              Мои нарезки
-            </label>
-          </div>
-          <div className="flex min-w-0 flex-wrap gap-2 sm:flex-nowrap"><select
-            id="cutting-job"
-            value={job?.id || ""}
-            onChange={(event) => setSelected(event.target.value)}
-            disabled={addingToChannel || deletingPart !== null}
-            className="select select-bordered w-full min-w-0 cursor-pointer"
-          >
-            {workspace.jobs.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.title || "Новая нарезка"} ·{" "}
-                {new Date(item.createdAt).toLocaleString("ru-RU", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
-                })}
-              </option>
-            ))}
-          </select>
-          <button type="button" className="btn btn-outline btn-error gap-2" onClick={() => void deleteJob()} disabled={!job || !finished(job) || deletingJob || addingToChannel || deletingPart !== null}>
-            <Trash2 size={16} /> Удалить
-          </button></div>
-        </section>
-      )}
+      <DailyCutting jobs={workspace.jobs} selected={job?.id} onSelect={id => { setSelected(id); setFormExpanded(false); }} />
       {loadError && (
         <div
           role="alert"
@@ -656,6 +636,7 @@ export default function VideoCutting() {
                       <ArrowUpRight size={13} className="inline" />
                     </a>
                   </div>
+                  {finished(job) && <button type="button" className="btn btn-ghost btn-sm text-error" onClick={() => void deleteJob()} disabled={deletingJob || addingToChannel || deletingPart !== null}><Trash2 size={16} /> Удалить</button>}
                   {!finished(job) && (
                     <button
                       type="button"
@@ -835,6 +816,7 @@ export default function VideoCutting() {
                   </div>
                 )}
               </div>
+              {markError && <p role="alert" className="text-sm text-error">{markError}</p>}
               {!!job.clips.length && (
                 <h2 className="text-lg font-semibold">
                   Готовые части · {job.clips.length}
@@ -854,12 +836,18 @@ export default function VideoCutting() {
                       </h3>
                       <video
                         src={clip.videoUrl}
+                        poster={clip.imageUrl}
                         controls
                         playsInline
                         preload="metadata"
                         className="aspect-[9/16] max-h-[420px] w-full bg-black object-contain"
                       />
                       <div className="p-4 space-y-3">
+                        <fieldset className="flex gap-3 text-sm" disabled={markBusy} aria-label={`Отметки публикации части ${clip.number}`}>
+                          {(["SR", "SM"] as const).map(mark => <label key={mark} className="flex items-center gap-1.5"><input type="checkbox" className="checkbox checkbox-xs" checked={!!clip.marks?.[mark]} onChange={event => void setMark(clip.number, mark, event.target.checked)} />{mark}</label>)}
+                        </fieldset>
+                        {clip.caption_and_tags && <p className="whitespace-pre-wrap text-sm">{clip.caption_and_tags}</p>}
+                        {clip.imageUrl && <a href={clip.imageUrl} download className="link text-sm">Скачать превью</a>}
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-xs tabular-nums text-base-content/70">
                             {time(clip.duration)}
