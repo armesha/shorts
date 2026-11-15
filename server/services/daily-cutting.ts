@@ -68,6 +68,9 @@ export class DailyCuttingService {
     void this.tick();
   }
   close() { this.closed = true; this.controller?.abort(); if (this.timer) clearInterval(this.timer); }
+  sharedOwner(userIds: number[], fallback: number) {
+    return this.state && userIds.includes(this.state.ownerId) ? this.state.ownerId : fallback;
+  }
   async info(ownerId: number) {
     if (this.broken) return { enabled: false, jobs: [], error: "Не удалось прочитать историю расписания. Запуск остановлен." };
     if (!this.state || this.state.ownerId !== ownerId) return { enabled: false, jobs: [] };

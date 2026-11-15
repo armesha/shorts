@@ -1,3 +1,4 @@
+import { sharedWorkspaceUserIds, sharesWorkspace } from "../services/shared-workspace.ts";
 import type { FastifyInstance } from "fastify";
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { createReadStream, existsSync, readdirSync, statSync } from "node:fs";
@@ -563,7 +564,7 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
       packs: listCreatorPacks(userId, isSuper).filter(
         (pack) => isSuper || (pack.owners ?? []).includes(userId) || isCustomPackGloballyVisible(db, pack),
       ),
-      gallery: db.listCreatorGalleryItems(userId),
+      gallery: sharedWorkspaceUserIds(db, userId).flatMap(id => db.listCreatorGalleryItems(id)).sort((a, b) => b.id - a.id),
       backgrounds: creatorBackgrounds(),
       userBackgrounds: await listUserBackgrounds(userId),
       presets: creatorPresets().map((preset) => ({
@@ -738,7 +739,8 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
     if (!requireCreator(req, reply)) return;
     const id = Number((req.params as { id: string }).id);
     if (!Number.isInteger(id) || id <= 0) return reply.code(400).send({ error: "Некорректный id" });
-    if (!db.deleteCreatorGalleryItem(id, uid(req))) return reply.code(404).send({ error: "Файл не найден" });
+    const item = db.getCreatorGalleryItem(id);
+    if (!item || !sharesWorkspace(db, uid(req), item.userId) || !db.deleteCreatorGalleryItem(id, item.userId)) return reply.code(404).send({ error: "Файл не найден" });
     return { deleted: true };
   });
 

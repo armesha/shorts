@@ -1,3 +1,4 @@
+import { sharedWorkspaceUserIds } from "../services/shared-workspace.ts";
 import type { FastifyInstance } from "fastify";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { resolve } from "node:path";
@@ -194,7 +195,7 @@ export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const userId = uid(req);
     const all = query.scope === "all" && deps.auth.isAdminLikeReq(req);
     return cachedQueueOverview(`queue:${all ? "all" : userId}`, () => {
-      const accounts = all ? db.listAccounts() : db.listAccountsByUser(userId);
+      const accounts = all ? db.listAccounts() : sharedWorkspaceUserIds(db, userId).flatMap(id => db.listAccountsByUser(id));
       const visibleAccountIds = new Set(accounts.map((account) => account.id));
       const accountById = new Map(accounts.map((account) => [account.id, account]));
       const userById = new Map(db.listUsers().map((user) => [user.id, user]));

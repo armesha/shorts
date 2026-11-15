@@ -1,3 +1,4 @@
+import { sharesWorkspace } from "./shared-workspace.ts";
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { existsSync, statSync } from "node:fs";
@@ -523,10 +524,13 @@ export class VideoCuttingService {
       }
     }
   }
+  private canAccess(userId: number, ownerId: number) {
+    return userId === ownerId || (!!this.options.db && sharesWorkspace(this.options.db, userId, ownerId));
+  }
   async list(userId: number) {
     await this.ready;
     return [...this.jobs.values()]
-      .filter((j) => j.userId === userId)
+      .filter((j) => this.canAccess(userId, j.userId))
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
       .slice(0, 50)
       .map((j) => this.snapshot(j));
@@ -538,7 +542,7 @@ export class VideoCuttingService {
   async get(userId: number, id: string) {
     await this.ready;
     const job = this.jobs.get(id);
-    return job?.userId === userId ? this.snapshot(job) : null;
+    return job && this.canAccess(userId, job.userId) ? this.snapshot(job) : null;
   }
   async create(userId: number, raw: unknown, daily = false) {
     await this.ready;
@@ -586,7 +590,7 @@ export class VideoCuttingService {
   async cancel(userId: number, id: string) {
     await this.ready;
     const job = this.jobs.get(id);
-    if (!job || job.userId !== userId) return null;
+    if (!job || !this.canAccess(userId, job.userId)) return null;
     if (!["completed", "failed", "cancelled"].includes(job.status)) {
       this.controllers.get(id)?.abort();
       job.status = "cancelled";
@@ -603,9 +607,9 @@ export class VideoCuttingService {
   ) {
     await this.ready;
     const job = this.jobs.get(id);
-    if (!job || job.userId !== userId) throw new Error("Нарезка не найдена.");
+    if (!job || !this.canAccess(userId, job.userId)) throw new Error("Нарезка не найдена.");
     if (!this.options.db) throw new Error("Добавление на канал недоступно.");
-    return withActiveLimit(`cutting-edit:${userId}:${id}`, 1, async () => {
+    return withActiveLimit(`cutting-edit:${id}`, 1, async () => {
       const result = await addCuttingClipsToChannel(this.options.db!, {
         userId,
         job,
@@ -628,8 +632,8 @@ export class VideoCuttingService {
   async setMark(userId: number, id: string, part: number | null, mark: "SR" | "SM", checked: boolean) {
     await this.ready;
     const job = this.jobs.get(id);
-    if (!job || job.userId !== userId) throw new Error("Нарезка не найдена.");
-    return withActiveLimit(`cutting-edit:${userId}:${id}`, 1, async () => {
+    if (!job || !this.canAccess(userId, job.userId)) throw new Error("Нарезка не найдена.");
+    return withActiveLimit(`cutting-edit:${id}`, 1, async () => {
       const target = part === null ? job : job.clips.find(clip => clip.number === part);
       if (!target) throw new Error("Часть не найдена.");
       target.marks = { ...target.marks, [mark]: checked };
@@ -640,21 +644,21 @@ export class VideoCuttingService {
   async deletePart(userId: number, id: string, part: number) {
     await this.ready;
     const job = this.jobs.get(id);
-    if (!job || job.userId !== userId) throw new Error("Нарезка не найдена.");
+    if (!job || !this.canAccess(userId, job.userId)) throw new Error("Нарезка не найдена.");
     if (
       !Number.isInteger(part) ||
       (!job.clips.some((clip) => clip.number === part) &&
         !job.deletedParts?.includes(part))
     )
       throw new Error("Готовая часть не найдена.");
-    return withActiveLimit(`cutting-edit:${userId}:${id}`, 1, async () => {
+    return withActiveLimit(`cutting-edit:${id}`, 1, async () => {
       job.deletedParts = [...new Set([...(job.deletedParts || []), part])];
       job.clips = job.clips.filter((clip) => clip.number !== part);
       await this.save(job);
-      const rel = `creator/cutting-u${userId}/${job.id}/part-${part}.mp4`;
-      for (const item of this.options.db?.listCreatorGalleryItems(userId) || [])
+      const rel = `creator/cutting-u${job.userId}/${job.id}/part-${part}.mp4`;
+      for (const item of this.options.db?.listCreatorGalleryItems(job.userId) || [])
         if (item.videoRel === rel)
-          this.options.db!.deleteCreatorGalleryItem(item.id, userId);
+          this.options.db!.deleteCreatorGalleryItem(item.id, job.userId);
       await rm(resolve(this.options.outputDir, rel), { force: true });
       return structuredClone(job);
     });
@@ -662,15 +666,15 @@ export class VideoCuttingService {
   async deleteJob(userId: number, id: string) {
     await this.ready;
     const job = this.jobs.get(id);
-    if (!job || job.userId !== userId) throw new Error("Нарезка не найдена.");
+    if (!job || !this.canAccess(userId, job.userId)) throw new Error("Нарезка не найдена.");
     if (!/^[a-f\d-]{36}$/.test(id) || !["completed", "failed", "cancelled"].includes(job.status) || this.controllers.has(id))
       throw new Error("Сначала дождитесь завершения или отмените обработку.");
-    return withActiveLimit(`cutting-edit:${userId}:${id}`, 1, async () => {
-      const prefix = `creator/cutting-u${userId}/${id}/`;
-      for (const item of this.options.db?.listCreatorGalleryItems(userId) || [])
-        if (item.videoRel?.startsWith(prefix)) this.options.db!.deleteCreatorGalleryItem(item.id, userId);
+    return withActiveLimit(`cutting-edit:${id}`, 1, async () => {
+      const prefix = `creator/cutting-u${job.userId}/${id}/`;
+      for (const item of this.options.db?.listCreatorGalleryItems(job.userId) || [])
+        if (item.videoRel?.startsWith(prefix)) this.options.db!.deleteCreatorGalleryItem(item.id, job.userId);
       await rm(resolve(this.options.outputDir, prefix), { recursive: true, force: true });
-      await rm(resolve(this.root, `u${userId}`, id), { recursive: true, force: true });
+      await rm(resolve(this.root, `u${job.userId}`, id), { recursive: true, force: true });
       this.jobs.delete(id);
       return { ok: true };
     });

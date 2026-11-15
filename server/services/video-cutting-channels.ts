@@ -1,3 +1,4 @@
+import { sharesWorkspace } from "./shared-workspace.ts";
 import { copyFile, mkdir, realpath, rename, rm } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { resolve, sep } from "node:path";
@@ -27,10 +28,10 @@ export async function addCuttingClipsToChannel(
   },
 ): Promise<{ added: CuttingChannelAdd[]; existing: CuttingChannelAdd[] }> {
   const { userId, job, accountId } = input;
-  if (job.userId !== userId || !/^[a-f\d-]{36}$/.test(job.id))
+  if (!sharesWorkspace(db, userId, job.userId) || !/^[a-f\d-]{36}$/.test(job.id))
     throw new Error("Нарезка недоступна.");
   const account = db.getAccount(accountId);
-  if (!account || account.userId !== userId)
+  if (!account || !sharesWorkspace(db, userId, account.userId))
     throw new Error("Выберите свой канал.");
   if (account.status !== "connected" || account.authError)
     throw new Error("Сначала подключите канал заново.");
@@ -46,7 +47,7 @@ export async function addCuttingClipsToChannel(
     )
   )
     throw new Error("Выберите готовые части этой нарезки.");
-  const prefix = `library/cutting-u${userId}/${job.id}/channel-${accountId}`;
+  const prefix = `library/cutting-u${job.userId}/${job.id}/channel-${accountId}`;
   const videos = db.listVideos(accountId);
   const existing: CuttingChannelAdd[] = [],
     pending: number[] = [];
@@ -62,7 +63,7 @@ export async function addCuttingClipsToChannel(
     else pending.push(part);
   }
   if (!pending.length) return { added: [], existing };
-  const owner = db.getUserById(userId);
+  const owner = account.userId != null ? db.getUserById(account.userId) : null;
   const cap = channelLibraryVideoCap(owner?.role === "admin", isMgsUser(owner));
   let reservation: string | null = null;
   if (cap !== null) {
@@ -78,7 +79,7 @@ export async function addCuttingClipsToChannel(
   let committed = false;
   try {
     const sourceRoot = await realpath(
-      resolve(input.outputDir, `creator/cutting-u${userId}/${job.id}`),
+      resolve(input.outputDir, `creator/cutting-u${job.userId}/${job.id}`),
     );
     const expectedRoot = await realpath(input.outputDir);
     if (!sourceRoot.startsWith(expectedRoot + sep))
@@ -98,7 +99,7 @@ export async function addCuttingClipsToChannel(
     const current = db.getAccount(accountId);
     if (
       !current ||
-      current.userId !== userId ||
+      !sharesWorkspace(db, userId, current.userId) ||
       current.status !== "connected" ||
       current.authError
     )

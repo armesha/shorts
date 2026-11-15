@@ -1,3 +1,4 @@
+import { sharedWorkspaceUserIds, sharesWorkspace } from "../services/shared-workspace.ts";
 // Shared dependency bag threaded into every carved route module. index.ts builds ONE instance
 // (makeRouteDeps) wiring the foundation singletons (auth-session, deck-access, notifier,
 // buildLibraryVideo) plus the remaining cross-cutting closures that were inline in the god-file
@@ -132,7 +133,7 @@ export function makeRouteDeps(input: {
     // Only the main admin may edit any channel; regular admins stay locked to their own channels.
     function accessibleAccount(req: unknown, reply: Replyish, id: number): Account | null {
       const a = db.getAccount(id);
-      if (!a || (!isSuperAdminReq(req) && a.userId !== uid(req))) {
+      if (!a || (!isSuperAdminReq(req) && !sharesWorkspace(db, uid(req), a.userId))) {
         reply.code(404).send({ error: "Канал не найден" });
         return null;
       }
@@ -200,14 +201,14 @@ export function makeRouteDeps(input: {
   // require the real admin role, so a moderator cannot turn a visual aggregate into write access.
   function visibleAccounts(req: unknown, scope?: string, readonly = false): Account[] {
     if (scope === "all" && (readonly ? isAdminLikeReq(req) : isAdminReq(req))) return db.listAccounts();
-    return readonly ? db.listVisibleAccountsByUser(uid(req)) : db.listAccountsByUser(uid(req));
+    return sharedWorkspaceUserIds(db, uid(req)).flatMap(id => readonly ? db.listVisibleAccountsByUser(id) : db.listAccountsByUser(id)).filter((account, index, all) => all.findIndex(other => other.id === account.id) === index);
   }
   function visibleAccount(req: unknown, id: number, readonly = false): Account | null {
     const a = db.getAccount(id);
     if (!a) return null;
     if (readonly && isAdminLikeReq(req)) return a;
     if (readonly && db.db.prepare("SELECT 1 FROM account_viewers WHERE account_id=? AND user_id=?").get(id, uid(req))) return a;
-    return a.userId === uid(req) || isSuperAdminReq(req) ? a : null;
+    return sharesWorkspace(db, uid(req), a.userId) || isSuperAdminReq(req) ? a : null;
   }
 
   function accountAnalyticsPayload(accountId: number, days = 30) {

@@ -1,3 +1,4 @@
+import { sharedWorkspaceUserIds } from "../services/shared-workspace.ts";
 import type { FastifyInstance } from "fastify";
 import type { Db } from "../db.ts";
 import { z } from "zod";
@@ -27,17 +28,21 @@ export function registerVideoCuttingRoutes(
     const userId = uid(req);
     if (!userId) return reply.code(401).send({ error: "Не авторизован" });
     reply.header("Cache-Control", "private, no-store");
-    return { ...await daily.info(userId), canManage: isSuperAdminUser(db.getUserById(userId)) };
+    const ownerId = daily.sharedOwner(sharedWorkspaceUserIds(db, userId), userId);
+    const state = await daily.info(ownerId);
+    const jobs = (await service.list(userId)).filter(job => job.daily);
+    return { ...state, jobs, canManage: isSuperAdminUser(db.getUserById(userId)) || sharedWorkspaceUserIds(db, userId).length > 1 };
   });
   for (const action of ["start", "stop", "run-now"] as const) app.post(`/api/video-cutting/daily/${action}`, async (req, reply) => {
     const userId = uid(req);
     if (!userId) return reply.code(401).send({ error: "Не авторизован" });
-    if (!isSuperAdminUser(db.getUserById(userId))) return reply.code(403).send({ error: "Недостаточно прав." });
+    if (!isSuperAdminUser(db.getUserById(userId)) && sharedWorkspaceUserIds(db, userId).length < 2) return reply.code(403).send({ error: "Недостаточно прав." });
     if (req.headers.origin) {
       try { if (new URL(req.headers.origin).host !== req.headers.host) return reply.code(403).send({ error: "Запрос с другого сайта запрещён." }); }
       catch { return reply.code(403).send({ error: "Некорректный источник запроса." }); }
     }
-    try { return action === "start" ? await daily.enable(userId) : action === "stop" ? await daily.disable(userId) : await daily.runNow(userId, (req.body as { url?: unknown } | null)?.url); }
+    const ownerId = daily.sharedOwner(sharedWorkspaceUserIds(db, userId), userId);
+    try { return action === "start" ? await daily.enable(ownerId) : action === "stop" ? await daily.disable(ownerId) : await daily.runNow(ownerId, (req.body as { url?: unknown } | null)?.url); }
     catch { return reply.code(400).send({ error: "Не удалось изменить расписание." }); }
   });
   app.get("/api/video-cutting", async (req, reply) => {
@@ -45,8 +50,8 @@ export function registerVideoCuttingRoutes(
     if (!userId) return reply.code(401).send({ error: "Не авторизован" });
     return {
       jobs: await service.list(userId),
-      channels: db
-        .listAccountsByUser(userId)
+      channels: sharedWorkspaceUserIds(db, userId)
+        .flatMap(id => db.listAccountsByUser(id))
         .filter(
           (account) => account.status === "connected" && !account.authError,
         )
@@ -99,7 +104,7 @@ export function registerVideoCuttingRoutes(
   app.post("/api/video-cutting/jobs/:id/marks", async (req, reply) => {
     const userId = uid(req);
     if (!userId) return reply.code(401).send({ error: "Не авторизован" });
-    if (!isSuperAdminUser(db.getUserById(userId))) return reply.code(403).send({ error: "Недостаточно прав." });
+    if (!isSuperAdminUser(db.getUserById(userId)) && sharedWorkspaceUserIds(db, userId).length < 2) return reply.code(403).send({ error: "Недостаточно прав." });
     const parsed = z.object({ part: z.number().int().positive().nullable(), mark: z.enum(["SR", "SM"]), checked: z.boolean() }).strict().safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: "Некорректная отметка." });
     try { return await service.setMark(userId, (req.params as { id: string }).id, parsed.data.part, parsed.data.mark, parsed.data.checked); }
@@ -110,7 +115,7 @@ export function registerVideoCuttingRoutes(
     if (!userId) return reply.code(401).send({ error: "Не авторизован" });
     const id = (req.params as { id: string }).id;
     if (!(await service.get(userId, id))) return reply.code(404).send({ error: "Нарезка не найдена." });
-    try { const result = await service.deleteJob(userId, id); await daily.forgetJob(userId, id); return result; }
+    try { const result = await service.deleteJob(userId, id); await daily.forgetJob(daily.sharedOwner(sharedWorkspaceUserIds(db, userId), userId), id); return result; }
     catch (error) { return reply.code(400).send({ error: error instanceof Error ? error.message : "Не удалось удалить нарезку." }); }
   });
   app.post("/api/video-cutting/jobs/:id/cancel", async (req, reply) => {

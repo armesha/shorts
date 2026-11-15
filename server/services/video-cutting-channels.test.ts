@@ -273,3 +273,22 @@ test("deleting a ready part removes its gallery file but preserves channel copie
     await f.close();
   }
 });
+
+test("shared administrators can add each other's cuts to either channel", async () => {
+  const f = await fixture();
+  try {
+    const armen = f.db.createUser({ username: "armen", passHash: "test", role: "admin" });
+    const stas = f.db.createUser({ username: "stas", passHash: "test", role: "admin" });
+    const channel = f.db.createAccount({ userId: stas.id, channelName: "Shared", status: "connected", sourceDecks: ["manual"] });
+    const job = { ...f.job, userId: armen.id };
+    const source = resolve(f.root, `creator/cutting-u${armen.id}/${job.id}`);
+    await mkdir(source, { recursive: true });
+    for (const clip of job.clips) await writeFile(resolve(source, `part-${clip.number}.mp4`), "video");
+    const first = await addCuttingClipsToChannel(f.db, { userId: stas.id, job, accountId: channel.id, outputDir: f.root });
+    const second = await addCuttingClipsToChannel(f.db, { userId: armen.id, job, accountId: channel.id, outputDir: f.root });
+    assert.equal(first.added.length, 2);
+    assert.equal(second.added.length, 0);
+    assert.equal(second.existing.length, 2);
+    await assert.rejects(addCuttingClipsToChannel(f.db, { userId: f.other.id, job, accountId: channel.id, outputDir: f.root }));
+  } finally { await f.close(); }
+});
