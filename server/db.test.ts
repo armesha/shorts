@@ -24,6 +24,21 @@ test("users table enforces a single super-admin flag", () => {
   );
 });
 
+test("additional super-admin access preserves the primary owner and account permissions", () => {
+  const db = openDb(":memory:");
+  const owner = db.createUser({ username: "owner", passHash: "x", role: "admin", isSuperAdmin: true });
+  const stas = db.createUser({ username: "stas", passHash: "x", role: "admin" });
+  const other = db.createUser({ username: "other", passHash: "x", role: "admin" });
+  db.db.prepare("UPDATE users SET super_admin_access = 1 WHERE id = ?").run(stas.id);
+  assert.equal(isSuperAdminUser(db.getUserById(stas.id)), true);
+  assert.equal(isSuperAdminUser(db.getUserById(other.id)), false);
+  assert.equal(db.getSuperAdminUser()?.id, owner.id);
+  const account = db.createAccount({ userId: stas.id, channelName: "Test", lang: "ru", channelLang: "ru" });
+  assert.equal(db.getAccount(account.id)?.ownerIsSuperAdmin, true);
+  db.updateUserRole(stas.id, "user");
+  assert.equal(isSuperAdminUser(db.getUserById(stas.id)), false);
+});
+
 test("user timezone is stored as an account-level posting preference", () => {
   const db = openDb(":memory:");
   const user = db.createUser({ username: "tz-user", passHash: "x", timezone: "America/New_York" });

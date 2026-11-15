@@ -440,6 +440,7 @@ export function applySchema(db: DatabaseSync): void {
   addColumn("users", "client_secret_json TEXT");
   addColumn("users", "password_set INTEGER NOT NULL DEFAULT 1");
   addColumn("users", "is_super_admin INTEGER NOT NULL DEFAULT 0");
+  addColumn("users", "super_admin_access INTEGER NOT NULL DEFAULT 0");
   addColumn("users", "timezone TEXT DEFAULT ''");
   addColumn("channel_analytics_daily", "dislikes INTEGER NOT NULL DEFAULT 0");
   addColumn("history", "error TEXT");

@@ -111,7 +111,7 @@ export const rowToUserAuth = (r: Row): UserAuth => ({
   passHash: r.pass_hash,
   passwordSet: Number(r.password_set ?? 1) !== 0,
   role: r.role,
-  isSuperAdmin: Number(r.is_super_admin ?? 0) !== 0,
+  isSuperAdmin: Number(r.is_super_admin ?? 0) !== 0 || Number(r.super_admin_access ?? 0) !== 0,
   timezone: normalizeTimeZone(r.timezone),
   failedAttempts: Number(r.failed_attempts) || 0,
   lockedUntil: r.locked_until ?? null,

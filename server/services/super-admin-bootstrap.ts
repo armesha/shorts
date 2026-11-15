@@ -5,7 +5,7 @@ export const SUPER_ADMIN_BOOTSTRAP_SETTING = "superAdmin.bootstrapApplied";
 
 type BootstrapDb = Pick<
   Db,
-  "getSetting" | "setSetting" | "getUserByUsername" | "listUsers" | "setUserSuperAdmin" | "updateUserRole"
+  "db" | "getSetting" | "setSetting" | "getUserByUsername" | "getUserById" | "setUserSuperAdmin" | "updateUserRole"
 >;
 
 export type SuperAdminBootstrapResult =
@@ -19,7 +19,8 @@ export type SuperAdminBootstrapResult =
     };
 
 export function ensureSuperAdminBootstrap(db: BootstrapDb): SuperAdminBootstrapResult {
-  const flagged = db.listUsers().find((user) => user.isSuperAdmin);
+  const primary = db.db.prepare("SELECT id FROM users WHERE is_super_admin = 1 LIMIT 1").get() as { id: number } | undefined;
+  const flagged = primary ? db.getUserById(primary.id) : null;
   if (flagged) {
     const user = flagged.role === "admin" ? flagged : db.updateUserRole(flagged.id, "admin") ?? flagged;
     if (db.getSetting(SUPER_ADMIN_BOOTSTRAP_SETTING) !== "1") db.setSetting(SUPER_ADMIN_BOOTSTRAP_SETTING, "1");

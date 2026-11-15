@@ -80,7 +80,8 @@ export function userMethods(db: DatabaseSync) {
     },
     updateUserRole(id: number, role: UserRole): UserAuth | null {
       const nextRole = normalizeUserRole(role);
-      db.prepare("UPDATE users SET role = ?, is_super_admin = CASE WHEN ? = 'admin' THEN is_super_admin ELSE 0 END WHERE id = ?").run(
+      db.prepare("UPDATE users SET role = ?, is_super_admin = CASE WHEN ? = 'admin' THEN is_super_admin ELSE 0 END, super_admin_access = CASE WHEN ? = 'admin' THEN super_admin_access ELSE 0 END WHERE id = ?").run(
+        nextRole,
         nextRole,
         nextRole,
         id,

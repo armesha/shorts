@@ -24,7 +24,7 @@ export function accountMethods(db: DatabaseSync) {
         .prepare(
           `SELECT a.*, COALESCE(today.uploads_today, 0) AS uploads_today
                   , (SELECT status FROM circle_youtube_connections cy WHERE cy.account_id=a.id) AS circle_youtube_status
-                  , u.username AS owner_username, u.role AS owner_role, u.is_super_admin AS owner_is_super_admin
+                  , u.username AS owner_username, u.role AS owner_role, (u.is_super_admin OR u.super_admin_access) AS owner_is_super_admin
              FROM accounts a
              LEFT JOIN users u ON u.id = a.user_id
              LEFT JOIN (
@@ -63,7 +63,7 @@ export function accountMethods(db: DatabaseSync) {
     getAccount(id: number): Account | null {
       const r = db
         .prepare(
-          `SELECT a.*, (SELECT status FROM circle_youtube_connections cy WHERE cy.account_id=a.id) AS circle_youtube_status, u.username AS owner_username, u.role AS owner_role, u.is_super_admin AS owner_is_super_admin
+          `SELECT a.*, (SELECT status FROM circle_youtube_connections cy WHERE cy.account_id=a.id) AS circle_youtube_status, u.username AS owner_username, u.role AS owner_role, (u.is_super_admin OR u.super_admin_access) AS owner_is_super_admin
              FROM accounts a
              LEFT JOIN users u ON u.id = a.user_id
             WHERE a.id = ?`,
