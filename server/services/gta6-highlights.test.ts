@@ -4,7 +4,7 @@ import { access, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promise
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import test from "node:test";
-import { assertChunkMinutes, assertLivePage, followGta6Live, recordLiveChunk, renderGta6Clip, runGta6Highlights, sourcePlansFromInputs } from "./gta6-highlights-media.ts";
+import { assertChunkMinutes, assertLivePage, followGta6Live, liveChannelKey, recordLiveChunk, renderGta6Clip, runGta6Highlights, sourcePlansFromInputs } from "./gta6-highlights-media.ts";
 import {
   GTA6_BANNER_ROBOT,
   GTA6_BANNER_SIM,
@@ -299,6 +299,12 @@ test("repeated local filenames stay separate sources", () => {
 test("live pages are youtube or twitch https links and chunks are 10 to 15 minutes", () => {
   assert.equal(assertLivePage("https://www.twitch.tv/example").hostname, "www.twitch.tv");
   assert.equal(assertLivePage("https://youtu.be/abcdefghijk").hostname, "youtu.be");
+  assert.equal(liveChannelKey("https://www.twitch.tv/Example").key, "twitch:example");
+  assert.equal(liveChannelKey("https://player.twitch.tv/?channel=Example").url, "https://www.twitch.tv/example");
+  assert.equal(liveChannelKey("https://www.youtube.com/watch?v=abcdefghijk").key, liveChannelKey("https://www.youtube.com/live/abcdefghijk").key);
+  assert.equal(liveChannelKey("https://www.youtube.com/@NASA/live").label, "youtube.com/@nasa");
+  assert.throws(() => liveChannelKey("https://www.twitch.tv/directory"));
+  assert.throws(() => liveChannelKey("https://www.youtube.com/feed/subscriptions"));
   assert.equal(assertChunkMinutes(10), 10);
   assert.equal(assertChunkMinutes(15), 15);
   for (const raw of ["http://www.twitch.tv/example", "https://example.com/live", "file:///tmp/a.mp4", "not a url"]) {
@@ -374,26 +380,24 @@ test("live recorder copies a bounded stream and treats a short file as the end",
   const run = async (_bin: string, args: string[]) => {
     calls.push(args);
     if (args.includes("--dump-single-json")) return { stdout: JSON.stringify({ is_live: true, live_status: "is_live" }), stderr: "" };
-    if (args.includes("-g")) return { stdout: "https://video.example/v\nhttps://video.example/a\n", stderr: "" };
     await writeFile(file, Buffer.alloc(5000));
     return { stdout: "", stderr: "" };
   };
   try {
-  const ended = await recordLiveChunk({
-    url: "https://www.youtube.com/watch?v=abcdefghijk",
-    file,
-    seconds: 600,
-    run,
-    probe: async () => 90,
-  });
-  assert.equal(ended.ended, true);
-  assert.equal(ended.empty, false);
-  const ffmpeg = calls.find((args) => args.includes("copy"));
-  assert.ok(ffmpeg);
-  assert.equal(ffmpeg[ffmpeg.indexOf("-t") + 1], "600");
-  assert.equal(ffmpeg[ffmpeg.indexOf("-c") + 1], "copy");
-  assert.ok(ffmpeg.includes("https://video.example/v"));
-  assert.ok(ffmpeg.includes("https://video.example/a"));
+  for (const url of ["https://www.youtube.com/watch?v=abcdefghijk", "https://www.twitch.tv/example"]) {
+    calls.length = 0;
+    const ended = await recordLiveChunk({ url, file, seconds: 600, run, probe: async () => 90 });
+    assert.equal(ended.ended, true);
+    assert.equal(ended.empty, false);
+    const download = calls.find((args) => args.includes("--downloader"));
+    assert.ok(download);
+    assert.ok(download.includes("m3u8:ffmpeg"));
+    assert.ok(download.includes("--no-live-from-start"));
+    assert.match(download.find((arg) => arg.startsWith("ffmpeg:")) || "", /-t 600/);
+    assert.match(download.find((arg) => arg.startsWith("ffmpeg:")) || "", /-c copy/);
+    assert.ok(download.includes(liveChannelKey(url).url));
+    assert.equal(download.includes("https://video.example/v"), false);
+  }
   await assert.rejects(() => recordLiveChunk({
     url: "https://www.twitch.tv/example",
     file,
@@ -402,6 +406,12 @@ test("live recorder copies a bounded stream and treats a short file as the end",
       assert.ok(args.includes("--dump-single-json"));
       return { stdout: JSON.stringify({ is_live: false, live_status: "was_live" }), stderr: "" };
     },
+  }), /нет прямого эфира/);
+  await assert.rejects(() => recordLiveChunk({
+    url: "https://www.twitch.tv/example",
+    file,
+    seconds: 600,
+    run: async () => { throw new Error("yt-dlp завершился с кодом 1: The channel is not currently live"); },
   }), /нет прямого эфира/);
   } finally {
     await rm(root, { recursive: true, force: true });

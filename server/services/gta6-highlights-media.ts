@@ -265,7 +265,36 @@ export function sourcePlansFromInputs(inputs: readonly string[]): Gta6SourcePlan
   });
 }
 
-const LIVE_HOSTS = new Set(["youtube.com", "m.youtube.com", "youtu.be", "twitch.tv"]);
+const LIVE_HOSTS = new Set(["youtube.com", "m.youtube.com", "youtu.be", "twitch.tv", "player.twitch.tv"]);
+export const GTA6_LIVE_LIMIT = 5;
+const YOUTUBE_HOSTS = new Set(["youtube.com", "m.youtube.com", "youtu.be"]);
+
+export type LiveChannelRef = { key: string; folder: string; label: string; url: string };
+
+export function liveChannelKey(raw: string): LiveChannelRef {
+  const url = assertLivePage(raw);
+  const host = url.hostname.toLowerCase().replace(/^www\./, "");
+  if (host === "twitch.tv" || host === "player.twitch.tv") {
+    const login = (host === "player.twitch.tv" ? url.searchParams.get("channel") : url.pathname.split("/").filter(Boolean)[0])?.toLowerCase() || "";
+    if (!/^[a-z0-9_]{2,25}$/u.test(login) || ["directory", "videos", "settings", "downloads", "subscriptions", "inventory", "search"].includes(login)) {
+      throw new Error("Нужна ссылка на канал Twitch.");
+    }
+    const key = `twitch:${login}`;
+    return { key, folder: key.replace(/[^a-z0-9_-]+/giu, "_"), label: `twitch.tv/${login}`, url: `https://www.twitch.tv/${login}` };
+  }
+  const parts = url.pathname.split("/").filter(Boolean);
+  const watch = url.searchParams.get("v") || "";
+  let id = "";
+  if (host === "youtu.be" && /^[\w-]{6,}$/u.test(parts[0] || "")) id = `v:${parts[0]}`;
+  else if (/^[\w-]{6,}$/u.test(watch)) id = `v:${watch}`;
+  else if (parts[0] === "live" && /^[\w-]{6,}$/u.test(parts[1] || "")) id = `v:${parts[1]}`;
+  else if (parts[0]?.startsWith("@") && parts[1] === "live") id = `at:${parts[0].slice(1).toLowerCase()}`;
+  else if ((parts[0] === "channel" || parts[0] === "c" || parts[0] === "user") && parts[1] && parts[2] === "live") id = `${parts[0]}:${parts[1]}`;
+  if (!YOUTUBE_HOSTS.has(host) || !id) throw new Error("Нужна ссылка на трансляцию YouTube.");
+  const key = `youtube:${id}`;
+  const label = id.startsWith("v:") ? `youtube.com/${id.slice(2)}` : id.startsWith("at:") ? `youtube.com/@${id.slice(3)}` : `youtube.com/${id.slice(id.indexOf(":") + 1)}`;
+  return { key, folder: key.replace(/[^a-z0-9_-]+/giu, "_"), label, url: url.href };
+}
 
 export function assertLivePage(raw: string) {
   let url: URL;
@@ -304,26 +333,37 @@ export async function recordLiveChunk(input: {
   run?: CapturedRun;
   probe?: (file: string) => Promise<number>;
 }) {
-  const page = assertLivePage(input.url);
+  const channel = liveChannelKey(input.url);
   const run = input.run ?? runCaptured;
   const ytdlp = ytdlpBin();
-  const common = ["--no-playlist", "--no-warnings", "--socket-timeout", "30"];
-  const meta = jsonBlock((await run(ytdlp, [...common, "--skip-download", "--dump-single-json", "--", page.href], {
-    cwd: repoRoot, timeoutMs: 120_000, env: childEnv(), signal: input.signal,
-  })).stdout);
-  if (meta.is_live !== true && meta.live_status !== "is_live") throw new Error("По ссылке сейчас нет прямого эфира.");
-  const listed = (await run(ytdlp, [...common, "-g", "-f", "bv*[height<=1080]+ba/b[height<=1080]/b", "--", page.href], {
-    cwd: repoRoot, timeoutMs: 120_000, env: childEnv(), signal: input.signal,
-  })).stdout;
-  const streams = listed.split(/\r?\n/u).map((line) => line.trim()).filter((line) => /^https:\/\//u.test(line)).slice(0, 2);
-  if (!streams.length) throw new Error("Эфир не отдаёт поток.");
-  await mkdir(resolve(input.file, ".."), { recursive: true });
-  const reconnect = ["-reconnect", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "5"];
-  const args = ["-hide_banner", "-loglevel", "error", "-y", ...reconnect, "-i", streams[0]!];
-  if (streams[1]) args.push(...reconnect, "-i", streams[1]!, "-map", "0:v:0", "-map", "1:a:0");
-  args.push("-t", String(input.seconds), "-c", "copy", input.file);
+  const common = ["--no-playlist", "--no-warnings", "--socket-timeout", "30", "--no-live-from-start"];
+  let meta: { is_live?: boolean; live_status?: string };
   try {
-    await run(process.env.GTA6_FFMPEG || "ffmpeg", args, {
+    meta = jsonBlock((await run(ytdlp, [...common, "--skip-download", "--dump-single-json", "--", channel.url], {
+      cwd: repoRoot, timeoutMs: 120_000, env: childEnv(), signal: input.signal,
+    })).stdout);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    if (/not currently live|is not live|no live streams/iu.test(message)) throw new Error("По ссылке сейчас нет прямого эфира.");
+    throw error;
+  }
+  if (meta.is_live !== true && meta.live_status !== "is_live") throw new Error("По ссылке сейчас нет прямого эфира.");
+  await mkdir(resolve(input.file, ".."), { recursive: true });
+  // yt-dlp keeps the site headers. A bare media URL expires and is rejected by YouTube and Twitch.
+  try {
+    await run(ytdlp, [
+      ...common,
+      "--no-part",
+      "--concurrent-fragments", "1",
+      "--downloader", "m3u8:ffmpeg",
+      "--downloader", "ffmpeg",
+      "--downloader-args", `ffmpeg:-t ${input.seconds} -c copy`,
+      "-f", "b[height<=1080]/b/bv*[height<=1080]+ba/b",
+      "--remux-video", "mkv",
+      "-o", input.file,
+      "--",
+      channel.url,
+    ], {
       cwd: repoRoot, timeoutMs: (input.seconds + 180) * 1000, env: childEnv(), signal: input.signal,
     });
   } catch (error) {
@@ -333,6 +373,14 @@ export async function recordLiveChunk(input: {
   if (size < 4096) return { ended: true, empty: true };
   const duration = await (input.probe ?? probeMediaDuration)(input.file).catch(() => 0);
   return { ended: input.signal?.aborted === true || duration + 5 < input.seconds, empty: !(duration > 0) };
+}
+
+let processTail: Promise<void> = Promise.resolve();
+
+export function withGta6ProcessSlot<T>(job: () => Promise<T>): Promise<T> {
+  const run = processTail.then(job, job);
+  processTail = run.then(() => undefined, () => undefined);
+  return run;
 }
 
 export async function followGta6Live(options: {
@@ -353,12 +401,12 @@ export async function followGta6Live(options: {
   const stop = new AbortController();
   const signal = options.signal ? AbortSignal.any([options.signal, stop.signal]) : stop.signal;
   const record = options.record ?? ((input: { url: string; file: string; seconds: number; signal?: AbortSignal }) => recordLiveChunk(input));
-  const processChunk = options.processChunk ?? ((input: { file: string; sourceId: string }) => runGta6Highlights({
+  const processChunk = options.processChunk ?? ((input: { file: string; sourceId: string }) => withGta6ProcessSlot(() => runGta6Highlights({
     sources: [{ sourceId: input.sourceId, chunks: [input.file] }],
     outDir: options.outDir,
     telegram: options.telegram,
     labels: options.labels,
-  }));
+  })));
   const remove = options.remove ?? ((file: string) => rm(file, { force: true }));
   const log = options.log ?? (() => {});
   await mkdir(resolve(options.outDir, "incoming"), { recursive: true });

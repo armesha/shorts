@@ -11,6 +11,20 @@ const Start = z.object({
   minutes: z.union([z.literal(10), z.literal(12), z.literal(15)]).optional(),
   telegram: z.boolean().optional(),
 }).strict();
+const Stop = z.object({ id: z.string().trim().min(1).max(80) }).strict();
+
+function present(state: Awaited<ReturnType<Gta6LiveSessions["view"]>>) {
+  return {
+    ...state,
+    channels: state.channels.map((channel) => ({
+      ...channel,
+      clips: channel.clips.map((clip) => ({
+        ...clip,
+        url: `/api/gta6-live/clips/${encodeURIComponent(channel.id)}/${encodeURIComponent(clip.file)}`,
+      })),
+    })),
+  };
+}
 
 function sameOrigin(req: FastifyRequest) {
   if (!req.headers.origin) return true;
@@ -23,22 +37,20 @@ export function registerGta6LiveRoutes(app: FastifyInstance, root: string, sessi
     const userId = uid(req);
     if (!userId) return reply.code(401).send({ error: "Не авторизован" });
     reply.header("Cache-Control", "private, no-store");
-    const state = await sessions.view(userId);
-    return { ...state, clips: state.clips.map((clip) => ({ ...clip, url: `/api/gta6-live/clips/${encodeURIComponent(clip.file)}` })) };
+    return present(await sessions.view(userId));
   });
 
   app.post("/api/gta6-live/start", async (req, reply) => {
     const userId = uid(req);
     if (!userId) return reply.code(401).send({ error: "Не авторизован" });
     if (!sameOrigin(req)) return reply.code(403).send({ error: "Запрос с другого сайта запрещён." });
-    if (!checkRateLimit(`gta6-live:${userId}`, { limit: 12, windowMs: 3600_000 }).ok) {
+    if (!checkRateLimit(`gta6-live:${userId}`, { limit: 60, windowMs: 3600_000 }).ok) {
       return reply.code(429).send({ error: "Слишком много запусков, подождите немного." });
     }
     const parsed = Start.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: "Проверьте ссылку и длину куска." });
     try {
-      const state = await sessions.start(userId, parsed.data);
-      return { ...state, clips: state.clips.map((clip) => ({ ...clip, url: `/api/gta6-live/clips/${encodeURIComponent(clip.file)}` })) };
+      return present(await sessions.start(userId, parsed.data));
     } catch (error) {
       return reply.code(400).send({ error: error instanceof Error ? error.message : "Не удалось начать эфир." });
     }
@@ -48,16 +60,18 @@ export function registerGta6LiveRoutes(app: FastifyInstance, root: string, sessi
     const userId = uid(req);
     if (!userId) return reply.code(401).send({ error: "Не авторизован" });
     if (!sameOrigin(req)) return reply.code(403).send({ error: "Запрос с другого сайта запрещён." });
-    const state = await sessions.stop(userId);
-    return { ...state, clips: state.clips.map((clip) => ({ ...clip, url: `/api/gta6-live/clips/${encodeURIComponent(clip.file)}` })) };
+    const parsed = Stop.safeParse(req.body);
+    if (!parsed.success) return reply.code(400).send({ error: "Канал не найден." });
+    try { return present(await sessions.stop(userId, parsed.data.id)); }
+    catch (error) { return reply.code(400).send({ error: error instanceof Error ? error.message : "Канал не найден." }); }
   });
 
-  app.get("/api/gta6-live/clips/:file", async (req, reply) => {
+  app.get("/api/gta6-live/clips/:channel/:file", async (req, reply) => {
     const userId = uid(req);
     if (!userId) return reply.code(401).send({ error: "Не авторизован" });
-    const file = String((req.params as { file?: string }).file || "");
+    const params = req.params as { channel?: string; file?: string };
     let path: string;
-    try { path = sessions.clipFile(userId, file); }
+    try { path = sessions.clipFile(userId, String(params.channel || ""), String(params.file || "")); }
     catch { return reply.code(400).send({ error: "Некорректный файл." }); }
     const info = await stat(path).catch(() => null);
     if (!info?.isFile()) return reply.code(404).send({ error: "Клип не найден." });
