@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import test from "node:test";
@@ -114,6 +114,25 @@ test("a writing line left by a restart is started again and a finished line is n
     assert.equal(after.channels.find((channel) => channel.id === doneFolder)?.running, false);
     await sessions.stop(7, liveFolder);
     await sessions.settled(7);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("recording until the stream ends does not stop after a fixed number of chunks", async () => {
+  const root = await mkdtemp(resolve(tmpdir(), "gta6-live-open-"));
+  let maxChunks: number | undefined = 6;
+  const sessions = new Gta6LiveSessions(root, (options) => {
+    maxChunks = options.maxChunks;
+    return Promise.resolve({ published: false, sources: [] });
+  });
+  try {
+    const view = await sessions.start(1, { url: "https://www.twitch.tv/alpha", minutes: 10, cuts: 2, untilEnd: true });
+    assert.equal(maxChunks, undefined);
+    assert.equal(view.channels[0]?.chunks, 0);
+    const stored = JSON.parse(await readFile(resolve(root, "u1", "state.json"), "utf8")) as { channels: Array<{ chunks: number }> };
+    assert.equal(stored.channels[0]?.chunks, 0);
+    await sessions.settled(1);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

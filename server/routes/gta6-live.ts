@@ -13,6 +13,7 @@ const Start = z.object({
   telegram: z.boolean().optional(),
   chunks: z.number().int().min(1).max(12).optional(),
   cuts: z.number().int().min(1).max(8).optional(),
+  untilEnd: z.boolean().optional(),
 }).strict();
 const Stop = z.object({ id: z.string().trim().min(1).max(80) }).strict();
 

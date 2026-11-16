@@ -73,7 +73,7 @@ export class Gta6LiveSessions {
             url: row.url,
             label: row.label,
             minutes: bounded(row.minutes, 5, 30, 10),
-            chunks: bounded(row.chunks, 1, 12, 6),
+            chunks: row.chunks === 0 ? 0 : bounded(row.chunks, 1, 12, 6),
             cuts: bounded(row.cuts, 1, 8, 4),
             telegram: row.telegram === true,
             line: typeof row.line === "string" ? row.line : "",
@@ -117,11 +117,12 @@ export class Gta6LiveSessions {
     };
   }
 
-  async start(userId: number, input: { url: string; minutes?: number; telegram?: boolean; chunks?: number; cuts?: number; keepClips?: boolean }) {
+  async start(userId: number, input: { url: string; minutes?: number; telegram?: boolean; chunks?: number; cuts?: number; untilEnd?: boolean; keepClips?: boolean }) {
     if (!Number.isSafeInteger(userId) || userId < 1) throw new Error("Некорректный пользователь.");
     const channel = liveChannelKey(input.url);
     const minutes = assertChunkMinutes(input.minutes ?? 10);
-    const chunks = bounded(input.chunks, 1, 12, 6);
+    const untilEnd = input.untilEnd === true;
+    const chunks = untilEnd ? 0 : bounded(input.chunks, 1, 12, 6);
     const cuts = bounded(input.cuts, 1, 8, 4);
     const telegram = input.telegram === true;
     if (this.active.has(channel.key)) throw new Error("Этот канал уже идёт.");
@@ -157,7 +158,7 @@ export class Gta6LiveSessions {
       outDir: resolve(this.dir(userId), channel.folder),
       minutes,
       telegram,
-      maxChunks: chunks,
+      maxChunks: untilEnd ? undefined : chunks,
       audioCuts: { min: cuts, max: cuts },
       signal: stop.signal,
       log: (line) => { void this.note(userId, channel.folder, token, line); },
@@ -189,8 +190,9 @@ export class Gta6LiveSessions {
           url: channel.url,
           minutes: channel.minutes,
           telegram: channel.telegram,
-          chunks: channel.chunks,
+          chunks: channel.chunks || undefined,
           cuts: channel.cuts,
+          untilEnd: channel.chunks === 0,
           keepClips: true,
         });
       } catch { /* битая ссылка не должна останавливать остальные эфиры */ }
