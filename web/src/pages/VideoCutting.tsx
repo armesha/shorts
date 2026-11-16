@@ -14,6 +14,7 @@ import {
 import { get, send } from "../lib/api/http";
 import { confirmDialog } from "../lib/confirm";
 import DailyCutting from "./DailyCutting";
+import Gta6LiveCard from "./Gta6LiveCard";
 
 type Part = {
   number: number;
@@ -355,6 +356,7 @@ export default function VideoCutting() {
           </button>
         )}
       </header>
+      <Gta6LiveCard />
       <DailyCutting jobs={workspace.jobs} selected={job?.id} onSelect={id => { setSelected(id); setFormExpanded(false); }} />
       {loadError && (
         <div
