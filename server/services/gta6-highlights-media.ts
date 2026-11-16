@@ -82,7 +82,9 @@ export function runCaptured(bin: string, args: string[], options: { cwd: string;
     child.on("error", (error) => finish(error));
     child.on("close", (code) => {
       if (code === 0) finish();
-      else finish(new Error(`${bin} завершился с кодом ${code}: ${stderr}`));
+      else finish(new Error(code == null
+        ? `${basename(bin)} остановлен: источник не ответил вовремя.`
+        : `${basename(bin)} завершился с кодом ${code}: ${stderr}`));
     });
   });
 }
@@ -341,7 +343,7 @@ export async function recordLiveChunk(input: {
   let meta: { is_live?: boolean; live_status?: string };
   try {
     meta = jsonBlock((await run(ytdlp, [...common, "--skip-download", "--dump-single-json", "--", channel.url], {
-      cwd: repoRoot, timeoutMs: 120_000, env: childEnv(), signal: input.signal,
+      cwd: repoRoot, timeoutMs: 8 * 60_000, env: childEnv(), signal: input.signal,
     })).stdout);
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
@@ -365,7 +367,7 @@ export async function recordLiveChunk(input: {
       "--",
       channel.url,
     ], {
-      cwd: repoRoot, timeoutMs: (input.seconds + 180) * 1000, env: childEnv(), signal: input.signal,
+      cwd: repoRoot, timeoutMs: (input.seconds + 12 * 60) * 1000, env: childEnv(), signal: input.signal,
     });
   } catch (error) {
     if (!input.signal?.aborted) throw error;
