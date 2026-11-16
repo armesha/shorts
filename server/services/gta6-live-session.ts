@@ -102,7 +102,7 @@ export class Gta6LiveSessions {
     };
   }
 
-  async start(userId: number, input: { url: string; minutes?: number; telegram?: boolean; chunks?: number }) {
+  async start(userId: number, input: { url: string; minutes?: number; telegram?: boolean; chunks?: number; cuts?: number }) {
     if (!Number.isSafeInteger(userId) || userId < 1) throw new Error("Некорректный пользователь.");
     const channel = liveChannelKey(input.url);
     const minutes = assertChunkMinutes(input.minutes ?? 10);
@@ -135,7 +135,7 @@ export class Gta6LiveSessions {
       minutes,
       telegram,
       maxChunks: input.chunks,
-      audioCuts: input.chunks ? { min: 3, max: 5 } : undefined,
+      audioCuts: input.cuts ? { min: input.cuts, max: input.cuts } : input.chunks ? { min: 3, max: 5 } : undefined,
       signal: stop.signal,
       log: (line) => { void this.note(userId, channel.folder, token, line); },
     }).then(async (report) => {

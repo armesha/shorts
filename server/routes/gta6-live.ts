@@ -9,9 +9,10 @@ import { Gta6LiveSessions } from "../services/gta6-live-session.ts";
 
 const Start = z.object({
   url: z.string().trim().min(1).max(2048),
-  minutes: z.union([z.literal(10), z.literal(12), z.literal(15)]).optional(),
+  minutes: z.number().int().min(5).max(30).optional(),
   telegram: z.boolean().optional(),
-  chunks: z.literal(6).optional(),
+  chunks: z.number().int().min(1).max(12).optional(),
+  cuts: z.number().int().min(1).max(8).optional(),
 }).strict();
 const Stop = z.object({ id: z.string().trim().min(1).max(80) }).strict();
 

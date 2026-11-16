@@ -311,7 +311,7 @@ export function assertLivePage(raw: string) {
 }
 
 export function assertChunkMinutes(minutes: number) {
-  if (!Number.isInteger(minutes) || minutes < 10 || minutes > 15) throw new Error("Кусок эфира должен быть от 10 до 15 минут.");
+  if (!Number.isInteger(minutes) || minutes < 5 || minutes > 30) throw new Error("Кусок эфира должен быть от 5 до 30 минут.");
   return minutes;
 }
 
@@ -456,8 +456,8 @@ export async function followGta6Live(options: {
 }) {
   const page = assertLivePage(options.url);
   const minutes = assertChunkMinutes(options.minutes ?? 10);
-  if (options.maxChunks != null && (!Number.isInteger(options.maxChunks) || options.maxChunks < 1 || options.maxChunks > 6)) {
-    throw new Error("Час эфира — это от 1 до 6 кусков.");
+  if (options.maxChunks != null && (!Number.isInteger(options.maxChunks) || options.maxChunks < 1 || options.maxChunks > 12)) {
+    throw new Error("Подряд можно записать от 1 до 12 кусков.");
   }
   const seconds = minutes * 60;
   const stop = new AbortController();

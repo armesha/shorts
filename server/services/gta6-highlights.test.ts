@@ -296,7 +296,7 @@ test("repeated local filenames stay separate sources", () => {
   assert.deepEqual(plans[1]?.chunks, ["/streams/en/live.mp4"]);
 });
 
-test("live pages are youtube or twitch https links and chunks are 10 to 15 minutes", () => {
+test("live pages are youtube or twitch https links and chunks are 5 to 30 minutes", () => {
   assert.equal(assertLivePage("https://www.twitch.tv/example").hostname, "www.twitch.tv");
   assert.equal(assertLivePage("https://youtu.be/abcdefghijk").hostname, "youtu.be");
   assert.equal(liveChannelKey("https://www.twitch.tv/Example").key, "twitch:example");
@@ -305,13 +305,15 @@ test("live pages are youtube or twitch https links and chunks are 10 to 15 minut
   assert.equal(liveChannelKey("https://www.youtube.com/@NASA/live").label, "youtube.com/@nasa");
   assert.throws(() => liveChannelKey("https://www.twitch.tv/directory"));
   assert.throws(() => liveChannelKey("https://www.youtube.com/feed/subscriptions"));
+  assert.equal(assertChunkMinutes(5), 5);
   assert.equal(assertChunkMinutes(10), 10);
   assert.equal(assertChunkMinutes(15), 15);
+  assert.equal(assertChunkMinutes(30), 30);
   for (const raw of ["http://www.twitch.tv/example", "https://example.com/live", "file:///tmp/a.mp4", "not a url"]) {
     assert.throws(() => assertLivePage(raw));
   }
-  assert.throws(() => assertChunkMinutes(9));
-  assert.throws(() => assertChunkMinutes(16));
+  assert.throws(() => assertChunkMinutes(4));
+  assert.throws(() => assertChunkMinutes(31));
 });
 
 test("live follow cuts a closed chunk while the next one records, then deletes only the raw chunk", async () => {
