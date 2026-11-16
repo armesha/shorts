@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { runGta6Highlights, sourcePlansFromInputs, type Gta6SourcePlan } from "../server/services/gta6-highlights-media.ts";
+import { followGta6Live, runGta6Highlights, sourcePlansFromInputs, type Gta6SourcePlan } from "../server/services/gta6-highlights-media.ts";
 import type { Gta6Label } from "../server/services/gta6-highlights.ts";
 
 function fail(message: string): never {
@@ -12,6 +12,8 @@ const argv = process.argv.slice(2);
 let outDir = "";
 let telegram = false;
 let labelsPath = "";
+let live = "";
+let minutes = 10;
 const inputs: string[] = [];
 const sources: Gta6SourcePlan[] = [];
 for (let index = 0; index < argv.length; index += 1) {
@@ -19,6 +21,8 @@ for (let index = 0; index < argv.length; index += 1) {
   if (arg === "--telegram") { telegram = true; continue; }
   if (arg === "--out") { outDir = argv[++index] || ""; continue; }
   if (arg === "--labels") { labelsPath = argv[++index] || ""; continue; }
+  if (arg === "--live") { live = argv[++index] || ""; continue; }
+  if (arg === "--minutes") { minutes = Number(argv[++index]); continue; }
   if (arg === "--input") { inputs.push(argv[++index] || ""); continue; }
   if (arg === "--chunk") {
     const sourceId = argv[++index] || "";
@@ -32,9 +36,29 @@ for (let index = 0; index < argv.length; index += 1) {
   fail(`Неизвестный аргумент: ${arg || ""}`);
 }
 if (!outDir) fail("Нужен каталог --out.");
-const plans = [...sources, ...sourcePlansFromInputs(inputs.filter(Boolean))];
-if (!plans.length) fail("Нужен хотя бы один --input или --chunk.");
 let labels: Gta6Label[] | undefined;
 if (labelsPath) labels = JSON.parse(await readFile(labelsPath, "utf8")) as Gta6Label[];
-const report = await runGta6Highlights({ sources: plans, outDir: resolve(outDir), telegram, labels });
+const plans = [...sources, ...sourcePlansFromInputs(inputs.filter(Boolean))];
+if (live && plans.length) fail("Режим эфира не смешивается с --input и --chunk.");
+if (!live && !plans.length) fail("Нужен --live, --input или --chunk.");
+const report = live
+  ? await followGta6Live({
+      url: live,
+      outDir: resolve(outDir),
+      minutes,
+      telegram,
+      labels,
+      signal: listenForStop(),
+      log: (line) => process.stderr.write(`${line}\n`),
+    })
+  : await runGta6Highlights({ sources: plans, outDir: resolve(outDir), telegram, labels });
 process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+
+function listenForStop() {
+  const stop = new AbortController();
+  process.once("SIGINT", () => {
+    process.stderr.write("Останавливаю запись после текущего куска.\n");
+    stop.abort();
+  });
+  return stop.signal;
+}

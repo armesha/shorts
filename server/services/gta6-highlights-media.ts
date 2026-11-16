@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
-import { mkdir, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { mkdir, rm, stat, writeFile } from "node:fs/promises";
 import { basename, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -18,7 +19,7 @@ import {
 export type CapturedRun = (
   bin: string,
   args: string[],
-  options: { cwd: string; timeoutMs?: number; env?: NodeJS.ProcessEnv },
+  options: { cwd: string; timeoutMs?: number; env?: NodeJS.ProcessEnv; signal?: AbortSignal },
 ) => Promise<{ stdout: string; stderr: string }>;
 
 export type Gta6Transcript = { language: string; segments: Gta6Segment[] };
@@ -41,7 +42,7 @@ export type Gta6Report = {
 
 const repoRoot = resolve(fileURLToPath(new URL(".", import.meta.url)), "../..");
 
-export function runCaptured(bin: string, args: string[], options: { cwd: string; timeoutMs?: number; env?: NodeJS.ProcessEnv }) {
+export function runCaptured(bin: string, args: string[], options: { cwd: string; timeoutMs?: number; env?: NodeJS.ProcessEnv; signal?: AbortSignal }) {
   return new Promise<{ stdout: string; stderr: string }>((accept, reject) => {
     const child = spawn(bin, args, {
       cwd: options.cwd,
@@ -65,10 +66,14 @@ export function runCaptured(bin: string, args: string[], options: { cwd: string;
       }, 3000).unref();
     };
     const timer = setTimeout(terminate, options.timeoutMs ?? 20 * 60_000);
+    const onAbort = () => terminate();
+    options.signal?.addEventListener("abort", onAbort, { once: true });
+    if (options.signal?.aborted) terminate();
     const finish = (error?: Error) => {
       if (settled) return;
       settled = true;
       clearTimeout(timer);
+      options.signal?.removeEventListener("abort", onAbort);
       error ? reject(error) : accept({ stdout, stderr });
     };
     child.stdout.on("data", (chunk) => { stdout += String(chunk); });
@@ -258,6 +263,138 @@ export function sourcePlansFromInputs(inputs: readonly string[]): Gta6SourcePlan
     used.add(sourceId);
     return { sourceId, chunks: [file] };
   });
+}
+
+const LIVE_HOSTS = new Set(["youtube.com", "m.youtube.com", "youtu.be", "twitch.tv"]);
+
+export function assertLivePage(raw: string) {
+  let url: URL;
+  try { url = new URL(raw); }
+  catch { throw new Error("Нужна ссылка на прямой эфир YouTube или Twitch."); }
+  const host = url.hostname.toLowerCase().replace(/^www\./, "");
+  if (url.protocol !== "https:" || url.username || url.password || !LIVE_HOSTS.has(host)) {
+    throw new Error("Поддерживается только прямая https-ссылка на YouTube или Twitch.");
+  }
+  return url;
+}
+
+export function assertChunkMinutes(minutes: number) {
+  if (!Number.isInteger(minutes) || minutes < 10 || minutes > 15) throw new Error("Кусок эфира должен быть от 10 до 15 минут.");
+  return minutes;
+}
+
+function ytdlpBin() {
+  if (process.env.GTA6_YTDLP) return process.env.GTA6_YTDLP;
+  const local = resolve(repoRoot, ".venv-cutting/bin/yt-dlp");
+  return existsSync(local) ? local : "yt-dlp";
+}
+
+function jsonBlock(stdout: string) {
+  const start = stdout.indexOf("{");
+  const end = stdout.lastIndexOf("}");
+  if (start < 0 || end < start) throw new Error("Не удалось прочитать состояние эфира.");
+  return JSON.parse(stdout.slice(start, end + 1)) as { is_live?: boolean; live_status?: string };
+}
+
+export async function recordLiveChunk(input: {
+  url: string;
+  file: string;
+  seconds: number;
+  signal?: AbortSignal;
+  run?: CapturedRun;
+  probe?: (file: string) => Promise<number>;
+}) {
+  const page = assertLivePage(input.url);
+  const run = input.run ?? runCaptured;
+  const ytdlp = ytdlpBin();
+  const common = ["--no-playlist", "--no-warnings", "--socket-timeout", "30"];
+  const meta = jsonBlock((await run(ytdlp, [...common, "--skip-download", "--dump-single-json", "--", page.href], {
+    cwd: repoRoot, timeoutMs: 120_000, env: childEnv(), signal: input.signal,
+  })).stdout);
+  if (meta.is_live !== true && meta.live_status !== "is_live") throw new Error("По ссылке сейчас нет прямого эфира.");
+  const listed = (await run(ytdlp, [...common, "-g", "-f", "bv*[height<=1080]+ba/b[height<=1080]/b", "--", page.href], {
+    cwd: repoRoot, timeoutMs: 120_000, env: childEnv(), signal: input.signal,
+  })).stdout;
+  const streams = listed.split(/\r?\n/u).map((line) => line.trim()).filter((line) => /^https:\/\//u.test(line)).slice(0, 2);
+  if (!streams.length) throw new Error("Эфир не отдаёт поток.");
+  await mkdir(resolve(input.file, ".."), { recursive: true });
+  const reconnect = ["-reconnect", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "5"];
+  const args = ["-hide_banner", "-loglevel", "error", "-y", ...reconnect, "-i", streams[0]!];
+  if (streams[1]) args.push(...reconnect, "-i", streams[1]!, "-map", "0:v:0", "-map", "1:a:0");
+  args.push("-t", String(input.seconds), "-c", "copy", input.file);
+  try {
+    await run(process.env.GTA6_FFMPEG || "ffmpeg", args, {
+      cwd: repoRoot, timeoutMs: (input.seconds + 180) * 1000, env: childEnv(), signal: input.signal,
+    });
+  } catch (error) {
+    if (!input.signal?.aborted) throw error;
+  }
+  const size = await stat(input.file).then((info) => info.size).catch(() => 0);
+  if (size < 4096) return { ended: true, empty: true };
+  const duration = await (input.probe ?? probeMediaDuration)(input.file).catch(() => 0);
+  return { ended: input.signal?.aborted === true || duration + 5 < input.seconds, empty: !(duration > 0) };
+}
+
+export async function followGta6Live(options: {
+  url: string;
+  outDir: string;
+  minutes?: number;
+  telegram?: boolean;
+  labels?: readonly Gta6Label[];
+  signal?: AbortSignal;
+  record?: (input: { url: string; file: string; seconds: number; signal?: AbortSignal }) => Promise<{ ended: boolean; empty?: boolean }>;
+  processChunk?: (input: { file: string; index: number; sourceId: string }) => Promise<Gta6Report>;
+  remove?: (file: string) => Promise<void>;
+  log?: (line: string) => void;
+}) {
+  const page = assertLivePage(options.url);
+  const minutes = assertChunkMinutes(options.minutes ?? 10);
+  const seconds = minutes * 60;
+  const stop = new AbortController();
+  const signal = options.signal ? AbortSignal.any([options.signal, stop.signal]) : stop.signal;
+  const record = options.record ?? ((input: { url: string; file: string; seconds: number; signal?: AbortSignal }) => recordLiveChunk(input));
+  const processChunk = options.processChunk ?? ((input: { file: string; sourceId: string }) => runGta6Highlights({
+    sources: [{ sourceId: input.sourceId, chunks: [input.file] }],
+    outDir: options.outDir,
+    telegram: options.telegram,
+    labels: options.labels,
+  }));
+  const remove = options.remove ?? ((file: string) => rm(file, { force: true }));
+  const log = options.log ?? (() => {});
+  await mkdir(resolve(options.outDir, "incoming"), { recursive: true });
+  const report: Gta6Report = { published: false, sources: [] };
+  const open = (index: number) => {
+    const file = resolve(options.outDir, "incoming", `chunk-${index}.mkv`);
+    log(`Пишу кусок ${index + 1}, ${minutes} мин.`);
+    return record({ url: page.href, file, seconds, signal }).then((result) => ({ ...result, file, index }));
+  };
+  let pending = open(0);
+  try {
+    while (!signal.aborted) {
+      const current = await pending;
+      const continueLive = !current.ended && !signal.aborted;
+      if (continueLive) pending = open(current.index + 1);
+      if (current.empty) {
+        await remove(current.file);
+        log(`Кусок ${current.index + 1} пустой и удалён.`);
+      } else {
+        log(`Кусок ${current.index + 1} закрыт, нарезаю.`);
+        const piece = await processChunk({ file: current.file, index: current.index, sourceId: `live-${current.index + 1}` });
+        report.sources.push(...piece.sources);
+        await writeFile(resolve(options.outDir, "report.json"), `${JSON.stringify(report, null, 2)}\n`);
+        await remove(current.file);
+        const clips = piece.sources.reduce((count, source) => count + source.highlights.length, 0);
+        log(`Исходный кусок ${current.index + 1} удалён. Клипов: ${clips}.`);
+      }
+      if (!continueLive) break;
+    }
+  } catch (error) {
+    stop.abort();
+    await pending.catch(() => undefined);
+    throw error;
+  }
+  await writeFile(resolve(options.outDir, "report.json"), `${JSON.stringify(report, null, 2)}\n`);
+  return report;
 }
 
 export type { Gta6Class };

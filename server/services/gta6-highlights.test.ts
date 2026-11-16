@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { access, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import test from "node:test";
-import { renderGta6Clip, runGta6Highlights, sourcePlansFromInputs } from "./gta6-highlights-media.ts";
+import { assertChunkMinutes, assertLivePage, followGta6Live, recordLiveChunk, renderGta6Clip, runGta6Highlights, sourcePlansFromInputs } from "./gta6-highlights-media.ts";
 import {
   GTA6_BANNER_ROBOT,
   GTA6_BANNER_SIM,
@@ -294,6 +294,118 @@ test("repeated local filenames stay separate sources", () => {
   assert.notEqual(plans[0]?.sourceId, plans[1]?.sourceId);
   assert.deepEqual(plans[0]?.chunks, ["/streams/ru/live.mp4"]);
   assert.deepEqual(plans[1]?.chunks, ["/streams/en/live.mp4"]);
+});
+
+test("live pages are youtube or twitch https links and chunks are 10 to 15 minutes", () => {
+  assert.equal(assertLivePage("https://www.twitch.tv/example").hostname, "www.twitch.tv");
+  assert.equal(assertLivePage("https://youtu.be/abcdefghijk").hostname, "youtu.be");
+  assert.equal(assertChunkMinutes(10), 10);
+  assert.equal(assertChunkMinutes(15), 15);
+  for (const raw of ["http://www.twitch.tv/example", "https://example.com/live", "file:///tmp/a.mp4", "not a url"]) {
+    assert.throws(() => assertLivePage(raw));
+  }
+  assert.throws(() => assertChunkMinutes(9));
+  assert.throws(() => assertChunkMinutes(16));
+});
+
+test("live follow cuts a closed chunk while the next one records, then deletes only the raw chunk", async () => {
+  const root = await mkdtemp(resolve(tmpdir(), "gta6-live-"));
+  const events: string[] = [];
+  try {
+    const report = await followGta6Live({
+      url: "https://www.twitch.tv/example",
+      outDir: root,
+      minutes: 12,
+      record: async ({ file, seconds }) => {
+        assert.equal(seconds, 720);
+        const number = events.filter((event) => event.startsWith("record:")).length + 1;
+        events.push(`record:${number}`);
+        await writeFile(file, `raw-${number}`);
+        return { ended: number >= 2 };
+      },
+      processChunk: async ({ file, index, sourceId }) => {
+        events.push(`process:${index}`);
+        if (index === 0) assert.ok(events.includes("record:2"));
+        await mkdir(resolve(root, "clips"), { recursive: true });
+        await writeFile(resolve(root, "clips", `${sourceId}.mp4`), "clip");
+        return {
+          published: false,
+          sources: [{ sourceId, chunks: [file], duration: 720, language: "ru", segments: [], highlights: [] }],
+        };
+      },
+    });
+    assert.deepEqual(events, ["record:1", "record:2", "process:0", "process:1"]);
+    assert.equal(report.published, false);
+    assert.equal(report.sources.length, 2);
+    await assert.rejects(access(resolve(root, "incoming", "chunk-0.mkv")));
+    await assert.rejects(access(resolve(root, "incoming", "chunk-1.mkv")));
+    assert.equal(await readFile(resolve(root, "clips", "live-1.mp4"), "utf8"), "clip");
+    assert.equal(await readFile(resolve(root, "clips", "live-2.mp4"), "utf8"), "clip");
+    const saved = JSON.parse(await readFile(resolve(root, "report.json"), "utf8")) as { published: boolean; sources: unknown[] };
+    assert.equal(saved.published, false);
+    assert.equal(saved.sources.length, 2);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("a failed cut keeps the raw chunk", async () => {
+  const root = await mkdtemp(resolve(tmpdir(), "gta6-live-fail-"));
+  try {
+    await assert.rejects(() => followGta6Live({
+      url: "https://www.youtube.com/watch?v=abcdefghijk",
+      outDir: root,
+      record: async ({ file }) => {
+        await writeFile(file, "raw");
+        return { ended: true };
+      },
+      processChunk: async () => { throw new Error("сбой нарезки"); },
+    }), /сбой нарезки/);
+    assert.equal(await readFile(resolve(root, "incoming", "chunk-0.mkv"), "utf8"), "raw");
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("live recorder copies a bounded stream and treats a short file as the end", async () => {
+  const root = await mkdtemp(resolve(tmpdir(), "gta6-live-rec-"));
+  const file = resolve(root, "chunk.mkv");
+  const calls: string[][] = [];
+  const run = async (_bin: string, args: string[]) => {
+    calls.push(args);
+    if (args.includes("--dump-single-json")) return { stdout: JSON.stringify({ is_live: true, live_status: "is_live" }), stderr: "" };
+    if (args.includes("-g")) return { stdout: "https://video.example/v\nhttps://video.example/a\n", stderr: "" };
+    await writeFile(file, Buffer.alloc(5000));
+    return { stdout: "", stderr: "" };
+  };
+  try {
+  const ended = await recordLiveChunk({
+    url: "https://www.youtube.com/watch?v=abcdefghijk",
+    file,
+    seconds: 600,
+    run,
+    probe: async () => 90,
+  });
+  assert.equal(ended.ended, true);
+  assert.equal(ended.empty, false);
+  const ffmpeg = calls.find((args) => args.includes("copy"));
+  assert.ok(ffmpeg);
+  assert.equal(ffmpeg[ffmpeg.indexOf("-t") + 1], "600");
+  assert.equal(ffmpeg[ffmpeg.indexOf("-c") + 1], "copy");
+  assert.ok(ffmpeg.includes("https://video.example/v"));
+  assert.ok(ffmpeg.includes("https://video.example/a"));
+  await assert.rejects(() => recordLiveChunk({
+    url: "https://www.twitch.tv/example",
+    file,
+    seconds: 600,
+    run: async (_bin, args) => {
+      assert.ok(args.includes("--dump-single-json"));
+      return { stdout: JSON.stringify({ is_live: false, live_status: "was_live" }), stderr: "" };
+    },
+  }), /нет прямого эфира/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
 });
 
 test("highlight modules do not import publishers", async () => {
