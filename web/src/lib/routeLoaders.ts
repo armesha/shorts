@@ -1,5 +1,6 @@
 const routeLoaders = {
   videoCutting: () => import("../pages/VideoCutting"),
+  streams: () => import("../pages/Streams"),
   mapStudio: () => import("../pages/MapStudio"),
   mapLibrary: () => import("../pages/MapLibrary"),
   overview: () => import("../pages/Overview"),
@@ -61,6 +62,8 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
   switch (pathname) {
     case "/cutting":
       return "videoCutting";
+    case "/streams":
+      return "streams";
     case "/overview":
       return "overview";
     case "/templates/montage":

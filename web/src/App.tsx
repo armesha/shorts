@@ -15,6 +15,7 @@ const Studio = lazy(pageLoaders.studio);
 const MapStudio = lazy(pageLoaders.mapStudio);
 const MapLibrary = lazy(pageLoaders.mapLibrary);
 const VideoCutting = lazy(pageLoaders.videoCutting);
+const Streams = lazy(pageLoaders.streams);
 const Gallery = lazy(pageLoaders.gallery);
 const Packs = lazy(pageLoaders.packs);
 const QueuePage = lazy(pageLoaders.queue);
@@ -84,6 +85,7 @@ function Gate() {
             <Route path="/characters" element={<Navigate to="/templates/characters" replace />} />
             <Route path="/templates/montage" element={<Navigate to="/cutting" replace />} />
             <Route path="/cutting" element={<VideoCutting />} />
+            <Route path="/streams" element={<Streams />} />
             <Route path="/ideas" element={<Navigate to="/library" replace />} />
             <Route path="/signals" element={realAdmin ? <Signals /> : <Navigate to="/channels" replace />} />
             <Route path="/signals/analysis" element={realAdmin ? <SignalsAnalysis /> : <Navigate to="/channels" replace />} />

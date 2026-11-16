@@ -1,4 +1,4 @@
-import { Film, Map, Video, ArrowUpRight, Sparkles } from "lucide-react";
+import { Film, Map, Video, ArrowUpRight, Sparkles, Radio } from "lucide-react";
 import { Link } from "react-router-dom";
 const templates = [
   {
@@ -7,6 +7,7 @@ const templates = [
     to: "/cutting",
     Icon: Film,
   },
+  { id: "streams", name: "Трансляции", to: "/streams", Icon: Radio },
   { id: "maps", name: "Карты", to: "/templates/maps", Icon: Map },
   { id: "circles", name: "Кружочки Telegram", to: "/circles", Icon: Video },
   { id: "characters", name: "3D Персонажи (Nixly AI)", to: "/templates/characters", Icon: Sparkles },
@@ -31,7 +32,9 @@ export default function VideoTemplateTiles() {
                   ? "bg-amber-100 text-amber-900"
                   : id === "characters"
                     ? "bg-purple-100 text-purple-900"
-                    : "bg-sky-100 text-sky-900"
+                    : id === "streams"
+                      ? "bg-rose-100 text-rose-900"
+                      : "bg-sky-100 text-sky-900"
             }`}
           >
             <Icon size={56} strokeWidth={1.5} />
