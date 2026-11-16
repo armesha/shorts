@@ -408,7 +408,6 @@ test("live recorder copies a bounded stream and treats a short file as the end",
   const calls: string[][] = [];
   const run = async (_bin: string, args: string[]) => {
     calls.push(args);
-    if (args.includes("--dump-single-json")) return { stdout: JSON.stringify({ is_live: true, live_status: "is_live" }), stderr: "" };
     await writeFile(file, Buffer.alloc(5000));
     return { stdout: "", stderr: "" };
   };
@@ -418,8 +417,9 @@ test("live recorder copies a bounded stream and treats a short file as the end",
     const ended = await recordLiveChunk({ url, file, seconds: 600, run, probe: async () => 90 });
     assert.equal(ended.ended, true);
     assert.equal(ended.empty, false);
-    const download = calls.find((args) => args.includes("--downloader"));
-    assert.ok(download);
+    assert.equal(calls.length, 1);
+    const download = calls[0]!;
+    assert.equal(download.includes("--dump-single-json"), false);
     assert.ok(download.includes("m3u8:ffmpeg"));
     assert.ok(download.includes("--no-live-from-start"));
     assert.match(download.find((arg) => arg.startsWith("ffmpeg:")) || "", /-t 600/);
@@ -427,15 +427,6 @@ test("live recorder copies a bounded stream and treats a short file as the end",
     assert.ok(download.includes(liveChannelKey(url).url));
     assert.equal(download.includes("https://video.example/v"), false);
   }
-  await assert.rejects(() => recordLiveChunk({
-    url: "https://www.twitch.tv/example",
-    file,
-    seconds: 600,
-    run: async (_bin, args) => {
-      assert.ok(args.includes("--dump-single-json"));
-      return { stdout: JSON.stringify({ is_live: false, live_status: "was_live" }), stderr: "" };
-    },
-  }), /нет прямого эфира/);
   await assert.rejects(() => recordLiveChunk({
     url: "https://www.twitch.tv/example",
     file,

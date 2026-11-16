@@ -79,3 +79,42 @@ test("live card follows youtube and twitch and stops at five channels", async ()
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test("a writing line left by a restart is started again and a finished line is not", async () => {
+  const root = await mkdtemp(resolve(tmpdir(), "gta6-live-resume-"));
+  const live = "https://www.youtube.com/watch?v=abcdefghijk";
+  const done = "https://www.twitch.tv/finished";
+  let calls = 0;
+  let cuts = 0;
+  const sessions = new Gta6LiveSessions(root, (options) => new Promise((resolveReport) => {
+    calls += 1;
+    cuts = options.audioCuts?.min ?? 0;
+    options.signal?.addEventListener("abort", () => resolveReport({ published: false, sources: [] }), { once: true });
+  }));
+  const liveFolder = liveChannelKey(live).folder;
+  const doneFolder = liveChannelKey(done).folder;
+  const row = (id: string, url: string, label: string, line: string) => ({ id, url, label, minutes: 10, telegram: false, line, error: "", clips: [] });
+  try {
+    await mkdir(resolve(root, "u7"), { recursive: true });
+    await writeFile(resolve(root, "u7", "state.json"), `${JSON.stringify({ channels: [
+      row(liveFolder, live, "youtube.com/abcdefghijk", "Пишу кусок 1, 10 мин."),
+      row(doneFolder, done, "twitch.tv/finished", "Эфир закончился"),
+    ] })}\n`);
+    const stale = await sessions.view(7);
+    assert.equal(stale.channels.find((channel) => channel.id === liveFolder)?.line, "Запись прервалась");
+    assert.equal(stale.channels.find((channel) => channel.id === liveFolder)?.running, false);
+    await sessions.resumeInterrupted(7);
+    await sessions.resumeInterrupted(7);
+    const after = await sessions.view(7);
+    assert.equal(calls, 1);
+    assert.equal(cuts, 4);
+    assert.equal(after.used, 1);
+    assert.equal(after.channels.find((channel) => channel.id === liveFolder)?.running, true);
+    assert.match(after.channels.find((channel) => channel.id === liveFolder)?.line || "", /кусок 1, 10 мин/);
+    assert.equal(after.channels.find((channel) => channel.id === doneFolder)?.running, false);
+    await sessions.stop(7, liveFolder);
+    await sessions.settled(7);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

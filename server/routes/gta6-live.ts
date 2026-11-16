@@ -40,9 +40,12 @@ export function registerGta6LiveRoutes(app: FastifyInstance, root: string, sessi
     const file = resolve(root, "hour.json");
     try {
       const spec = JSON.parse(await readFile(file, "utf8")) as { userId?: number; urls?: string[]; started?: boolean };
-      if (spec.started || !spec.userId || !Array.isArray(spec.urls)) return;
-      for (const url of spec.urls) await sessions.start(spec.userId, { url, minutes: 10, chunks: 6 });
-      await writeFile(file, `${JSON.stringify({ ...spec, started: true })}\n`);
+      if (!spec.userId || !Array.isArray(spec.urls)) return;
+      if (!spec.started) {
+        for (const url of spec.urls) await sessions.start(spec.userId, { url, minutes: 10, chunks: 6, cuts: 4 });
+        await writeFile(file, `${JSON.stringify({ ...spec, started: true })}\n`);
+      }
+      await sessions.resumeInterrupted(spec.userId);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") app.log.error(error);
     }

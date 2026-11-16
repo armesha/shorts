@@ -321,11 +321,9 @@ function ytdlpBin() {
   return existsSync(local) ? local : "yt-dlp";
 }
 
-function jsonBlock(stdout: string) {
-  const start = stdout.indexOf("{");
-  const end = stdout.lastIndexOf("}");
-  if (start < 0 || end < start) throw new Error("Не удалось прочитать состояние эфира.");
-  return JSON.parse(stdout.slice(start, end + 1)) as { is_live?: boolean; live_status?: string };
+function liveMissing(error: unknown) {
+  const message = error instanceof Error ? error.message : "";
+  return /not currently live|is not live|no live streams/iu.test(message);
 }
 
 export async function recordLiveChunk(input: {
@@ -340,19 +338,10 @@ export async function recordLiveChunk(input: {
   const run = input.run ?? runCaptured;
   const ytdlp = ytdlpBin();
   const common = ["--no-playlist", "--no-warnings", "--socket-timeout", "30", "--no-live-from-start"];
-  let meta: { is_live?: boolean; live_status?: string };
-  try {
-    meta = jsonBlock((await run(ytdlp, [...common, "--skip-download", "--dump-single-json", "--", channel.url], {
-      cwd: repoRoot, timeoutMs: 8 * 60_000, env: childEnv(), signal: input.signal,
-    })).stdout);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "";
-    if (/not currently live|is not live|no live streams/iu.test(message)) throw new Error("По ссылке сейчас нет прямого эфира.");
-    throw error;
-  }
-  if (meta.is_live !== true && meta.live_status !== "is_live") throw new Error("По ссылке сейчас нет прямого эфира.");
   await mkdir(resolve(input.file, ".."), { recursive: true });
-  // yt-dlp keeps the site headers. A bare media URL expires and is rejected by YouTube and Twitch.
+  // One yt-dlp call both checks the live page and records it. A separate
+  // --dump-single-json waits on the same slow player response and was killed
+  // by restarts before any chunk file existed.
   try {
     await run(ytdlp, [
       ...common,
@@ -370,6 +359,7 @@ export async function recordLiveChunk(input: {
       cwd: repoRoot, timeoutMs: (input.seconds + 12 * 60) * 1000, env: childEnv(), signal: input.signal,
     });
   } catch (error) {
+    if (liveMissing(error)) throw new Error("По ссылке сейчас нет прямого эфира.");
     if (!input.signal?.aborted) throw error;
   }
   const size = await stat(input.file).then((info) => info.size).catch(() => 0);
@@ -479,7 +469,7 @@ export async function followGta6Live(options: {
   const report: Gta6Report = { published: false, sources: [] };
   const open = (index: number) => {
     const file = resolve(options.outDir, "incoming", `chunk-${index}.mkv`);
-    log(`Пишу кусок ${index + 1}, ${minutes} мин.`);
+    log(`Подключаюсь к эфиру, кусок ${index + 1}, ${minutes} мин.`);
     return record({ url: page.href, file, seconds, signal }).then((result) => ({ ...result, file, index }));
   };
   let pending = open(0);

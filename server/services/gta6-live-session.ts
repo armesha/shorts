@@ -14,6 +14,8 @@ export type Gta6LiveChannel = {
   url: string;
   label: string;
   minutes: number;
+  chunks: number;
+  cuts: number;
   telegram: boolean;
   running: boolean;
   line: string;
@@ -30,6 +32,15 @@ function clipsFrom(report: Gta6Report): Gta6LiveClip[] {
     file: basename(hit.clip),
     class: hit.class,
   }))).filter((clip) => /^[\w.-]+\.mp4$/u.test(clip.file));
+}
+
+function bounded(value: unknown, min: number, max: number, fallback: number) {
+  const number = Number(value);
+  return Number.isInteger(number) && number >= min && number <= max ? number : fallback;
+}
+
+export function writingLine(line: string) {
+  return line.startsWith("Пишу кусок ") || line.startsWith("Подключаюсь к эфиру") || /^Кусок \d+ закрыт, нарезаю\.$/u.test(line);
 }
 
 function cleanClip(clip: unknown): Gta6LiveClip | null {
@@ -56,13 +67,14 @@ export class Gta6LiveSessions {
         channels: parsed.channels.flatMap((item) => {
           if (!item || typeof item !== "object") return [];
           const row = item as Partial<StoredChannel>;
-          const minutes = Number(row.minutes);
           if (typeof row.id !== "string" || !/^[\w.-]+$/u.test(row.id) || typeof row.url !== "string" || typeof row.label !== "string") return [];
           return [{
             id: row.id,
             url: row.url,
             label: row.label,
-            minutes: Number.isInteger(minutes) && minutes >= 10 && minutes <= 15 ? minutes : 10,
+            minutes: bounded(row.minutes, 5, 30, 10),
+            chunks: bounded(row.chunks, 1, 12, 6),
+            cuts: bounded(row.cuts, 1, 8, 4),
             telegram: row.telegram === true,
             line: typeof row.line === "string" ? row.line : "",
             error: typeof row.error === "string" ? row.error : "",
@@ -98,14 +110,19 @@ export class Gta6LiveSessions {
     return {
       limit: GTA6_LIVE_LIMIT,
       used: this.active.size,
-      channels: stored.channels.map((channel) => ({ ...channel, running: this.running(userId, channel.id) })),
+      channels: stored.channels.map((channel) => {
+        const running = this.running(userId, channel.id);
+        return { ...channel, running, line: running || !writingLine(channel.line) ? channel.line : "Запись прервалась" };
+      }),
     };
   }
 
-  async start(userId: number, input: { url: string; minutes?: number; telegram?: boolean; chunks?: number; cuts?: number }) {
+  async start(userId: number, input: { url: string; minutes?: number; telegram?: boolean; chunks?: number; cuts?: number; keepClips?: boolean }) {
     if (!Number.isSafeInteger(userId) || userId < 1) throw new Error("Некорректный пользователь.");
     const channel = liveChannelKey(input.url);
     const minutes = assertChunkMinutes(input.minutes ?? 10);
+    const chunks = bounded(input.chunks, 1, 12, 6);
+    const cuts = bounded(input.cuts, 1, 8, 4);
     const telegram = input.telegram === true;
     if (this.active.has(channel.key)) throw new Error("Этот канал уже идёт.");
     if (this.active.size >= GTA6_LIVE_LIMIT) throw new Error("Уже следим за 5 каналами.");
@@ -117,13 +134,19 @@ export class Gta6LiveSessions {
       url: channel.url,
       label: channel.label,
       minutes,
+      chunks,
+      cuts,
       telegram,
-      line: `Пишу кусок 1, ${minutes} мин.`,
+      line: `Подключаюсь к эфиру, кусок 1, ${minutes} мин.`,
       error: "",
       clips: [],
     };
     try {
-      await this.update(userId, (state) => ({ channels: [...state.channels.filter((item) => item.id !== channel.folder), row] }));
+      await this.update(userId, (state) => {
+        const previous = state.channels.find((item) => item.id === channel.folder);
+        const next = { ...row, clips: input.keepClips ? previous?.clips ?? [] : [] };
+        return { channels: [...state.channels.filter((item) => item.id !== channel.folder), next] };
+      });
     } catch (error) {
       if (this.active.get(channel.key)?.token === token) this.active.delete(channel.key);
       throw error;
@@ -134,8 +157,8 @@ export class Gta6LiveSessions {
       outDir: resolve(this.dir(userId), channel.folder),
       minutes,
       telegram,
-      maxChunks: input.chunks,
-      audioCuts: input.cuts ? { min: input.cuts, max: input.cuts } : input.chunks ? { min: 3, max: 5 } : undefined,
+      maxChunks: chunks,
+      audioCuts: { min: cuts, max: cuts },
       signal: stop.signal,
       log: (line) => { void this.note(userId, channel.folder, token, line); },
     }).then(async (report) => {
@@ -153,6 +176,25 @@ export class Gta6LiveSessions {
     });
     this.tasks.set(taskKey, task);
     return this.view(userId);
+  }
+
+  async resumeInterrupted(userId: number) {
+    if (!Number.isSafeInteger(userId) || userId < 1) return;
+    const stored = await this.read(userId);
+    for (const channel of stored.channels) {
+      if (!writingLine(channel.line)) continue;
+      try {
+        if (this.active.has(liveChannelKey(channel.url).key)) continue;
+        await this.start(userId, {
+          url: channel.url,
+          minutes: channel.minutes,
+          telegram: channel.telegram,
+          chunks: channel.chunks,
+          cuts: channel.cuts,
+          keepClips: true,
+        });
+      } catch { /* битая ссылка не должна останавливать остальные эфиры */ }
+    }
   }
 
   async stop(userId: number, id: string) {
