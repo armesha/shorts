@@ -17,6 +17,7 @@ import { homedir } from "node:os";
 import { setTimeout as delay } from "node:timers/promises";
 import type { Db } from "../db.ts";
 import { cuttingBannerFilter, cuttingBannerHash } from "./cutting-banner.ts";
+import { detectSilenceLog, snapSectionEndsToAudio } from "./video-cutting-audio.ts";
 import { cuttingRenderCommand } from "../infra/cutting-render-resources.ts";
 import { DAILY_CUTTING_EFFORT, DAILY_CUTTING_MODEL, addDailySourceDescriptions, planDailyCuts, readPreparedDailyPlan, type DailyClip } from "./daily-cutting-plan.ts";
 import {
@@ -1008,7 +1009,9 @@ export class VideoCuttingService {
     await mkdir(resolve(this.options.outputDir, relDir), { recursive: true });
     for (const part of job.plan) {
       const dailyPart = job.daily ? part as DailyClip : undefined;
-      const sections = dailyPart?.segments.map(s => ({ start: s.start_seconds, end: s.end_seconds }));
+      const planned = dailyPart?.segments.map(s => ({ start: s.start_seconds, end: s.end_seconds }))
+        ?? [{ start: part.start, end: part.end }];
+      const sections = await snapSectionEndsToAudio(planned, cleanDuration, (from, window) => detectSilenceLog(source, from, window, signal));
       const partDuration = sections?.reduce((n, s) => n + s.end - s.start, 0) ?? part.end - part.start;
       await this.update(
         job,
