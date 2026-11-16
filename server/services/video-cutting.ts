@@ -326,6 +326,7 @@ export async function renderCuttingPart(input: {
   timeline?: CutTimeline[];
   segments?: SourceRange[];
   hook?: string;
+  light?: boolean;
 }) {
   const run = input.run || runCuttingProcess;
   const sections = input.segments || [{ start: input.part.start, end: input.part.end }];
@@ -363,7 +364,7 @@ export async function renderCuttingPart(input: {
       "-reinit_filter",
       "0",
       "-threads",
-      "2",
+      input.light ? "1" : "2",
       "-ss",
       String(range.start),
       "-t",
@@ -414,11 +415,11 @@ export async function renderCuttingPart(input: {
     "-c:v",
     "libx264",
     "-preset",
-    "superfast",
+    input.light ? "ultrafast" : "superfast",
     "-crf",
-    "20",
+    input.light ? "23" : "20",
     "-threads",
-    "2",
+    input.light ? "1" : "2",
     "-c:a",
     "aac",
     "-b:a",

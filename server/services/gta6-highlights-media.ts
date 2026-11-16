@@ -268,7 +268,7 @@ export function sourcePlansFromInputs(inputs: readonly string[]): Gta6SourcePlan
   });
 }
 
-const LIVE_HOSTS = new Set(["youtube.com", "m.youtube.com", "youtu.be", "twitch.tv", "player.twitch.tv"]);
+const LIVE_HOSTS = new Set(["youtube.com", "m.youtube.com", "youtu.be", "twitch.tv", "m.twitch.tv", "player.twitch.tv"]);
 export const GTA6_LIVE_LIMIT = 5;
 const YOUTUBE_HOSTS = new Set(["youtube.com", "m.youtube.com", "youtu.be"]);
 
@@ -277,7 +277,7 @@ export type LiveChannelRef = { key: string; folder: string; label: string; url: 
 export function liveChannelKey(raw: string): LiveChannelRef {
   const url = assertLivePage(raw);
   const host = url.hostname.toLowerCase().replace(/^www\./, "");
-  if (host === "twitch.tv" || host === "player.twitch.tv") {
+  if (host === "twitch.tv" || host === "m.twitch.tv" || host === "player.twitch.tv") {
     const login = (host === "player.twitch.tv" ? url.searchParams.get("channel") : url.pathname.split("/").filter(Boolean)[0])?.toLowerCase() || "";
     if (!/^[a-z0-9_]{2,25}$/u.test(login) || ["directory", "videos", "settings", "downloads", "subscriptions", "inventory", "search"].includes(login)) {
       throw new Error("Нужна ссылка на канал Twitch.");
@@ -337,20 +337,22 @@ export async function recordLiveChunk(input: {
   const channel = liveChannelKey(input.url);
   const run = input.run ?? runCaptured;
   const ytdlp = ytdlpBin();
+  const nice = ["/usr/bin/nice", "/bin/nice"].find((file) => existsSync(file));
   const common = ["--no-playlist", "--no-warnings", "--socket-timeout", "30", "--no-live-from-start"];
   await mkdir(resolve(input.file, ".."), { recursive: true });
   // One yt-dlp call both checks the live page and records it. A separate
   // --dump-single-json waits on the same slow player response and was killed
-  // by restarts before any chunk file existed.
+  // by restarts before any chunk file existed. 720p is enough for the 9:16 frame.
   try {
-    await run(ytdlp, [
+    await run(nice || ytdlp, [
+      ...(nice ? ["-n", "15", ytdlp] : []),
       ...common,
       "--no-part",
       "--concurrent-fragments", "1",
       "--downloader", "m3u8:ffmpeg",
       "--downloader", "ffmpeg",
       "--downloader-args", `ffmpeg:-t ${input.seconds} -c copy`,
-      "-f", "b[height<=1080]/b/bv*[height<=1080]+ba/b",
+      "-f", "b[height<=720]/b[height<=1080]/b/bv*[height<=720]+ba/b",
       "--remux-video", "mkv",
       "-o", input.file,
       "--",
@@ -376,7 +378,20 @@ export function withGta6ProcessSlot<T>(job: () => Promise<T>): Promise<T> {
   return run;
 }
 
-export async function cutLiveChunkByAudio(input: {
+export function cutLiveChunkByAudio(input: {
+  file: string;
+  sourceId: string;
+  outDir: string;
+  min?: number;
+  max?: number;
+  duration?: number;
+  silenceLog?: string;
+  copy?: (range: { start: number; end: number }, output: string) => Promise<void>;
+}): Promise<Gta6Report> {
+  return withGta6ProcessSlot(() => renderLiveChunk(input));
+}
+
+async function renderLiveChunk(input: {
   file: string;
   sourceId: string;
   outDir: string;
@@ -410,6 +425,7 @@ export async function cutLiveChunkByAudio(input: {
         words: [],
         subtitles: false,
         banner: { item, file: bannerFile },
+        light: true,
       });
     }
     highlights.push({

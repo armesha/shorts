@@ -4,7 +4,7 @@ import { access, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promise
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import test from "node:test";
-import { assertChunkMinutes, assertLivePage, followGta6Live, liveChannelKey, recordLiveChunk, renderGta6Clip, runGta6Highlights, sourcePlansFromInputs } from "./gta6-highlights-media.ts";
+import { assertChunkMinutes, assertLivePage, cutLiveChunkByAudio, followGta6Live, liveChannelKey, recordLiveChunk, renderGta6Clip, runGta6Highlights, sourcePlansFromInputs } from "./gta6-highlights-media.ts";
 import {
   GTA6_BANNER_ROBOT,
   GTA6_BANNER_SIM,
@@ -301,6 +301,7 @@ test("live pages are youtube or twitch https links and chunks are 5 to 30 minute
   assert.equal(assertLivePage("https://youtu.be/abcdefghijk").hostname, "youtu.be");
   assert.equal(liveChannelKey("https://www.twitch.tv/Example").key, "twitch:example");
   assert.equal(liveChannelKey("https://player.twitch.tv/?channel=Example").url, "https://www.twitch.tv/example");
+  assert.equal(liveChannelKey("https://m.twitch.tv/Sanya_Sniper2011").url, "https://www.twitch.tv/sanya_sniper2011");
   assert.equal(liveChannelKey("https://www.youtube.com/watch?v=abcdefghijk").key, liveChannelKey("https://www.youtube.com/live/abcdefghijk").key);
   assert.equal(liveChannelKey("https://www.youtube.com/@NASA/live").label, "youtube.com/@nasa");
   assert.throws(() => liveChannelKey("https://www.twitch.tv/directory"));
@@ -314,6 +315,33 @@ test("live pages are youtube or twitch https links and chunks are 5 to 30 minute
   }
   assert.throws(() => assertChunkMinutes(4));
   assert.throws(() => assertChunkMinutes(31));
+});
+
+test("two live chunks are cut one at a time", async () => {
+  const root = await mkdtemp(resolve(tmpdir(), "gta6-live-slot-"));
+  let current = 0;
+  let peak = 0;
+  const cut = () => cutLiveChunkByAudio({
+    file: resolve(root, "chunk.mkv"),
+    sourceId: "live-1",
+    outDir: root,
+    duration: 40,
+    silenceLog: "",
+    min: 1,
+    max: 1,
+    copy: async () => {
+      current += 1;
+      peak = Math.max(peak, current);
+      await new Promise((done) => setTimeout(done, 40));
+      current -= 1;
+    },
+  });
+  try {
+    await Promise.all([cut(), cut()]);
+    assert.equal(peak, 1);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
 });
 
 test("live follow cuts a closed chunk while the next one records, then deletes only the raw chunk", async () => {
@@ -420,6 +448,7 @@ test("live recorder copies a bounded stream and treats a short file as the end",
     assert.equal(calls.length, 1);
     const download = calls[0]!;
     assert.equal(download.includes("--dump-single-json"), false);
+    assert.ok(download.includes("b[height<=720]/b[height<=1080]/b/bv*[height<=720]+ba/b"));
     assert.ok(download.includes("m3u8:ffmpeg"));
     assert.ok(download.includes("--no-live-from-start"));
     assert.match(download.find((arg) => arg.startsWith("ffmpeg:")) || "", /-t 600/);
