@@ -404,10 +404,21 @@ export async function cutLiveChunkByAudio(input: {
     const clip = resolve(input.outDir, "clips", `${input.sourceId}-audio-${index + 1}.mp4`);
     if (input.copy) await input.copy(piece, clip);
     else {
-      await runCaptured(process.env.GTA6_FFMPEG || "ffmpeg", [
-        "-y", "-ss", piece.start.toFixed(3), "-to", piece.end.toFixed(3), "-i", input.file,
-        "-c", "copy", "-movflags", "+faststart", clip,
-      ], { cwd: repoRoot, timeoutMs: 120_000, env: childEnv() });
+      const { renderCuttingPart } = await import("./video-cutting.ts");
+      const { circleAdvertiserSource, circleAdvertiserState, listCircleAdvertisers } = await import("./circle-advertisers.ts");
+      const activeId = circleAdvertiserState().activeAdvertiserId;
+      const item = listCircleAdvertisers().find((entry) => entry.id === activeId);
+      const bannerFile = item ? circleAdvertiserSource(item.id) : "";
+      if (!item || !existsSync(bannerFile)) throw new Error("Не найден активный баннер для нарезок.");
+      await renderCuttingPart({
+        source: input.file,
+        output: clip,
+        dir: input.outDir,
+        part: { number: index + 1, start: piece.start, end: piece.end, title: "Эфир", reason: "Кусок эфира." },
+        words: [],
+        subtitles: false,
+        banner: { item, file: bannerFile },
+      });
     }
     highlights.push({
       sourceId: input.sourceId,
