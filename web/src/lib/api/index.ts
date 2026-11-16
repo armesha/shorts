@@ -9,7 +9,7 @@ import type {
   AuthUser, Generator, GeneratedPreview, GeneratedVideo, VideoItem, GenJobStatus, GenQueueResponse, GenWorkerStatus,
   PsychSchema, PsychCardList, PackSummary, PackFull, PackMusic, PackMusicUploadFile,
   PackMusicUploadResult, MusicTrack, StatRow, ChannelTotals, PlatformSummary, StatPoint,
-  AdminAnalytics, UserAnalytics, ErrorLogItem, NotificationItem, NotificationCounts, SystemStatus, IdeaItem,
+  AdminAnalytics, UserAnalytics, ErrorLogItem, NotificationItem, NotificationCounts, SystemStatus,
   SignalsResponse, SignalsSettings, SignalsSettingsUpdateResult,
   ContentCatalogResponse, AccountReadiness, QueueOverview, VideoCountsResponse,
   VideoLibraryKind, VideoLibraryPage, VideoLibrarySort, BulkPostNowResponse,
@@ -81,9 +81,6 @@ export const apiClient = {
   signals: () => get<SignalsResponse>("/signals"),
   updateSignalsSettings: (settings: SignalsSettings) =>
     send<SignalsSettingsUpdateResult>("/signals/settings", "PUT", settings),
-  ideas: () => get<IdeaItem[]>("/ideas"),
-  createIdea: (body: { title: string; description?: string }) => send<IdeaItem>("/ideas", "POST", body),
-  deleteIdea: (id: number | string) => send<{ ok: boolean }>(`/ideas/${id}`, "DELETE"),
   settings: () => get<AppSettings>("/settings"),
   // Google keys (client_secret.json) — up to N per user, each channel bound to one.
   youtubeClients: () => get<OAuthClientsResponse>("/youtube/clients"),

@@ -68,7 +68,6 @@ import { registerSuperAdminChannelBlockRoutes } from "./routes/super-admin-chann
 import { registerExamplesRoutes } from "./routes/examples.ts";
 import { registerAudioRoutes } from "./routes/audio.ts";
 import { registerMemesRoutes } from "./routes/memes.ts";
-import { registerIdeasRoutes } from "./routes/ideas.ts";
 import { registerCircleEditorRoutes } from "./routes/circle-editor.ts";
 import { registerCirclePipelineRoutes } from "./routes/circle-pipeline.ts";
 import { CirclePipelineService } from "./services/circle-pipeline/service.ts";
@@ -413,7 +412,6 @@ registerSuperAdminChannelBlockRoutes(app, db, deps);
 registerExamplesRoutes(app, db, deps);
 registerAudioRoutes(app, db, deps);
 registerMemesRoutes(app, deps);
-registerIdeasRoutes(app, db, deps);
 registerSocialRoutes(app, socialService, deps);
 registerCircleEditorRoutes(app, db);
 registerCirclePipelineRoutes(app, circlePipeline, ownerId => isSuperAdminUser(db.getUserById(ownerId)), circleYouTube);

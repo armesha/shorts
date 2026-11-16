@@ -18,7 +18,6 @@ import {
   History,
   House,
   Info,
-  Lightbulb,
   KeyRound,
   Languages,
   Library,
@@ -67,7 +66,6 @@ export type AppIconName =
   | "history"
   | "home"
   | "info"
-  | "ideas"
   | "library"
   | "limits"
   | "login"
@@ -120,7 +118,6 @@ const ICONS: Record<AppIconName, LucideIcon> = {
   history: History,
   home: House,
   info: Info,
-  ideas: Lightbulb,
   library: Library,
   limits: KeyRound,
   login: LogIn,

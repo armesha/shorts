@@ -34,7 +34,6 @@ const CircleLibrary = lazy(pageLoaders.circleLibrary);
 const Login = lazy(pageLoaders.login);
 const Register = lazy(pageLoaders.register);
 const TelegramMiniApp = lazy(pageLoaders.telegramMiniApp);
-const Ideas = lazy(pageLoaders.ideas);
 const Signals = lazy(pageLoaders.signals);
 const SignalsAnalysis = lazy(pageLoaders.signalsAnalysis);
 const StasReport = lazy(pageLoaders.stasReport);
@@ -85,7 +84,7 @@ function Gate() {
             <Route path="/characters" element={<Navigate to="/templates/characters" replace />} />
             <Route path="/templates/montage" element={<Navigate to="/cutting" replace />} />
             <Route path="/cutting" element={<VideoCutting />} />
-            <Route path="/ideas" element={realAdmin ? <Ideas /> : <Navigate to="/statistics" replace />} />
+            <Route path="/ideas" element={<Navigate to="/library" replace />} />
             <Route path="/signals" element={realAdmin ? <Signals /> : <Navigate to="/channels" replace />} />
             <Route path="/signals/analysis" element={realAdmin ? <SignalsAnalysis /> : <Navigate to="/channels" replace />} />
             <Route path="/gallery" element={realAdmin ? <Gallery /> : <Navigate to="/channels" replace />} />
