@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdir, mkdtemp, rm, writeFile, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
-import { DailyCuttingService, pragueDay } from "./daily-cutting.ts";
+import { DailyCuttingService, normalizeCuttingChannelUrl, pragueDay } from "./daily-cutting.ts";
 import { VideoCuttingService } from "./video-cutting.ts";
 
 test("daily schedule alternates selection, excludes repeats and survives restart", async () => {
@@ -51,6 +51,35 @@ test("daily schedule alternates selection, excludes repeats and survives restart
     assert.deepEqual(selectedBanners, ["active-banner", "active-banner", "active-banner"]);
     await assert.rejects(daily.runNow(7, "https://youtu.be/ccccccccccc"), /уже выбиралось/);
     assert.equal(pragueDay(new Date("2026-10-30T23:30:00Z")), "2026-10-31");
+  } finally { daily.close(); await cutting.close(); await rm(root, { recursive: true, force: true }); }
+});
+
+test("an added channel is saved and included in the next search", async () => {
+  const base = resolve("tmp/daily-cutting-tests");
+  await mkdir(base, { recursive: true });
+  const root = await mkdtemp(resolve(base, "channel-"));
+  const seen: string[] = [];
+  const cutting = new VideoCuttingService({ root: resolve(root, "jobs"), outputDir: root, execute: async () => {} });
+  const daily = new DailyCuttingService(cutting, {
+    file: resolve(root, "state.json"),
+    now: () => new Date("2026-11-16T12:00:00Z"),
+    bannerId: () => "active-banner",
+    fetch: async channel => { seen.push(channel.url); return []; },
+  });
+  try {
+    await daily.enable(7);
+    const added = await daily.addChannel(7, "https://www.youtube.com/@ExampleChannel", "Example");
+    assert.equal(normalizeCuttingChannelUrl("https://www.youtube.com/@ExampleChannel/videos"), "https://www.youtube.com/@ExampleChannel/videos");
+    assert.ok(added.channels?.some(channel => channel.name === "Example" && channel.url.endsWith("/@ExampleChannel/videos") && !channel.builtin));
+    await assert.rejects(daily.addChannel(7, "https://www.youtube.com/@ExampleChannel/videos"), /уже есть/);
+    for (let i = 0; i < 30 && !seen.includes("https://www.youtube.com/@ExampleChannel/videos"); i++) {
+      await daily.tick(true);
+      await delay(20);
+    }
+    assert.ok(seen.includes("https://www.youtube.com/@ExampleChannel/videos"));
+    const removed = await daily.removeChannel(7, "https://www.youtube.com/@ExampleChannel");
+    assert.equal(removed.channels?.some(channel => channel.name === "Example"), false);
+    await assert.rejects(daily.addChannel(7, "https://example.com/@nope"), /YouTube/);
   } finally { daily.close(); await cutting.close(); await rm(root, { recursive: true, force: true }); }
 });
 

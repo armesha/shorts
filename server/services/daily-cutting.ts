@@ -7,12 +7,19 @@ import { normalizeVideoUrl } from "./video-cutting-plan.ts";
 import { withActiveLimit } from "../infra/rate-limits.ts";
 import { circleAdvertiserState } from "./circle-advertisers.ts";
 
+const channelSchema = z.object({
+  name: z.string().trim().min(1).max(80),
+  url: z.string().url().max(300),
+  rulesOnly: z.boolean().optional(),
+}).strict();
 const stateSchema = z.object({ ownerId: z.number().int().positive(), enabled: z.boolean(),
   lastDay: z.string().optional(), sequence: z.number().int().nonnegative(),
   selected: z.array(z.string().regex(/^[\w-]{11}$/)),
+  channels: z.array(channelSchema).max(40).optional(),
   pending: z.object({ id: z.string().regex(/^[\w-]{11}$/), day: z.string(), jobId: z.string().optional() }).optional(),
   error: z.string().optional() }).strict();
 type State = z.infer<typeof stateSchema>;
+type CuttingChannel = { name: string; url: string; rulesOnly?: boolean; builtin?: boolean };
 export const DAILY_CHANNELS = [
   { name: "Jane Kravitz", url: "https://www.youtube.com/channel/UCtlDForpy1QJCqgqxylxPHg/videos" },
   { name: "Настя Джексон", url: "https://www.youtube.com/channel/UCU67BLdoLR5CqVjeNtJWj-w/videos" },
@@ -28,6 +35,24 @@ export const DAILY_CHANNELS = [
   { name: "Канал Коваля", url: "https://www.youtube.com/channel/UCp0QOno_8FOaGbn8gQujRHQ/videos" },
 ] as const;
 export type ChannelVideo = { id: string; views: number; duration?: number; live?: boolean; title?: string };
+export function normalizeCuttingChannelUrl(raw: string): string {
+  let parsed: URL;
+  try { parsed = new URL(raw.trim()); }
+  catch { throw new Error("Укажите ссылку на канал YouTube."); }
+  const host = parsed.hostname.replace(/^www\./, "").toLowerCase();
+  if (parsed.protocol !== "https:" || parsed.username || parsed.password || (host !== "youtube.com" && host !== "m.youtube.com"))
+    throw new Error("Нужна ссылка на канал YouTube.");
+  const parts = parsed.pathname.split("/").filter(Boolean);
+  const handle = parts[0]?.startsWith("@") ? parts[0] : "";
+  const id = parts[0] === "channel" ? parts[1] : "";
+  const named = parts[0] === "c" || parts[0] === "user" ? parts[1] : "";
+  if (id && !/^UC[\w-]{20,}$/.test(id)) throw new Error("Нужна ссылка на канал YouTube.");
+  if (handle && (handle.length < 2 || handle.length > 40 || !/^@[\w.-]+$/.test(handle))) throw new Error("Нужна ссылка на канал YouTube.");
+  if (!id && !handle && !named) throw new Error("Нужна ссылка на канал YouTube.");
+  const base = id ? `/channel/${id}` : handle ? `/${handle}` : `/${parts[0]}/${named}`;
+  return `https://www.youtube.com${base}/videos`;
+}
+
 export function selectDailyVideo(videos: ChannelVideo[], seen: Set<string>, popular: boolean) {
   const eligible = videos.filter(v => /^[\w-]{11}$/.test(v.id) && !seen.has(v.id) && !v.live && v.duration != null && v.duration >= 120 && v.duration <= 10800 && (!popular || v.views > 0));
   if (popular) eligible.sort((a, b) => b.views - a.views);
@@ -48,7 +73,7 @@ export class DailyCuttingService {
   private controller?: AbortController;
   private saveQueue: Promise<void> = Promise.resolve();
   private readonly file: string;
-  constructor(private readonly cutting: VideoCuttingService, private readonly options: { file?: string; now?: () => Date; fetch?: () => Promise<ChannelVideo[]>; bannerId?: () => string | null; log?: (s: string) => void } = {}) {
+  constructor(private readonly cutting: VideoCuttingService, private readonly options: { file?: string; now?: () => Date; fetch?: (channel: CuttingChannel) => Promise<ChannelVideo[]>; bannerId?: () => string | null; log?: (s: string) => void } = {}) {
     this.file = options.file || resolve(process.cwd(), "data/video-cutting/daily-state.json");
   }
   private async save() {
@@ -71,10 +96,36 @@ export class DailyCuttingService {
   sharedOwner(userIds: number[], fallback: number) {
     return this.state && userIds.includes(this.state.ownerId) ? this.state.ownerId : fallback;
   }
+  private scheduleChannels(): CuttingChannel[] {
+    const extra = this.state?.channels ?? [];
+    return [...DAILY_CHANNELS.map(channel => ({ ...channel, builtin: true })), ...extra.map(channel => ({ ...channel, builtin: false }))];
+  }
   async info(ownerId: number) {
-    if (this.broken) return { enabled: false, jobs: [], error: "Не удалось прочитать историю расписания. Запуск остановлен." };
-    if (!this.state || this.state.ownerId !== ownerId) return { enabled: false, jobs: [] };
-    return { ...this.state, jobs: (await this.cutting.dailyJobs(ownerId)).sort((a, b) => b.createdAt.localeCompare(a.createdAt)) };
+    if (this.broken) return { enabled: false, channels: [], jobs: [], error: "Не удалось прочитать историю расписания. Запуск остановлен." };
+    if (!this.state || this.state.ownerId !== ownerId) return { enabled: false, channels: [], jobs: [] };
+    return { ...this.state, channels: this.scheduleChannels(), jobs: (await this.cutting.dailyJobs(ownerId)).sort((a, b) => b.createdAt.localeCompare(a.createdAt)) };
+  }
+  async addChannel(ownerId: number, rawUrl: string, rawName?: string) {
+    if (this.broken || !this.state || this.state.ownerId !== ownerId) throw new Error("Включите своё расписание нарезок.");
+    const url = normalizeCuttingChannelUrl(rawUrl);
+    const known = this.scheduleChannels().some(channel => channel.url === url);
+    if (known) throw new Error("Этот канал уже есть в списке.");
+    const derived = url.split("/").filter(Boolean).at(-2) || "Канал";
+    const name = (rawName || derived).trim().slice(0, 80);
+    if (!name) throw new Error("Укажите название канала.");
+    this.state.channels = [...(this.state.channels ?? []), { name, url }];
+    await this.save();
+    return this.info(ownerId);
+  }
+  async removeChannel(ownerId: number, rawUrl: string) {
+    if (!this.state || this.state.ownerId !== ownerId) throw new Error("Расписание не найдено.");
+    const url = normalizeCuttingChannelUrl(rawUrl);
+    if (DAILY_CHANNELS.some(channel => channel.url === url)) throw new Error("Встроенный канал нельзя удалить.");
+    const next = (this.state.channels ?? []).filter(channel => channel.url !== url);
+    if (next.length === (this.state.channels ?? []).length) throw new Error("Канал не найден.");
+    this.state.channels = next;
+    await this.save();
+    return this.info(ownerId);
   }
   async enable(ownerId: number) {
     if (this.broken) throw new Error("Повреждена история расписания.");
@@ -121,7 +172,7 @@ export class DailyCuttingService {
     return { started: true };
     });
   }
-  private async fetchVideos(channel: typeof DAILY_CHANNELS[number], signal: AbortSignal): Promise<ChannelVideo[]> {
+  private async fetchVideos(channel: CuttingChannel, signal: AbortSignal): Promise<ChannelVideo[]> {
     const bin = process.env.VIDEO_CUTTING_YTDLP || (existsSync(resolve(process.cwd(), ".venv-cutting/bin/yt-dlp")) ? resolve(process.cwd(), ".venv-cutting/bin/yt-dlp") : "yt-dlp");
     const output = await runCuttingProcess(bin, ["--no-warnings", "--flat-playlist", "--dump-json", "--", channel.url], { cwd: process.cwd(), timeoutMs: 300_000, signal });
     const videos = output.split("\n").filter(Boolean).map(line => {
@@ -153,11 +204,12 @@ export class DailyCuttingService {
       if (!state.pending && (force || state.lastDay !== day)) {
         const seen = new Set([...state.selected, ...jobs.map(j => new URL(j.input.url).searchParams.get("v") || "")]);
         let chosen: ChannelVideo | undefined;
-        const first = Math.floor(state.sequence / 2) % DAILY_CHANNELS.length;
-        for (let offset = 0; offset < DAILY_CHANNELS.length; offset++) {
-          const channel = DAILY_CHANNELS[(first + offset) % DAILY_CHANNELS.length];
+        const channels = this.scheduleChannels();
+        const first = Math.floor(state.sequence / 2) % channels.length;
+        for (let offset = 0; offset < channels.length; offset++) {
+          const channel = channels[(first + offset) % channels.length];
           try {
-            const videos = await (this.options.fetch?.() || this.fetchVideos(channel, this.controller.signal));
+            const videos = await (this.options.fetch?.(channel) || this.fetchVideos(channel, this.controller.signal));
             if (!state.enabled || this.closed) return;
             chosen = selectDailyVideo(videos, seen, state.sequence % 2 === 0);
             if (chosen) break;

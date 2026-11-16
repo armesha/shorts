@@ -43,7 +43,26 @@ export function registerVideoCuttingRoutes(
     }
     const ownerId = daily.sharedOwner(sharedWorkspaceUserIds(db, userId), userId);
     try { return action === "start" ? await daily.enable(ownerId) : action === "stop" ? await daily.disable(ownerId) : await daily.runNow(ownerId, (req.body as { url?: unknown } | null)?.url); }
-    catch { return reply.code(400).send({ error: "Не удалось изменить расписание." }); }
+    catch (error) { return reply.code(400).send({ error: error instanceof Error ? error.message : "Не удалось изменить расписание." }); }
+  });
+  app.post("/api/video-cutting/daily/channels", async (req, reply) => {
+    const userId = uid(req);
+    if (!userId) return reply.code(401).send({ error: "Не авторизован" });
+    if (!isSuperAdminUser(db.getUserById(userId)) && sharedWorkspaceUserIds(db, userId).length < 2) return reply.code(403).send({ error: "Недостаточно прав." });
+    const body = req.body as { url?: unknown; name?: unknown } | null;
+    if (!body || typeof body.url !== "string" || (body.name !== undefined && typeof body.name !== "string"))
+      return reply.code(400).send({ error: "Укажите ссылку на канал YouTube." });
+    try { return await daily.addChannel(daily.sharedOwner(sharedWorkspaceUserIds(db, userId), userId), body.url, body.name); }
+    catch (error) { return reply.code(400).send({ error: error instanceof Error ? error.message : "Не удалось добавить канал." }); }
+  });
+  app.delete("/api/video-cutting/daily/channels", async (req, reply) => {
+    const userId = uid(req);
+    if (!userId) return reply.code(401).send({ error: "Не авторизован" });
+    if (!isSuperAdminUser(db.getUserById(userId)) && sharedWorkspaceUserIds(db, userId).length < 2) return reply.code(403).send({ error: "Недостаточно прав." });
+    const body = req.body as { url?: unknown } | null;
+    if (!body || typeof body.url !== "string") return reply.code(400).send({ error: "Укажите канал." });
+    try { return await daily.removeChannel(daily.sharedOwner(sharedWorkspaceUserIds(db, userId), userId), body.url); }
+    catch (error) { return reply.code(400).send({ error: error instanceof Error ? error.message : "Не удалось удалить канал." }); }
   });
   app.get("/api/video-cutting", async (req, reply) => {
     const userId = uid(req);
