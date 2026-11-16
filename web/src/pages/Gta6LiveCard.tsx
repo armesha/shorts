@@ -15,10 +15,16 @@ type LiveState = { limit: number; used: number; channels: Channel[] };
 const MINUTES = [10, 12, 15] as const;
 const CLASS_NAME: Record<string, string> = { first_look: "Взгляд", graphics: "Графика", clothing: "Одежда" };
 
+const HOUR_STREAMS = [
+  { label: "LiveNOW FOX 24/7", url: "https://www.youtube.com/watch?v=C96oohpWBGw" },
+  { label: "LiveNOW from FOX", url: "https://www.youtube.com/watch?v=0TtsQz8oOv4" },
+];
+
 export default function Gta6LiveCard() {
   const [state, setState] = useState<LiveState>();
   const [url, setUrl] = useState("");
   const [minutes, setMinutes] = useState<(typeof MINUTES)[number]>(10);
+  const [hour, setHour] = useState(true);
   const [telegram, setTelegram] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -39,7 +45,7 @@ export default function Gta6LiveCard() {
     setBusy(true);
     setError("");
     try {
-      const next = await send<LiveState>("/gta6-live/start", "POST", { url, minutes, telegram });
+      const next = await send<LiveState>("/gta6-live/start", "POST", { url, minutes, telegram, ...(hour && minutes === 10 ? { chunks: 6 } : {}) });
       setState(next);
       setUrl("");
     } catch (reason) {
@@ -60,7 +66,7 @@ export default function Gta6LiveCard() {
   return (
     <section className="rounded-lg border border-base-300 bg-base-100 p-4" aria-labelledby="gta6-live-title">
       <form onSubmit={(event) => void start(event)} className="flex flex-wrap items-center gap-2">
-        <h2 id="gta6-live-title" className="text-lg font-semibold">Эфир</h2>
+        <h2 id="gta6-live-title" className="text-lg font-semibold">Трансляции</h2>
         <span className="mr-auto text-sm tabular-nums text-base-content/70">{state?.used ?? 0}/{state?.limit ?? 5}</span>
         <input
           type="url"
@@ -82,8 +88,17 @@ export default function Gta6LiveCard() {
           <input type="checkbox" className="toggle toggle-sm" checked={telegram} disabled={busy || full} onChange={(event) => setTelegram(event.target.checked)} />
           ТГ
         </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" className="toggle toggle-sm" checked={hour} disabled={busy || full || minutes !== 10} onChange={(event) => setHour(event.target.checked)} />
+          Час, каждые 10 мин, 3–5 нарезок
+        </label>
         <button type="submit" className="btn btn-sm btn-primary" disabled={busy || full || !url.trim()}>Старт</button>
       </form>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {HOUR_STREAMS.map((stream) => (
+          <button key={stream.url} type="button" className="btn btn-xs btn-outline" disabled={busy || full} onClick={() => { setUrl(stream.url); setMinutes(10); setHour(true); }}>{stream.label}</button>
+        ))}
+      </div>
       {error && <p role="alert" className="mt-2 text-sm text-error">{error}</p>}
       {!!state?.channels.length && (
         <ul className="mt-3 space-y-3">

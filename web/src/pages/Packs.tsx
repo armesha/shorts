@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import BannerLibraryDialog from "../components/BannerLibraryDialog";
 import VideoTemplateTiles from "../components/VideoTemplateTiles";
+import Gta6LiveCard from "./Gta6LiveCard";
 import { Megaphone, Layers, AlertTriangle, Trash2, Loader2 } from "lucide-react";
 import {
   apiClient,
@@ -272,6 +273,9 @@ export default function Packs() {
         </div>
       </header>
       <VideoTemplateTiles/>
+      <section className="rounded-2xl border border-base-300 bg-base-100 p-4" aria-label="Трансляции">
+        <Gta6LiveCard />
+      </section>
 
 
 

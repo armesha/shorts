@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { extendEndToSilence, snapSectionEndsToAudio } from "./video-cutting-audio.ts";
+import { cutsFromSilence, extendEndToSilence, snapSectionEndsToAudio } from "./video-cutting-audio.ts";
 
 test("a sound after the last word keeps the clip open until the audio goes quiet", async () => {
   assert.equal(extendEndToSilence(10, [0.05], 20), 10);
@@ -15,4 +15,9 @@ test("a sound after the last word keeps the clip open until the audio goes quiet
   assert.equal(snapped[0].end, 12.2);
   assert.equal(snapped[1].start, 40);
   assert.equal(snapped[1].end, 50);
+  const pieces = cutsFromSilence(600, [140, 300, 455], 3, 5);
+  assert.ok(pieces.length >= 3 && pieces.length <= 5);
+  assert.equal(pieces[0].start, 0);
+  assert.equal(pieces.at(-1)?.end, 600);
+  assert.ok(pieces.some((piece) => piece.end === 140 || piece.end === 300 || piece.end === 455));
 });

@@ -29,6 +29,22 @@ export function extendEndToSilence(
   return Math.min(speechEnd + held + SILENCE_PAD_SECONDS, cap);
 }
 
+export function cutsFromSilence(duration: number, silenceAt: number[], minCuts = 3, maxCuts = 5): CutSection[] {
+  if (!(duration > 1) || minCuts < 1 || maxCuts < minCuts) throw new Error("Некорректная нарезка эфира.");
+  const count = Math.min(maxCuts, Math.max(minCuts, Math.round(duration / 150)));
+  const edges = [0];
+  for (let index = 1; index < count; index += 1) {
+    const target = (duration * index) / count;
+    const previous = edges[index - 1] ?? 0;
+    const near = silenceAt
+      .filter((time) => time > previous + 20 && time < duration - 20)
+      .sort((a, b) => Math.abs(a - target) - Math.abs(b - target))[0];
+    edges.push(near ?? target);
+  }
+  edges.push(duration);
+  return edges.slice(0, -1).map((start, index) => ({ start, end: edges[index + 1] ?? duration }));
+}
+
 export function sectionHardLimit(sections: CutSection[], index: number, duration: number): number {
   const section = sections[index];
   let limit = Math.min(duration, section.end + TAIL_WINDOW_SECONDS);

@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 import { mkdir, rm, stat, writeFile } from "node:fs/promises";
 import { basename, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { cutsFromSilence, detectSilenceLog, silenceStartsFromDetectLog } from "./video-cutting-audio.ts";
 import {
   GTA6_HEIGHT,
   GTA6_WIDTH,
@@ -383,6 +384,49 @@ export function withGta6ProcessSlot<T>(job: () => Promise<T>): Promise<T> {
   return run;
 }
 
+export async function cutLiveChunkByAudio(input: {
+  file: string;
+  sourceId: string;
+  outDir: string;
+  min?: number;
+  max?: number;
+  duration?: number;
+  silenceLog?: string;
+  copy?: (range: { start: number; end: number }, output: string) => Promise<void>;
+}): Promise<Gta6Report> {
+  const duration = input.duration ?? await probeMediaDuration(input.file);
+  const silenceLog = input.silenceLog ?? await detectSilenceLog(input.file, 0, duration);
+  const pieces = cutsFromSilence(duration, silenceStartsFromDetectLog(silenceLog), input.min ?? 3, input.max ?? 5);
+  const highlights: Gta6ClipRecord[] = [];
+  await mkdir(resolve(input.outDir, "clips"), { recursive: true });
+  for (let index = 0; index < pieces.length; index += 1) {
+    const piece = pieces[index]!;
+    const clip = resolve(input.outDir, "clips", `${input.sourceId}-audio-${index + 1}.mp4`);
+    if (input.copy) await input.copy(piece, clip);
+    else {
+      await runCaptured(process.env.GTA6_FFMPEG || "ffmpeg", [
+        "-y", "-ss", piece.start.toFixed(3), "-to", piece.end.toFixed(3), "-i", input.file,
+        "-c", "copy", "-movflags", "+faststart", clip,
+      ], { cwd: repoRoot, timeoutMs: 120_000, env: childEnv() });
+    }
+    highlights.push({
+      sourceId: input.sourceId,
+      class: "first_look",
+      text: "",
+      triggerStart: piece.start,
+      triggerEnd: piece.end,
+      start: piece.start,
+      end: piece.end,
+      clip,
+      filter: "audio",
+    });
+  }
+  return {
+    published: false,
+    sources: [{ sourceId: input.sourceId, chunks: [input.file], duration, language: "", segments: [], highlights }],
+  };
+}
+
 export async function followGta6Live(options: {
   url: string;
   outDir: string;
@@ -394,19 +438,28 @@ export async function followGta6Live(options: {
   processChunk?: (input: { file: string; index: number; sourceId: string }) => Promise<Gta6Report>;
   remove?: (file: string) => Promise<void>;
   log?: (line: string) => void;
+  maxChunks?: number;
+  audioCuts?: { min: number; max: number };
 }) {
   const page = assertLivePage(options.url);
   const minutes = assertChunkMinutes(options.minutes ?? 10);
+  if (options.maxChunks != null && (!Number.isInteger(options.maxChunks) || options.maxChunks < 1 || options.maxChunks > 6)) {
+    throw new Error("Час эфира — это от 1 до 6 кусков.");
+  }
   const seconds = minutes * 60;
   const stop = new AbortController();
   const signal = options.signal ? AbortSignal.any([options.signal, stop.signal]) : stop.signal;
   const record = options.record ?? ((input: { url: string; file: string; seconds: number; signal?: AbortSignal }) => recordLiveChunk(input));
-  const processChunk = options.processChunk ?? ((input: { file: string; sourceId: string }) => withGta6ProcessSlot(() => runGta6Highlights({
-    sources: [{ sourceId: input.sourceId, chunks: [input.file] }],
-    outDir: options.outDir,
-    telegram: options.telegram,
-    labels: options.labels,
-  })));
+  const processChunk = options.processChunk ?? (options.audioCuts
+    ? (input: { file: string; sourceId: string }) => cutLiveChunkByAudio({
+      file: input.file, sourceId: input.sourceId, outDir: options.outDir, min: options.audioCuts?.min, max: options.audioCuts?.max,
+    })
+    : (input: { file: string; sourceId: string }) => withGta6ProcessSlot(() => runGta6Highlights({
+      sources: [{ sourceId: input.sourceId, chunks: [input.file] }],
+      outDir: options.outDir,
+      telegram: options.telegram,
+      labels: options.labels,
+    })));
   const remove = options.remove ?? ((file: string) => rm(file, { force: true }));
   const log = options.log ?? (() => {});
   await mkdir(resolve(options.outDir, "incoming"), { recursive: true });
@@ -420,7 +473,8 @@ export async function followGta6Live(options: {
   try {
     while (!signal.aborted) {
       const current = await pending;
-      const continueLive = !current.ended && !signal.aborted;
+      const withinHour = options.maxChunks == null || current.index + 1 < options.maxChunks;
+      const continueLive = !current.ended && !signal.aborted && withinHour;
       if (continueLive) pending = open(current.index + 1);
       if (current.empty) {
         await remove(current.file);

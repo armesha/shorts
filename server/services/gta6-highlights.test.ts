@@ -355,6 +355,33 @@ test("live follow cuts a closed chunk while the next one records, then deletes o
   }
 });
 
+test("live follow stops after the requested number of 10-minute chunks", async () => {
+  const root = await mkdtemp(resolve(tmpdir(), "gta6-live-hour-"));
+  let recorded = 0;
+  try {
+    const report = await followGta6Live({
+      url: "https://www.youtube.com/watch?v=abcdefghijk",
+      outDir: root,
+      minutes: 10,
+      maxChunks: 2,
+      record: async ({ file, seconds }) => {
+        assert.equal(seconds, 600);
+        recorded += 1;
+        await writeFile(file, "raw");
+        return { ended: false };
+      },
+      processChunk: async ({ sourceId }) => ({
+        published: false,
+        sources: [{ sourceId, chunks: [], duration: 600, language: "", segments: [], highlights: [] }],
+      }),
+    });
+    assert.equal(recorded, 2);
+    assert.equal(report.sources.length, 2);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("a failed cut keeps the raw chunk", async () => {
   const root = await mkdtemp(resolve(tmpdir(), "gta6-live-fail-"));
   try {

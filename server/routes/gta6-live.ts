@@ -1,5 +1,6 @@
 import { createReadStream } from "node:fs";
-import { stat } from "node:fs/promises";
+import { readFile, stat, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { uid } from "../infra/auth-session.ts";
@@ -10,6 +11,7 @@ const Start = z.object({
   url: z.string().trim().min(1).max(2048),
   minutes: z.union([z.literal(10), z.literal(12), z.literal(15)]).optional(),
   telegram: z.boolean().optional(),
+  chunks: z.literal(6).optional(),
 }).strict();
 const Stop = z.object({ id: z.string().trim().min(1).max(80) }).strict();
 
@@ -33,6 +35,17 @@ function sameOrigin(req: FastifyRequest) {
 }
 
 export function registerGta6LiveRoutes(app: FastifyInstance, root: string, sessions = new Gta6LiveSessions(root)) {
+  app.addHook("onReady", async () => {
+    const file = resolve(root, "hour.json");
+    try {
+      const spec = JSON.parse(await readFile(file, "utf8")) as { userId?: number; urls?: string[]; started?: boolean };
+      if (spec.started || !spec.userId || !Array.isArray(spec.urls)) return;
+      for (const url of spec.urls) await sessions.start(spec.userId, { url, minutes: 10, chunks: 6 });
+      await writeFile(file, `${JSON.stringify({ ...spec, started: true })}\n`);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") app.log.error(error);
+    }
+  });
   app.get("/api/gta6-live", async (req, reply) => {
     const userId = uid(req);
     if (!userId) return reply.code(401).send({ error: "Не авторизован" });
