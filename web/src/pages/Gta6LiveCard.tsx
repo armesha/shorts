@@ -4,6 +4,7 @@ import { get, send } from "../lib/api/http";
 type Clip = { file: string; class: string; url: string };
 type Channel = {
   id: string;
+  url: string;
   label: string;
   running: boolean;
   line: string;
@@ -105,7 +106,7 @@ export default function Gta6LiveCard() {
           {state.channels.map((channel) => (
             <li key={channel.id} className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="min-w-0 flex-1 truncate font-medium">{channel.label}</span>
+                <a className="link min-w-0 flex-1 truncate font-medium" href={channel.url} target="_blank" rel="noreferrer">{channel.label}</a>
                 {channel.line && <span className="text-sm text-base-content/70">{channel.line}</span>}
                 {channel.running && <button type="button" className="btn btn-sm" disabled={busy} onClick={() => void stop(channel.id)}>Стоп</button>}
               </div>
