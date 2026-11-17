@@ -18,7 +18,7 @@ const baseTemplate = (): TemplateDoc => ({
       y: 0,
       w: 1080,
       h: 1920,
-      src: "assets/template-packs/psychology-mgs/backgrounds/ai-bg-01.jpg",
+      src: "assets/template-packs/psychology-it/backgrounds/psychology-it-bg-01.jpg",
       fit: "cover",
     },
     {

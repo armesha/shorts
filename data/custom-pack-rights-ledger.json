@@ -157,16 +157,6 @@
         "Facts should be source-backed before large publication batches.",
         "Avoid medical/legal/financial instructions and unsafe experiments."
       ]
-    },
-    "психология-mgs-mqe2kfjv": {
-      "status": "custom_pack_manual_provenance_review",
-      "livePath": "data/packs/психология-mgs-mqe2kfjv.json",
-      "note": "MGS/client-specific psychology pack. Do not use as a donor, fallback, or active source for armen/super-admin thematic blocks unless explicitly requested.",
-      "rules": [
-        "Keep separate from super-admin packs.",
-        "Do not add external sourced text without a license/source note.",
-        "Avoid clinical diagnosis, crisis/self-harm advice, and protected-class targeting."
-      ]
     }
   }
 }
