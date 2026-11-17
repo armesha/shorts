@@ -86,6 +86,7 @@ __pycache__/
 .venv/
 .venv-cutting/
 data/video-cutting/
+data/stream-highlights/
 
 # scratch screenshots at repo root — agent working files, not source
 /image.png

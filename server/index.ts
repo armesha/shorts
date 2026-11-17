@@ -49,6 +49,7 @@ import { registerChannelGroupRoutes } from "./routes/channel-groups.ts";
 import { registerVideoTemplateRoutes } from "./routes/video-templates.ts";
 import { registerVideoCuttingRoutes } from "./routes/video-cutting.ts";
 import { registerGta6LiveRoutes } from "./routes/gta6-live.ts";
+import { registerStreamHighlightRoutes } from "./routes/stream-highlights.ts";
 import { registerMapStudioRoutes } from "./routes/map-studio.ts";
 import { registerMapPipelineRoutes } from "./routes/map-pipeline.ts";
 import { MapPipelineService } from "./services/map-pipeline/service.ts";
@@ -397,6 +398,7 @@ const mapPipeline = registerMapPipelineRoutes(app, mapPipelineService, ownerId =
 registerVideoTemplateRoutes(app, db, resolve(process.cwd(), base.outputDir));
 registerVideoCuttingRoutes(app, db, resolve(process.cwd(), base.outputDir));
 registerGta6LiveRoutes(app, resolve(process.cwd(), "data/gta6-live"));
+registerStreamHighlightRoutes(app, resolve(process.cwd(), "data/stream-highlights"));
 registerStatsRoutes(app, db, deps);
 registerSignalsRoutes(app, db, deps);
 registerNotificationsRoutes(app, db, deps);

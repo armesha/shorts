@@ -7,7 +7,7 @@ const templates = [
     to: "/cutting",
     Icon: Film,
   },
-  { id: "streams", name: "Трансляции", to: "/streams", Icon: Radio },
+  { id: "streams", name: "Стримы", to: "/streams", Icon: Radio },
   { id: "maps", name: "Карты", to: "/templates/maps", Icon: Map },
   { id: "circles", name: "Кружочки Telegram", to: "/circles", Icon: Video },
   { id: "characters", name: "3D Персонажи (Nixly AI)", to: "/templates/characters", Icon: Sparkles },
