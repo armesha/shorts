@@ -87,6 +87,8 @@ __pycache__/
 .venv-cutting/
 data/video-cutting/
 data/stream-highlights/
+data/gta6-live/
+*.tsbuildinfo
 
 # scratch screenshots at repo root — agent working files, not source
 /image.png
