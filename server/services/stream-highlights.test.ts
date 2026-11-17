@@ -140,6 +140,11 @@ test("serial cutting page no longer hosts the stream review", async () => {
   const streams = await readFile(resolve("web/src/pages/Streams.tsx"), "utf8");
   assert.equal(cutting.includes("Gta6LiveCard"), false);
   assert.equal(cutting.includes("StreamReview"), false);
-  assert.equal(streams.includes("StreamReview"), true);
+  assert.equal(streams.includes("StreamReview"), false);
   assert.equal(streams.includes("Gta6LiveCard"), true);
+  const page = await readFile(resolve("server/public/narezka/index.html"), "utf8");
+  assert.match(page, /Разобрать/);
+  assert.equal(page.includes('type="time"'), false);
+  const rules = await readFile(resolve("docs/stream-highlight-rules.md"), "utf8");
+  assert.match(rules, /narezka\.shareboard\.live/);
 });

@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Нарезка</title>
+  <style>
+    :root { color-scheme: light; --ink: #1c1917; --muted: #57534e; --line: #e7e5e4; --paper: #fafaf9; --card: #fff; --accent: #9f1239; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 16px/1.45 system-ui, sans-serif; color: var(--ink); background: var(--paper); }
+    main { max-width: 1080px; margin: 0 auto; padding: 28px 16px 64px; }
+    h1 { font-size: 32px; margin: 0; }
+    h2, h3 { margin: 0; }
+    p { margin: 0; }
+    button, input, textarea { font: inherit; }
+    button { border: 1px solid var(--line); background: var(--card); border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+    button.primary { background: var(--accent); color: white; border-color: var(--accent); }
+    button[aria-pressed="true"] { background: var(--accent); color: white; border-color: var(--accent); }
+    button:disabled { opacity: .6; cursor: default; }
+    input, textarea { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: white; }
+    label { display: grid; gap: 6px; font-size: 14px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+    .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .grow { flex: 1; min-width: 220px; }
+    .muted { color: var(--muted); font-size: 14px; }
+    .error { color: #b91c1c; font-size: 14px; }
+    .stack { display: grid; gap: 16px; }
+    .clip { display: grid; gap: 12px; }
+    .times { display: grid; gap: 8px; grid-template-columns: 1fr; }
+    iframe { width: 100%; aspect-ratio: 16/9; border: 0; border-radius: 10px; background: black; }
+    .mono { font-family: ui-monospace, monospace; }
+    header.top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+    @media (min-width: 800px) {
+      .clip { grid-template-columns: 320px 1fr; }
+      .times { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="top">
+      <div>
+        <h1>Нарезка</h1>
+        <p class="muted">Разбор записи стрима. Сериальные нарезки остаются на Shareboard. Публикации нет.</p>
+      </div>
+      <button id="logout" type="button" hidden>Выйти</button>
+    </header>
+    <section id="login" class="card stack" hidden>
+      <form id="login-form" class="stack">
+        <label>Логин <input name="username" autocomplete="username" required maxlength="80" /></label>
+        <label>Пароль <input name="password" type="password" autocomplete="current-password" required maxlength="200" /></label>
+        <p class="muted">Тот же логин, что на Shareboard.</p>
+        <button class="primary" type="submit">Войти</button>
+        <p id="login-error" class="error" role="alert"></p>
+      </form>
+    </section>
+    <section id="app" class="stack" hidden>
+      <form id="start" class="card stack">
+        <div class="row">
+          <input id="url" class="grow" type="url" required maxlength="2048" placeholder="Ссылка на запись YouTube" aria-label="Ссылка на запись" />
+          <button class="primary" type="submit">Разобрать</button>
+        </div>
+        <p id="form-error" class="error" role="alert"></p>
+      </form>
+      <div id="jobs" class="row" role="group" aria-label="Разборы"></div>
+      <div id="detail" class="stack"></div>
+    </section>
+  </main>
+  <script>
+    const MOMENT = { humor: "Юмор", reaction: "Реакция", failure: "Неудача", action: "Действие", opinion: "Мнение", scare: "Скример", mechanic: "Механика" };
+    const RATING = [["interesting", "Интересно"], ["maybe", "Сомнительно"], ["boring", "Скучно"]];
+    const login = document.querySelector("#login");
+    const app = document.querySelector("#app");
+    const logout = document.querySelector("#logout");
+    let board = { jobs: [] };
+    let selected = "";
+    let busy = false;
+
+    function formatOffset(total) {
+      const seconds = Math.max(0, Math.round(total));
+      return [Math.floor(seconds / 3600), Math.floor((seconds % 3600) / 60), seconds % 60].map((part) => String(part).padStart(2, "0")).join(":");
+    }
+    function parseOffset(value) {
+      const match = /^(\d{2}):([0-5]\d):([0-5]\d)$/.exec(value.trim());
+      return match ? Number(match[1]) * 3600 + Number(match[2]) * 60 + Number(match[3]) : null;
+    }
+    async function api(path, method, body) {
+      const response = await fetch(path, { method, credentials: "same-origin", headers: body ? { "Content-Type": "application/json" } : undefined, body: body ? JSON.stringify(body) : undefined });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Не удалось выполнить запрос");
+      return data;
+    }
+    function show(loggedIn) {
+      login.hidden = loggedIn;
+      app.hidden = !loggedIn;
+      logout.hidden = !loggedIn;
+    }
+    function job() { return board.jobs.find((item) => item.id === selected) || board.jobs[0]; }
+
+    function draw() {
+      const current = job();
+      const jobs = document.querySelector("#jobs");
+      jobs.replaceChildren();
+      for (const item of board.jobs) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = item.title || "Новый разбор";
+        button.setAttribute("aria-pressed", String(item.id === current?.id));
+        button.onclick = () => { selected = item.id; draw(); };
+        jobs.append(button);
+      }
+      const detail = document.querySelector("#detail");
+      detail.replaceChildren();
+      if (!current) return;
+      const head = document.createElement("div");
+      head.className = "row";
+      const title = document.createElement("h2");
+      title.textContent = current.title || "Разбор записи";
+      const stage = document.createElement("span");
+      stage.className = "muted";
+      stage.textContent = [current.channel, current.stage].filter(Boolean).join(" · ");
+      head.append(title, stage);
+      const running = ["queued", "fetching", "analyzing"].includes(current.status);
+      if (running) {
+        const stop = document.createElement("button");
+        stop.type = "button";
+        stop.textContent = "Отменить";
+        stop.disabled = busy;
+        stop.onclick = async () => { busy = true; try { board = await api("/api/stream-highlights/" + current.id + "/cancel", "POST", {}); } catch (error) { document.querySelector("#form-error").textContent = error.message; } finally { busy = false; draw(); } };
+        head.append(stop);
+      }
+      detail.append(head);
+      if (current.error) {
+        const error = document.createElement("p");
+        error.className = "error";
+        error.textContent = current.error;
+        detail.append(error);
+      }
+      if (current.status === "ready" && !current.clips.length) {
+        const empty = document.createElement("p");
+        empty.className = "muted";
+        empty.textContent = "В этой записи нет момента, который стоит отдать отдельным роликом.";
+        detail.append(empty);
+      }
+      for (const clip of current.clips) detail.append(clipCard(current, clip));
+    }
+
+    function clipCard(current, clip) {
+      const article = document.createElement("article");
+      article.className = "card clip";
+      const frame = document.createElement("iframe");
+      const start = clip.userStart ?? clip.start;
+      const end = clip.userEnd ?? clip.end;
+      frame.title = clip.title;
+      frame.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      frame.allowFullscreen = true;
+      frame.src = "https://www.youtube.com/embed/" + encodeURIComponent(current.videoId) + "?start=" + Math.floor(start) + "&end=" + Math.ceil(end) + "&rel=0";
+      const body = document.createElement("div");
+      body.className = "stack";
+      const meta = document.createElement("p");
+      meta.className = "muted";
+      meta.textContent = (MOMENT[clip.momentType] || clip.momentType) + " · " + formatOffset(clip.start) + "–" + formatOffset(clip.end);
+      const title = document.createElement("h3");
+      title.textContent = clip.title;
+      const reason = document.createElement("p");
+      reason.textContent = clip.reason;
+      const ratings = document.createElement("div");
+      ratings.className = "row";
+      ratings.setAttribute("aria-label", "Оценка: " + clip.title);
+      const startInput = field("Начало", formatOffset(start), "Начало ролика " + clip.title);
+      const endInput = field("Конец", formatOffset(end), "Конец ролика " + clip.title);
+      const times = document.createElement("div");
+      times.className = "times";
+      times.append(startInput.label, endInput.label);
+      const noteLabel = document.createElement("label");
+      noteLabel.append("Почему так");
+      const note = document.createElement("textarea");
+      note.rows = 2;
+      note.maxLength = 600;
+      note.value = clip.note;
+      note.setAttribute("aria-label", "Заметка к ролику " + clip.title);
+      noteLabel.append(note);
+      const error = document.createElement("p");
+      error.className = "error";
+      const save = async (rating) => {
+        const startAt = parseOffset(startInput.input.value);
+        const endAt = parseOffset(endInput.input.value);
+        if (startAt == null || endAt == null) { error.textContent = "Время в формате 00:00:00."; return; }
+        if (endAt <= startAt) { error.textContent = "Конец должен быть позже начала."; return; }
+        error.textContent = "";
+        busy = true;
+        try {
+          board = await api("/api/stream-highlights/" + current.id + "/review", "POST", { slug: clip.slug, rating: rating === undefined ? clip.rating : rating, start: startAt, end: endAt, note: note.value });
+          draw();
+        } catch (reasonError) { error.textContent = reasonError.message; }
+        finally { busy = false; }
+      };
+      for (const [id, label] of RATING) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = label;
+        button.setAttribute("aria-pressed", String(clip.rating === id));
+        button.onclick = () => save(id);
+        ratings.append(button);
+      }
+      const bounds = document.createElement("button");
+      bounds.type = "button";
+      bounds.textContent = "Сохранить границы";
+      bounds.onclick = () => save();
+      body.append(meta, title, reason, ratings, times, noteLabel, bounds, error);
+      article.append(frame, body);
+      return article;
+    }
+    function field(name, value, aria) {
+      const label = document.createElement("label");
+      label.append(name);
+      const input = document.createElement("input");
+      input.className = "mono";
+      input.inputMode = "numeric";
+      input.autocomplete = "off";
+      input.spellcheck = false;
+      input.placeholder = "00:00:00";
+      input.value = value;
+      input.setAttribute("aria-label", aria);
+      label.append(input);
+      return { label, input };
+    }
+
+    document.querySelector("#login-form").onsubmit = async (event) => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      document.querySelector("#login-error").textContent = "";
+      try {
+        await api("/api/auth/login", "POST", { username: data.get("username"), password: data.get("password") });
+        show(true);
+        board = await api("/api/stream-highlights");
+        draw();
+      } catch (error) { document.querySelector("#login-error").textContent = error.message; }
+    };
+    document.querySelector("#start").onsubmit = async (event) => {
+      event.preventDefault();
+      document.querySelector("#form-error").textContent = "";
+      busy = true;
+      try {
+        board = await api("/api/stream-highlights", "POST", { url: document.querySelector("#url").value });
+        selected = board.jobs[0]?.id || "";
+        document.querySelector("#url").value = "";
+        draw();
+      } catch (error) { document.querySelector("#form-error").textContent = error.message; }
+      finally { busy = false; }
+    };
+    logout.onclick = async () => { await api("/api/auth/logout", "POST", {}); show(false); };
+    async function boot() {
+      try {
+        await api("/api/auth/me");
+        show(true);
+        board = await api("/api/stream-highlights");
+        draw();
+        setInterval(async () => { if (document.hidden || busy) return; try { board = await api("/api/stream-highlights"); draw(); } catch { /* следующая попытка */ } }, 4000);
+      } catch { show(false); }
+    }
+    boot();
+  </script>
+</body>
+</html>
