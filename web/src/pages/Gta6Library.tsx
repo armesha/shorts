@@ -1,18 +1,33 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Download, Trash2 } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Download, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ApiError, get, send } from "../lib/api/http";
 import { confirmDialog } from "../lib/confirm";
 
 const API = "/gta6-live/library";
 const YOUTUBE_API = "/creator/gta6-youtube";
+const CLIPS_PER_PAGE = 12;
+const SORT_OPTIONS = [
+  { id: "newest", label: "Сначала свежие" },
+  { id: "oldest", label: "Сначала старые" },
+] as const;
 const BANNERS = [
   { id: "shortrobot", label: "Shortrobot" },
   { id: "simka", label: "SIMKA VPN" },
 ] as const;
 
 type Banner = (typeof BANNERS)[number]["id"];
+type Sort = (typeof SORT_OPTIONS)[number]["id"];
+type PublicationFilter = "all" | "posted" | "unposted";
 type Clip = { id: string; title: string; createdAt: string; published: boolean; duration?: number };
+const sourceLabels: Record<string, string> = {
+  "twitch.tv/steel": "Стилл",
+  "twitch.tv/jolygames": "Шевцов",
+  "youtube.com/ijJXKz-1YnE": "Swich Games",
+};
+
+const sourceName = (clip: Clip) => sourceLabels[clip.title] ?? clip.title;
+
 type Publication = {
   clipId: string;
   banner: Banner;
@@ -50,8 +65,10 @@ function Gta6ClipCard({ clip, busy, youtube, onUpdate, onPublish }: {
   const [banner, setBanner] = useState<Banner>("shortrobot");
   const [canLoadPreview, setCanLoadPreview] = useState(false);
   const [videoDuration, setVideoDuration] = useState<number>();
+  const [preview, setPreview] = useState<{ banner: Banner; url: string; duration?: number }>();
   const player = useRef<HTMLDivElement>(null);
   const src = `/api${API}/${clip.id}/${banner}`;
+  const name = sourceName(clip);
   const titleId = `gta6-clip-${clip.id}`;
   const targetId = youtube?.targets.find(item => item.banner === banner)?.accountId;
   const target = youtube?.accounts.find(account => account.id === targetId);
@@ -60,7 +77,8 @@ function Gta6ClipCard({ clip, busy, youtube, onUpdate, onPublish }: {
   const date = new Date(clip.createdAt).toLocaleString("ru-RU", {
     day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false,
   });
-  const duration = clip.duration ?? videoDuration;
+  const currentPreview = preview?.banner === banner ? preview : undefined;
+  const duration = clip.duration ?? currentPreview?.duration ?? videoDuration;
   useEffect(() => {
     const element = player.current;
     if (!element || canLoadPreview) return;
@@ -73,12 +91,31 @@ function Gta6ClipCard({ clip, busy, youtube, onUpdate, onPublish }: {
     observer.observe(element);
     return () => observer.disconnect();
   }, [canLoadPreview]);
+  useEffect(() => {
+    if (!canLoadPreview) return;
+    const controller = new AbortController();
+    let objectUrl: string | undefined;
+    async function loadPreview() {
+      const response = await fetch(`/api/creator/gta6-previews/${clip.id}/${banner}`, { signal: controller.signal });
+      if (!response.ok) return;
+      const data = await response.blob();
+      if (controller.signal.aborted) return;
+      objectUrl = URL.createObjectURL(data);
+      const duration = Number(response.headers.get("X-Clip-Duration"));
+      setPreview({ banner, url: objectUrl, duration: duration > 0 ? duration : undefined });
+    }
+    void loadPreview().catch(() => undefined);
+    return () => {
+      controller.abort();
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [banner, canLoadPreview, clip.id]);
 
   return (
     <article aria-labelledby={titleId} className="min-w-0 border border-base-300 bg-base-100">
       <div ref={player} className="relative bg-black">
-        <video src={src} controls playsInline preload="none" aria-label={`Ролик ${clip.title}`}
-          poster={canLoadPreview ? `/api/creator/gta6-previews/${clip.id}/${banner}` : undefined}
+        <video src={src} controls playsInline preload="none" aria-label={`Ролик ${name}`}
+          poster={currentPreview?.url}
           onLoadedMetadata={event => {
             if (Number.isFinite(event.currentTarget.duration)) setVideoDuration(event.currentTarget.duration);
           }}
@@ -91,7 +128,7 @@ function Gta6ClipCard({ clip, busy, youtube, onUpdate, onPublish }: {
       </div>
       <div className="space-y-2 px-3 py-2">
         <div className="space-y-1">
-          <h2 id={titleId} className="break-words text-sm font-semibold">{clip.title}</h2>
+          <h2 id={titleId} className="break-words text-sm font-semibold">{name}</h2>
           <time dateTime={clip.createdAt} className="text-xs tabular-nums text-base-content/70">{date}</time>
         </div>
         <div className="join flex w-full" role="group" aria-label="Баннер">
@@ -143,6 +180,28 @@ export default function Gta6Library() {
   const [actionError, setActionError] = useState("");
   const [busy, setBusy] = useState(false);
   const [reload, setReload] = useState(0);
+  const [source, setSource] = useState("");
+  const [publicationFilter, setPublicationFilter] = useState<PublicationFilter>("all");
+  const [sort, setSort] = useState<Sort>("newest");
+  const [page, setPage] = useState(1);
+  const controls = useRef<HTMLDivElement>(null);
+  const sources = [...new Set(clips?.map(sourceName))].sort((a, b) => a.localeCompare(b, "ru-RU"));
+  const activeSource = sources.includes(source) ? source : "";
+  const postedIds = new Set(youtube?.publications.filter(item => item.state === "published").map(item => item.clipId));
+  const filteredClips = (clips ?? []).filter(clip => {
+    const posted = clip.published || postedIds.has(clip.id);
+    return (!activeSource || sourceName(clip) === activeSource) &&
+      (publicationFilter === "all" || (publicationFilter === "posted") === posted);
+  }).sort((a, b) => sort === "oldest" ? a.createdAt.localeCompare(b.createdAt) : b.createdAt.localeCompare(a.createdAt));
+  const pageCount = Math.max(1, Math.ceil(filteredClips.length / CLIPS_PER_PAGE));
+  const currentPage = Math.min(page, pageCount);
+  const start = (currentPage - 1) * CLIPS_PER_PAGE;
+  const pageClips = filteredClips.slice(start, start + CLIPS_PER_PAGE);
+
+  function changePage(nextPage: number) {
+    setPage(nextPage);
+    controls.current?.scrollIntoView({ block: "start" });
+  }
 
   useEffect(() => {
     if (busy) return;
@@ -244,12 +303,13 @@ export default function Gta6Library() {
         <div className="mt-3 flex flex-wrap items-end gap-3">
           {BANNERS.map(({ id, label }) => {
             const automation = youtube?.automation?.find(job => job.banner === id);
+            const target = youtube?.targets.find(item => item.banner === id);
             return (
               <div key={id} className="grid min-w-0 max-w-full gap-1">
                 <label className="grid gap-1">
                   {label}
                   <select className="select select-bordered select-sm w-full min-h-11" disabled={busy || !youtube?.accounts.length}
-                    value={youtube?.targets.find(target => target.banner === id)?.accountId ?? ""}
+                    value={target?.accountId ?? ""}
                     onChange={event => void setTarget(id, event.target.value ? Number(event.target.value) : null)}>
                     <option value="">Выбрать канал</option>
                     {youtube?.accounts.map(account => <option key={account.id} value={account.id}>{account.name}</option>)}
@@ -261,7 +321,9 @@ export default function Gta6Library() {
                     aria-label={`Автопубликация ${label} раз в час`} />
                   Раз в час
                 </label>
-                {automation?.error && <p className="text-xs text-error">{automation.error}</p>}
+                {automation?.enabled === 1 && !target ? (
+                  <p className="text-xs text-base-content/70">Ожидает входа в YouTube</p>
+                ) : automation?.error && <p className="text-xs text-error">{automation.error}</p>}
               </div>
             );
           })}
@@ -279,9 +341,41 @@ export default function Gta6Library() {
       {actionError && <p className="text-error" role="alert">{actionError}</p>}
       {!clips && !loadError && <p role="status" className="text-sm">Загрузка…</p>}
       {!!clips?.length && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          {clips.map((clip) => <Gta6ClipCard key={clip.id} clip={clip} busy={busy} youtube={youtube} onUpdate={updateClip} onPublish={publishClip} />)}
-        </div>
+        <>
+          <div className="flex scroll-mt-4 flex-wrap items-center gap-2" ref={controls}>
+            <select className="select select-bordered select-sm min-h-11 w-auto max-w-full" aria-label="Стример" value={activeSource}
+              onChange={event => { setSource(event.target.value); setPage(1); }}>
+              <option value="">Все стримеры</option>
+              {sources.map(name => <option key={name} value={name}>{name}</option>)}
+            </select>
+            <select className="select select-bordered select-sm min-h-11 w-auto max-w-full" aria-label="Статус публикации" value={publicationFilter}
+              onChange={event => { setPublicationFilter(event.target.value as PublicationFilter); setPage(1); }}>
+              <option value="all">Все ролики</option>
+              <option value="posted">Выложенные</option>
+              <option value="unposted">Не выложенные</option>
+            </select>
+            <select className="select select-bordered select-sm min-h-11 w-auto max-w-full" aria-label="Сортировка" value={sort}
+              onChange={event => { setSort(event.target.value as Sort); setPage(1); }}>
+              {SORT_OPTIONS.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
+            </select>
+            {pageClips.length > 0 && (
+              <span className="text-sm tabular-nums text-base-content/70">{start + 1}–{start + pageClips.length} из {filteredClips.length}</span>
+            )}
+          </div>
+          {!pageClips.length && <p className="text-sm text-base-content/70">Нет роликов с такими фильтрами.</p>}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            {pageClips.map(clip => <Gta6ClipCard key={clip.id} clip={clip} busy={busy} youtube={youtube} onUpdate={updateClip} onPublish={publishClip} />)}
+          </div>
+          {pageCount > 1 && (
+            <nav className="flex items-center justify-center gap-3" aria-label="Страницы роликов">
+              <button type="button" className="btn btn-outline btn-sm btn-square min-h-11 min-w-11" aria-label="Предыдущая страница"
+                disabled={currentPage === 1} onClick={() => changePage(currentPage - 1)}><ChevronLeft size={18} aria-hidden="true" /></button>
+              <span className="text-sm tabular-nums" aria-live="polite">{currentPage} / {pageCount}</span>
+              <button type="button" className="btn btn-outline btn-sm btn-square min-h-11 min-w-11" aria-label="Следующая страница"
+                disabled={currentPage === pageCount} onClick={() => changePage(currentPage + 1)}><ChevronRight size={18} aria-hidden="true" /></button>
+            </nav>
+          )}
+        </>
       )}
     </div>
   );

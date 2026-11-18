@@ -58,6 +58,8 @@ export function registerGta6Previews(app: FastifyInstance, libraryFor: (ownerId:
     try {
       const { id, banner } = input.data;
       const file = await prepareGta6Preview(libraryFor(ownerId), id, banner);
+      const { duration } = JSON.parse(await readFile(resolve(dirname(file), "clip.json"), "utf8")) as { duration?: number };
+      if (typeof duration === "number" && Number.isFinite(duration)) reply.header("X-Clip-Duration", String(duration));
       return reply.type("image/jpeg").header("Cache-Control", "private, max-age=3600").send(createReadStream(file));
     } catch { return reply.code(404).send({ error: "Превью недоступно." }); }
   });
