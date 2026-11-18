@@ -40,11 +40,6 @@ function formatClip(minutes: number, cuts: number) {
   return `${whole} мин ${rest} сек`;
 }
 
-const HOUR_STREAMS = [
-  { label: "LiveNOW FOX 24/7", url: "https://www.youtube.com/watch?v=C96oohpWBGw" },
-  { label: "LiveNOW from FOX", url: "https://www.youtube.com/watch?v=0TtsQz8oOv4" },
-];
-
 export default function Gta6LiveCard() {
   const [params] = useSearchParams();
   const [state, setState] = useState<LiveState>();
@@ -161,11 +156,6 @@ export default function Gta6LiveCard() {
       <div className="mt-3 rounded-lg bg-base-200 p-3 text-sm">
         <p className="font-medium">Ролик около {clipLength}</p>
         <p className="text-base-content/70">Каждые {minutes} мин — {cuts} {clipsWord(cuts)}. {untilEnd ? "Пишем, пока эфир не закончится." : `Вся запись около ${sessionLength}, до ${cuts * chunks} ${clipsWord(cuts * chunks)}.`}</p>
-      </div>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {HOUR_STREAMS.map((stream) => (
-          <button key={stream.url} type="button" className="btn btn-xs btn-outline" disabled={busy || full} onClick={() => { setUrl(stream.url); setMinutes(10); setCuts(4); setChunks(6); setUntilEnd(false); }}>{stream.label}</button>
-        ))}
       </div>
       {error && <p role="alert" className="mt-2 text-sm text-error">{error}</p>}
       {!!state?.channels.length && (
