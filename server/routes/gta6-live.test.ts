@@ -137,3 +137,57 @@ test("recording until the stream ends does not stop after a fixed number of chun
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test("opted-in streams archive both versions with private playback, status, and removal", async () => {
+  const root = await mkdtemp(resolve(tmpdir(), "gta6-library-api-"));
+  const sessions = new Gta6LiveSessions(root, async ({ library }) => {
+    await library?.store.add(library.title, async (banner, destination) => {
+      await writeFile(destination, banner);
+      if (banner === "shortrobot") assert.deepEqual(await library.store.list(), []);
+    });
+    return { published: false, sources: [] };
+  });
+  const app = Fastify();
+  app.addHook("onRequest", async (req) => {
+    const id = Number(req.headers["x-test-user"]);
+    if (id === 7 || id === 8) (req as FastifyRequest & { userId?: number }).userId = id;
+  });
+  registerGta6LiveRoutes(app, root, sessions);
+  const headers = { "x-test-user": "7" };
+  const other = { "x-test-user": "8" };
+  const url = "/api/gta6-live/library";
+  try {
+    assert.equal((await app.inject({ url })).statusCode, 401);
+    const start = (gta6Library: boolean) => app.inject({
+      url: "/api/gta6-live/start", method: "POST", headers,
+      payload: { url: "https://www.twitch.tv/tester", gta6Library },
+    });
+    assert.equal((await start(false)).statusCode, 200);
+    await sessions.settled(7);
+    assert.deepEqual((await app.inject({ url, headers })).json(), { clips: [] });
+    assert.equal((await start(true)).statusCode, 200);
+    await sessions.settled(7);
+    const { clips } = (await app.inject({ url, headers })).json();
+    assert.equal(clips.length, 1);
+    assert.equal(clips[0].published, false);
+    assert.equal(clips[0].title, "twitch.tv/tester");
+    const clip = `${url}/${clips[0].id}`;
+    assert.equal((await app.inject({ url: `${clip}/shortrobot`, headers })).body, "shortrobot");
+    const range = await app.inject({ url: `${clip}/simka`, headers: { ...headers, range: "bytes=0-2" } });
+    assert.equal(range.statusCode, 206);
+    assert.equal(range.body, "sim");
+    assert.equal((await app.inject({ url: `${clip}/simka`, headers: other })).statusCode, 404);
+    assert.equal((await app.inject({ url: clip, headers: other, method: "DELETE" })).statusCode, 404);
+    assert.equal((await app.inject({ url: clip, headers, method: "PATCH", payload: { published: true } })).statusCode, 200);
+    assert.equal((await new Gta6LiveSessions(root).library(7).list())[0]?.published, true);
+    assert.equal((await app.inject({ url: clip, headers, method: "PATCH", payload: { published: false } })).statusCode, 200);
+    assert.equal((await new Gta6LiveSessions(root).library(7).list())[0]?.published, false);
+    assert.equal((await app.inject({ url: clip, headers, method: "DELETE" })).statusCode, 200);
+    assert.deepEqual((await app.inject({ url, headers })).json(), { clips: [] });
+    assert.equal((await app.inject({ url: `${clip}/simka`, headers })).statusCode, 404);
+  } finally {
+    await sessions.settled(7);
+    await app.close();
+    await rm(root, { recursive: true, force: true });
+  }
+});

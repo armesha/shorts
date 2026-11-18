@@ -1,11 +1,12 @@
 import { createReadStream } from "node:fs";
 import { readFile, stat, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import type { FastifyInstance, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { uid } from "../infra/auth-session.ts";
 import { checkRateLimit } from "../infra/rate-limits.ts";
 import { Gta6LiveSessions } from "../services/gta6-live-session.ts";
+import { GTA6_BANNERS, GTA6_CLIP_ID } from "../services/gta6-library.ts";
 
 const Start = z.object({
   url: z.string().trim().min(1).max(2048),
@@ -14,8 +15,12 @@ const Start = z.object({
   chunks: z.number().int().min(1).max(12).optional(),
   cuts: z.number().int().min(1).max(8).optional(),
   untilEnd: z.boolean().optional(),
+  gta6Library: z.boolean().optional(),
 }).strict();
 const Stop = z.object({ id: z.string().trim().min(1).max(80) }).strict();
+const LibraryClip = z.object({ id: z.string().regex(GTA6_CLIP_ID) });
+const LibraryVideo = LibraryClip.extend({ banner: z.enum(GTA6_BANNERS) });
+const Published = z.object({ published: z.boolean() }).strict();
 
 function present(state: Awaited<ReturnType<Gta6LiveSessions["view"]>>) {
   return {
@@ -34,6 +39,26 @@ function sameOrigin(req: FastifyRequest) {
   if (!req.headers.origin) return true;
   try { return new URL(req.headers.origin).host === req.headers.host; }
   catch { return false; }
+}
+
+async function sendMp4(req: FastifyRequest, reply: FastifyReply, path: string) {
+  const info = await stat(path).catch(() => null);
+  if (!info?.isFile()) return reply.code(404).send({ error: "Клип не найден." });
+  reply.type("video/mp4").header("Accept-Ranges", "bytes").header("Cache-Control", "private, no-store");
+  const range = req.headers.range;
+  if (!range) return reply.header("Content-Length", info.size).send(createReadStream(path));
+  const matched = /^bytes=(\d*)-(\d*)$/u.exec(range);
+  const first = matched?.[1];
+  const last = matched?.[2];
+  const start = first ? Number(first) : Math.max(0, info.size - Number(last));
+  const end = first && last ? Math.min(Number(last), info.size - 1) : info.size - 1;
+  if ((!first && !last) || !Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start > end) {
+    return reply.code(416).header("Content-Range", `bytes */${info.size}`).send();
+  }
+  return reply.code(206)
+    .header("Content-Range", `bytes ${start}-${end}/${info.size}`)
+    .header("Content-Length", end - start + 1)
+    .send(createReadStream(path, { start, end }));
 }
 
 export function registerGta6LiveRoutes(app: FastifyInstance, root: string, sessions = new Gta6LiveSessions(root)) {
@@ -91,25 +116,47 @@ export function registerGta6LiveRoutes(app: FastifyInstance, root: string, sessi
     let path: string;
     try { path = sessions.clipFile(userId, String(params.channel || ""), String(params.file || "")); }
     catch { return reply.code(400).send({ error: "Некорректный файл." }); }
-    const info = await stat(path).catch(() => null);
-    if (!info?.isFile()) return reply.code(404).send({ error: "Клип не найден." });
-    reply.header("Content-Type", "video/mp4");
-    reply.header("Accept-Ranges", "bytes");
+    return sendMp4(req, reply, path);
+  });
+
+  app.get("/api/gta6-live/library", async (req, reply) => {
+    const userId = uid(req);
+    if (!userId) return reply.code(401).send({ error: "Не авторизован" });
     reply.header("Cache-Control", "private, no-store");
-    const range = req.headers.range;
-    const matched = typeof range === "string" ? /^bytes=(\d+)-(\d*)$/u.exec(range) : null;
-    if (typeof range === "string" && !matched) return reply.code(416).send();
-    if (matched) {
-      const start = Number(matched[1]);
-      const end = matched[2] ? Number(matched[2]) : info.size - 1;
-      if (!Number.isInteger(start) || !Number.isInteger(end) || start > end || end >= info.size) return reply.code(416).send();
-      reply.code(206);
-      reply.header("Content-Range", `bytes ${start}-${end}/${info.size}`);
-      reply.header("Content-Length", end - start + 1);
-      return reply.send(createReadStream(path, { start, end }));
+    return { clips: await sessions.library(userId).list() };
+  });
+
+  app.get("/api/gta6-live/library/:id/:banner", async (req, reply) => {
+    const userId = uid(req);
+    if (!userId) return reply.code(401).send({ error: "Не авторизован" });
+    const parsed = LibraryVideo.safeParse(req.params);
+    if (!parsed.success) return reply.code(400).send({ error: "Некорректный файл." });
+    return sendMp4(req, reply, sessions.library(userId).file(parsed.data.id, parsed.data.banner));
+  });
+
+  app.patch("/api/gta6-live/library/:id", async (req, reply) => {
+    const userId = uid(req);
+    if (!userId) return reply.code(401).send({ error: "Не авторизован" });
+    if (!sameOrigin(req)) return reply.code(403).send({ error: "Запрос с другого сайта запрещён." });
+    const clip = LibraryClip.safeParse(req.params);
+    const status = Published.safeParse(req.body);
+    if (!clip.success || !status.success) return reply.code(400).send({ error: "Проверьте отметку ролика." });
+    if (!await sessions.library(userId).setPublished(clip.data.id, status.data.published)) {
+      return reply.code(404).send({ error: "Клип не найден." });
     }
-    reply.header("Content-Length", info.size);
-    return reply.send(createReadStream(path));
+    return status.data;
+  });
+
+  app.delete("/api/gta6-live/library/:id", async (req, reply) => {
+    const userId = uid(req);
+    if (!userId) return reply.code(401).send({ error: "Не авторизован" });
+    if (!sameOrigin(req)) return reply.code(403).send({ error: "Запрос с другого сайта запрещён." });
+    const clip = LibraryClip.safeParse(req.params);
+    if (!clip.success) return reply.code(400).send({ error: "Клип не найден." });
+    if (!await sessions.library(userId).remove(clip.data.id)) {
+      return reply.code(404).send({ error: "Клип не найден." });
+    }
+    return { ok: true };
   });
 
   return sessions;

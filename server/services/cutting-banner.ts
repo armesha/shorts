@@ -5,16 +5,25 @@ import { extname, resolve } from "node:path";
 import type { CircleAdvertiser } from "./circle-advertisers.ts";
 import type { ProcessRunner } from "./video-cutting.ts";
 
+export type CuttingBannerStyle = Pick<CircleAdvertiser, "fullFrame" | "transparent" | "chromaColor" | "similarity" | "blend">;
+export type CuttingBannerArea = { left: number; top: number; width: number; height: number };
+
 export async function cuttingBannerHash(file: string) {
   const hash = createHash("sha256");
   for await (const chunk of createReadStream(file)) hash.update(chunk as Buffer);
   return hash.digest("hex");
 }
 
-export function cuttingBannerFilter(index: number, item: CircleAdvertiser, base: string, output: string) {
+export function cuttingBannerFilter(
+  index: number,
+  item: CuttingBannerStyle,
+  base: string,
+  output: string,
+  { left, top, width, height }: CuttingBannerArea = { left: 90, top: 1420, width: 900, height: 260 },
+) {
   const crop = item.fullFrame !== false ? "crop=900:260:90:830," : "";
   const alpha = item.transparent !== false ? "format=rgba" : `format=rgba,chromakey=${(item.chromaColor || "#00ff00").replace("#", "0x")}:${item.similarity ?? 0.18}:${item.blend ?? 0.08}`;
-  return `[${index}:v]${crop}scale=900:260:force_original_aspect_ratio=decrease,${alpha},pad=900:260:(ow-iw)/2:(oh-ih)/2:color=black@0,fps=30,setpts=PTS-STARTPTS[banner];[${base}][banner]overlay=90:1420:eof_action=repeat:shortest=0[${output}];`;
+  return `[${index}:v]${crop}scale=${width}:${height}:force_original_aspect_ratio=decrease,${alpha},pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=black@0,fps=30,setpts=PTS-STARTPTS[banner];[${base}][banner]overlay=${left}:${top}:eof_action=repeat:shortest=0[${output}];`;
 }
 
 export async function overlayExistingCuttingBanner(input: {

@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { useSearchParams } from "react-router-dom";
 import { get, send } from "../lib/api/http";
 
 type Clip = { file: string; class: string; url: string };
@@ -45,6 +46,7 @@ const HOUR_STREAMS = [
 ];
 
 export default function Gta6LiveCard() {
+  const [params] = useSearchParams();
   const [state, setState] = useState<LiveState>();
   const [url, setUrl] = useState("");
   const [minutes, setMinutes] = useState(10);
@@ -52,6 +54,7 @@ export default function Gta6LiveCard() {
   const [chunks, setChunks] = useState(6);
   const [untilEnd, setUntilEnd] = useState(false);
   const [telegram, setTelegram] = useState(false);
+  const [gta6Library, setGta6Library] = useState(params.get("gta6") === "1");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const full = (state?.used ?? 0) >= (state?.limit ?? 5);
@@ -72,8 +75,8 @@ export default function Gta6LiveCard() {
     setError("");
     try {
       const next = await send<LiveState>("/gta6-live/start", "POST", untilEnd
-        ? { url, minutes, telegram, cuts, untilEnd: true }
-        : { url, minutes, telegram, chunks, cuts });
+        ? { url, minutes, telegram, cuts, untilEnd: true, gta6Library }
+        : { url, minutes, telegram, chunks, cuts, gta6Library });
       setState(next);
       setUrl("");
     } catch (reason) {
@@ -117,6 +120,10 @@ export default function Gta6LiveCard() {
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" className="toggle toggle-sm" checked={telegram} disabled={busy || full} onChange={(event) => setTelegram(event.target.checked)} />
           ТГ
+        </label>
+        <label className="flex min-h-11 items-center gap-2 text-sm">
+          <input type="checkbox" className="checkbox checkbox-sm" checked={gta6Library} disabled={busy || full} onChange={(event) => setGta6Library(event.target.checked)} />
+          В библиотеку GTA 6
         </label>
         <button type="submit" className="btn btn-sm btn-primary" disabled={busy || full || !url.trim()}>Старт</button>
       </form>

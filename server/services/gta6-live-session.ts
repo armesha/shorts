@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { basename, resolve, sep } from "node:path";
+import { Gta6Library } from "./gta6-library.ts";
 import {
   assertChunkMinutes,
   followGta6Live,
@@ -17,6 +18,7 @@ export type Gta6LiveChannel = {
   chunks: number;
   cuts: number;
   telegram: boolean;
+  gta6Library: boolean;
   running: boolean;
   line: string;
   error: string;
@@ -59,6 +61,8 @@ export class Gta6LiveSessions {
 
   private dir(userId: number) { return resolve(this.root, `u${userId}`); }
 
+  library(userId: number) { return new Gta6Library(resolve(this.dir(userId), "library")); }
+
   private async read(userId: number): Promise<Stored> {
     try {
       const parsed = JSON.parse(await readFile(resolve(this.dir(userId), "state.json"), "utf8")) as { channels?: unknown };
@@ -76,6 +80,7 @@ export class Gta6LiveSessions {
             chunks: row.chunks === 0 ? 0 : bounded(row.chunks, 1, 12, 6),
             cuts: bounded(row.cuts, 1, 8, 4),
             telegram: row.telegram === true,
+            gta6Library: row.gta6Library === true,
             line: typeof row.line === "string" ? row.line : "",
             error: typeof row.error === "string" ? row.error : "",
             clips: Array.isArray(row.clips) ? row.clips.flatMap((clip) => cleanClip(clip) ?? []) : [],
@@ -117,7 +122,7 @@ export class Gta6LiveSessions {
     };
   }
 
-  async start(userId: number, input: { url: string; minutes?: number; telegram?: boolean; chunks?: number; cuts?: number; untilEnd?: boolean; keepClips?: boolean }) {
+  async start(userId: number, input: { url: string; minutes?: number; telegram?: boolean; chunks?: number; cuts?: number; untilEnd?: boolean; keepClips?: boolean; gta6Library?: boolean }) {
     if (!Number.isSafeInteger(userId) || userId < 1) throw new Error("Некорректный пользователь.");
     const channel = liveChannelKey(input.url);
     const minutes = assertChunkMinutes(input.minutes ?? 10);
@@ -138,6 +143,7 @@ export class Gta6LiveSessions {
       chunks,
       cuts,
       telegram,
+      gta6Library: input.gta6Library === true,
       line: `Подключаюсь к эфиру, кусок 1, ${minutes} мин.`,
       error: "",
       clips: [],
@@ -160,6 +166,7 @@ export class Gta6LiveSessions {
       telegram,
       maxChunks: untilEnd ? undefined : chunks,
       audioCuts: { min: cuts, max: cuts },
+      library: row.gta6Library ? { store: this.library(userId), root: this.root, title: channel.label } : undefined,
       signal: stop.signal,
       log: (line) => { void this.note(userId, channel.folder, token, line); },
     }).then(async (report) => {
@@ -193,6 +200,7 @@ export class Gta6LiveSessions {
           chunks: channel.chunks || undefined,
           cuts: channel.cuts,
           untilEnd: channel.chunks === 0,
+          gta6Library: channel.gta6Library,
           keepClips: true,
         });
       } catch { /* битая ссылка не должна останавливать остальные эфиры */ }

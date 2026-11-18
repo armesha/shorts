@@ -326,6 +326,12 @@ test(
       assert.equal(info.width, 1080);
       assert.equal(info.height, 1920);
       assert.equal(info.fps, "30/1");
+      const aspectRatio = spawnSync("ffprobe", [
+        "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=display_aspect_ratio",
+        "-of", "default=noprint_wrappers=1:nokey=1", output,
+      ], { encoding: "utf8" });
+      assert.equal(aspectRatio.status, 0, aspectRatio.stderr);
+      assert.equal(aspectRatio.stdout.trim(), "9:16");
       assert.ok(Math.abs(info.duration - 1) < 0.1);
       const pixels = spawnSync("ffmpeg", [
         "-v",

@@ -1,9 +1,10 @@
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
-import { mkdir, rm, stat, writeFile } from "node:fs/promises";
+import { link, mkdir, rm, stat, writeFile } from "node:fs/promises";
 import { basename, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { cutsFromSilence, detectSilenceLog, silenceStartsFromDetectLog } from "./video-cutting-audio.ts";
+import { GTA6_BANNER_AREA, gta6LibraryBanners, type Gta6Library } from "./gta6-library.ts";
 import {
   GTA6_HEIGHT,
   GTA6_WIDTH,
@@ -372,6 +373,8 @@ export async function recordLiveChunk(input: {
 
 let processTail: Promise<void> = Promise.resolve();
 
+type LibraryTarget = { store: Gta6Library; root: string; title: string };
+
 export function withGta6ProcessSlot<T>(job: () => Promise<T>): Promise<T> {
   const run = processTail.then(job, job);
   processTail = run.then(() => undefined, () => undefined);
@@ -387,6 +390,7 @@ export function cutLiveChunkByAudio(input: {
   duration?: number;
   silenceLog?: string;
   copy?: (range: { start: number; end: number }, output: string) => Promise<void>;
+  library?: LibraryTarget;
 }): Promise<Gta6Report> {
   return withGta6ProcessSlot(() => renderLiveChunk(input));
 }
@@ -400,6 +404,7 @@ async function renderLiveChunk(input: {
   duration?: number;
   silenceLog?: string;
   copy?: (range: { start: number; end: number }, output: string) => Promise<void>;
+  library?: LibraryTarget;
 }): Promise<Gta6Report> {
   const duration = input.duration ?? await probeMediaDuration(input.file);
   const silenceLog = input.silenceLog ?? await detectSilenceLog(input.file, 0, duration);
@@ -417,16 +422,26 @@ async function renderLiveChunk(input: {
       const item = listCircleAdvertisers().find((entry) => entry.id === activeId);
       const bannerFile = item ? circleAdvertiserSource(item.id) : "";
       if (!item || !existsSync(bannerFile)) throw new Error("Не найден активный баннер для нарезок.");
-      await renderCuttingPart({
+      const render = {
         source: input.file,
-        output: clip,
         dir: input.outDir,
         part: { number: index + 1, start: piece.start, end: piece.end, title: "Эфир", reason: "Кусок эфира." },
         words: [],
         subtitles: false,
-        banner: { item, file: bannerFile },
         light: true,
-      });
+      };
+      const area = input.library ? GTA6_BANNER_AREA : undefined;
+      await renderCuttingPart({ ...render, output: clip, banner: { item, file: bannerFile, area } });
+      if (input.library) {
+        const banners = gta6LibraryBanners(input.library.root);
+        await input.library.store.add(input.library.title, async (banner, output) => {
+          if (banner === "shortrobot" && item.id === banners.shortrobot.item.id && bannerFile === banners.shortrobot.file) {
+            await link(clip, output);
+          } else {
+            await renderCuttingPart({ ...render, output, banner: { ...banners[banner], area: GTA6_BANNER_AREA } });
+          }
+        });
+      }
     }
     highlights.push({
       sourceId: input.sourceId,
@@ -459,6 +474,7 @@ export async function followGta6Live(options: {
   log?: (line: string) => void;
   maxChunks?: number;
   audioCuts?: { min: number; max: number };
+  library?: LibraryTarget;
 }) {
   const page = assertLivePage(options.url);
   const minutes = assertChunkMinutes(options.minutes ?? 10);
@@ -471,7 +487,8 @@ export async function followGta6Live(options: {
   const record = options.record ?? ((input: { url: string; file: string; seconds: number; signal?: AbortSignal }) => recordLiveChunk(input));
   const processChunk = options.processChunk ?? (options.audioCuts
     ? (input: { file: string; sourceId: string }) => cutLiveChunkByAudio({
-      file: input.file, sourceId: input.sourceId, outDir: options.outDir, min: options.audioCuts?.min, max: options.audioCuts?.max,
+      file: input.file, sourceId: input.sourceId, outDir: options.outDir,
+      min: options.audioCuts?.min, max: options.audioCuts?.max, library: options.library,
     })
     : (input: { file: string; sourceId: string }) => withGta6ProcessSlot(() => runGta6Highlights({
       sources: [{ sourceId: input.sourceId, chunks: [input.file] }],

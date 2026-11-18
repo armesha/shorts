@@ -1,4 +1,4 @@
-import { Film, Map, Video, ArrowUpRight, Sparkles, Radio } from "lucide-react";
+import { Film, Map, Video, ArrowUpRight, Sparkles, Radio, Clapperboard } from "lucide-react";
 import { Link } from "react-router-dom";
 const templates = [
   {
@@ -8,6 +8,7 @@ const templates = [
     Icon: Film,
   },
   { id: "streams", name: "Стримы", to: "/streams", Icon: Radio },
+  { id: "gta6", name: "Нарезка GTA 6", to: "/gta6", Icon: Clapperboard },
   { id: "maps", name: "Карты", to: "/templates/maps", Icon: Map },
   { id: "circles", name: "Кружочки Telegram", to: "/circles", Icon: Video },
   { id: "characters", name: "3D Персонажи (Nixly AI)", to: "/templates/characters", Icon: Sparkles },
@@ -32,7 +33,9 @@ export default function VideoTemplateTiles() {
                   ? "bg-amber-100 text-amber-900"
                   : id === "characters"
                     ? "bg-purple-100 text-purple-900"
-                    : id === "streams"
+                    : id === "gta6"
+                      ? "bg-indigo-100 text-indigo-900"
+                      : id === "streams"
                       ? "bg-rose-100 text-rose-900"
                       : "bg-sky-100 text-sky-900"
             }`}

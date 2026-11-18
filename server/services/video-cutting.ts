@@ -16,7 +16,7 @@ import { extname, resolve } from "node:path";
 import { homedir } from "node:os";
 import { setTimeout as delay } from "node:timers/promises";
 import type { Db } from "../db.ts";
-import { cuttingBannerFilter, cuttingBannerHash } from "./cutting-banner.ts";
+import { cuttingBannerFilter, cuttingBannerHash, type CuttingBannerArea, type CuttingBannerStyle } from "./cutting-banner.ts";
 import { detectSilenceLog, snapSectionEndsToAudio } from "./video-cutting-audio.ts";
 import { cuttingRenderCommand } from "../infra/cutting-render-resources.ts";
 import { DAILY_CUTTING_EFFORT, DAILY_CUTTING_MODEL, addDailySourceDescriptions, planDailyCuts, readPreparedDailyPlan, type DailyClip } from "./daily-cutting-plan.ts";
@@ -320,7 +320,7 @@ export async function renderCuttingPart(input: {
   part: CutPart;
   words: TimedWord[];
   subtitles: boolean;
-  banner?: { item: CircleAdvertiser; file: string; hash?: string };
+  banner?: { item: CuttingBannerStyle; file: string; hash?: string; area?: CuttingBannerArea };
   signal?: AbortSignal;
   run?: ProcessRunner;
   timeline?: CutTimeline[];
@@ -394,10 +394,10 @@ export async function renderCuttingPart(input: {
     "[bg][fg]overlay=0:656:shortest=1[framed];";
   let label = "framed";
   if (input.banner) {
-    graph += cuttingBannerFilter(ranges.length, input.banner.item, "framed", "branded");
+    graph += cuttingBannerFilter(ranges.length, input.banner.item, "framed", "branded", input.banner.area);
     label = "branded";
   }
-  graph += `[${label}]${input.subtitles || input.hook ? `ass=filename=${ass},` : ""}fps=30,format=yuv420p[out]`;
+  graph += `[${label}]${input.subtitles || input.hook ? `ass=filename=${ass},` : ""}fps=30,setsar=1,format=yuv420p[out]`;
   const temporary = input.output.replace(/\.mp4$/, ".encoding.mp4");
   args.push(
     "-filter_complex",

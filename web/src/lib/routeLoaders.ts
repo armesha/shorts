@@ -1,6 +1,7 @@
 const routeLoaders = {
   videoCutting: () => import("../pages/VideoCutting"),
   streams: () => import("../pages/Streams"),
+  gta6Library: () => import("../pages/Gta6Library"),
   mapStudio: () => import("../pages/MapStudio"),
   mapLibrary: () => import("../pages/MapLibrary"),
   overview: () => import("../pages/Overview"),
@@ -64,6 +65,8 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
       return "videoCutting";
     case "/streams":
       return "streams";
+    case "/gta6":
+      return "gta6Library";
     case "/overview":
       return "overview";
     case "/templates/montage":
