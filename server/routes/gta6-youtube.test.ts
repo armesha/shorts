@@ -122,7 +122,7 @@ test("a restart keeps submitted videos locked and preserves confirmed links", as
   }
 });
 
-test("automation sends two startup Shorts, then waits an hour per banner", async () => {
+test("automation sends two startup Shorts, then respects hourly intervals and the Prague night pause", async () => {
   const root = await mkdtemp(join(tmpdir(), "gta6-youtube-automation-"));
   const db = openDb(":memory:");
   const app = Fastify();
@@ -138,27 +138,51 @@ test("automation sends two startup Shorts, then waits an hour per banner", async
       await library.add(`Clip ${index}`, async (_banner, file) => { await writeFile(file, "video"); }, 45);
     }
     const sent: string[] = [];
+    const started = Date.parse("2026-10-24T10:00:00Z");
+    let timestamp = started;
+    let crossesNight = false;
     const { tick } = registerGta6YouTubeRoutes(app, db, id => sessions.library(id), {
       async publishManually(input) {
-        sent.push(input.file);
+        if (crossesNight) timestamp += 60_000;
         input.onSubmit("https://www.youtube.com/watch?v=abcdefghijk");
+        sent.push(input.file);
         input.onPublished("https://www.youtube.com/watch?v=abcdefghijk");
         return true;
       },
-    }, async () => ({ duration: 45, width: 1080, height: 1920, fps: "30/1", audio: true }));
+    }, async () => ({ duration: 45, width: 1080, height: 1920, fps: "30/1", audio: true }), () => timestamp);
     db.db.prepare("INSERT INTO gta6_youtube_targets(owner_id,banner,account_id,channel_id) VALUES(?,'shortrobot',?,?)")
       .run(owner.id, channel.id, channelId);
     db.db.prepare("INSERT INTO gta6_youtube_automation(owner_id,banner,enabled) VALUES(?,'shortrobot',1)").run(owner.id);
-    const started = Date.now();
     for (let pass = 0; pass < 5; pass++) await tick();
     assert.equal(sent.length, 2);
     const state = db.db.prepare("SELECT initial_remaining AS remaining,next_at AS nextAt FROM gta6_youtube_automation").get();
     assert.equal(state?.remaining, 0);
-    assert.ok(Number(state?.nextAt) >= started + 60 * 60_000);
-    db.db.exec("UPDATE gta6_youtube_automation SET next_at=0");
+    assert.equal(state?.nextAt, started + 60 * 60_000);
+    timestamp = started + 60 * 60_000;
     for (let pass = 0; pass < 3; pass++) await tick();
     assert.equal(sent.length, 3);
     assert.equal(new Set(sent).size, 3);
+
+    // An upload begun at 22:59 CEST must stop before submission at 23:00.
+    timestamp = Date.parse("2026-10-24T20:59:00Z");
+    crossesNight = true;
+    await tick();
+    await setImmediate();
+    crossesNight = false;
+    assert.equal(sent.length, 3);
+    const morning = Date.parse("2026-10-25T07:00:00Z"); // 08:00 CET after the clock change
+    assert.equal(db.db.prepare("SELECT next_at AS nextAt FROM gta6_youtube_automation").get()?.nextAt, morning);
+    // A due job already present during the night is moved to the same morning.
+    db.db.exec("UPDATE gta6_youtube_automation SET next_at=0");
+    await tick();
+    assert.equal(db.db.prepare("SELECT next_at AS nextAt FROM gta6_youtube_automation").get()?.nextAt, morning);
+    timestamp = morning - 60_000;
+    await tick();
+    assert.equal(sent.length, 3);
+    timestamp = morning;
+    await tick();
+    assert.equal(sent.length, 4);
+    assert.equal(new Set(sent).size, 4);
   } finally {
     await app.close();
     db.db.close();

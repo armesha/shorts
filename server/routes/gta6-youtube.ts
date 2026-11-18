@@ -6,6 +6,7 @@ import type { Db } from "../db.ts";
 import { uid } from "../infra/auth-session.ts";
 import type { CircleYouTubePublisher } from "../services/circle-pipeline/youtube-publisher.ts";
 import { GTA6_BANNERS, GTA6_CLIP_ID, type Gta6Banner, type Gta6Library } from "../services/gta6-library.ts";
+import { DEFAULT_ACCOUNT_TIMEZONE, nextLocalTimeAt, timePartsInTimeZone } from "../services/timezone.ts";
 import { probeCuttingMedia } from "../services/video-cutting.ts";
 import { sameOrigin } from "./gta6-live.ts";
 import { prepareGta6Preview } from "./gta6-previews.ts";
@@ -16,12 +17,28 @@ const targetInput = z.object({ banner: z.enum(GTA6_BANNERS), accountId: z.number
 const confirmedTarget = z.object({ accountId: z.number().int().positive(), channelId: z.string().regex(/^UC[\w-]{22}$/u) }).strict();
 const automationInput = z.object({ banner: z.enum(GTA6_BANNERS), enabled: z.boolean() }).strict();
 const HOUR_MS = 60 * 60_000;
+const PUBLICATION_START = "08:00";
+const PUBLICATION_END = "23:00";
 type Target = { accountId: number; channelId: string };
 type Automation = { ownerId: number; banner: Gta6Banner; initialRemaining: number; nextAt: number; pendingClip: string | null };
 
 class PublicationError extends Error {
   constructor(readonly status: number, message: string) { super(message); }
 }
+
+class NightPause extends PublicationError {
+  constructor(readonly resumeAt: number) { super(409, "Ночная пауза. Ролик вернётся в очередь утром."); }
+}
+
+function nextAllowedTime(timestamp: number) {
+  const time = new Date(timestamp);
+  const { hhmm } = timePartsInTimeZone(time, DEFAULT_ACCOUNT_TIMEZONE);
+  if (hhmm >= PUBLICATION_START && hhmm < PUBLICATION_END) return timestamp;
+  const morning = nextLocalTimeAt(PUBLICATION_START, DEFAULT_ACCOUNT_TIMEZONE, time);
+  if (!morning) throw new Error("Could not determine the next GTA Shorts publication time");
+  return Date.parse(morning);
+}
+
 const captions = {
   shortrobot: { text: "@shortrobot — бот для скачивания видео в Telegram.", tag: "#Shortrobot" },
   simka: { text: "SIMKA VPN в Telegram — @simka_dbot.", tag: "#SimkaVPN" },
@@ -32,7 +49,7 @@ export function isGta6YouTubeUploading(db: Db, ownerId: number, clipId: string) 
 }
 
 export function registerGta6YouTubeRoutes(app: FastifyInstance, db: Db, libraryFor: (ownerId: number) => Gta6Library,
-  uploader: Pick<CircleYouTubePublisher, "publishManually">, probe = probeCuttingMedia) {
+  uploader: Pick<CircleYouTubePublisher, "publishManually">, probe = probeCuttingMedia, now = Date.now) {
   db.db.prepare("UPDATE gta6_youtube_publications SET state='failed',error=? WHERE state='uploading'")
     .run("Отправка была прервана. Можно повторить.");
   db.db.prepare("UPDATE gta6_youtube_publications SET state='review',error=? WHERE state='submitted'")
@@ -87,9 +104,20 @@ export function registerGta6YouTubeRoutes(app: FastifyInstance, db: Db, libraryF
     return view(ownerId);
   });
 
+  function deferClip(ownerId: number, banner: Gta6Banner, id: string, resumeAt: number) {
+    db.db.prepare(`UPDATE gta6_youtube_automation SET pending_clip=NULL,next_at=?,error=NULL
+      WHERE owner_id=? AND banner=? AND pending_clip=?`).run(resumeAt, ownerId, banner, id);
+  }
+
   async function publish(ownerId: number, id: string, banner: Gta6Banner, confirmed: Target, scheduled = false) {
-    const scheduleEnabled = () => !scheduled || Boolean(db.db.prepare(`SELECT 1 FROM gta6_youtube_automation
-      WHERE owner_id=? AND banner=? AND pending_clip=? AND enabled=1`).get(ownerId, banner, id));
+    const checkSchedule = () => {
+      if (!scheduled) return;
+      if (!db.db.prepare(`SELECT 1 FROM gta6_youtube_automation WHERE owner_id=? AND banner=? AND pending_clip=? AND enabled=1`)
+        .get(ownerId, banner, id)) throw new PublicationError(409, "Автопубликация выключена.");
+      const timestamp = now();
+      const resumeAt = nextAllowedTime(timestamp);
+      if (resumeAt > timestamp) throw new NightPause(resumeAt);
+    };
     const started = db.db.prepare("SELECT 1 FROM gta6_youtube_publications WHERE owner_id=? AND clip_id=? AND banner=? AND state<>'failed'")
       .get(ownerId, id, banner);
     if (started) throw new PublicationError(409, "Отправка уже началась или ролик уже опубликован.");
@@ -106,7 +134,7 @@ export function registerGta6YouTubeRoutes(app: FastifyInstance, db: Db, libraryF
     if (target?.accountId !== confirmed.accountId || target.channelId !== confirmed.channelId) {
       throw new PublicationError(409, "Канал для этого баннера изменился. Обновите страницу.");
     }
-    if (!scheduleEnabled()) throw new PublicationError(409, "Автопубликация выключена.");
+    checkSchedule();
     const insert = db.db.prepare(`INSERT INTO gta6_youtube_publications(owner_id,clip_id,banner,state) VALUES(?,?,?,'uploading')
       ON CONFLICT(owner_id,clip_id,banner) DO UPDATE SET state='uploading',url=NULL,error=NULL,comment_status=NULL WHERE state='failed'`).run(ownerId, id, banner);
     if (!insert.changes) throw new PublicationError(409, "Отправка уже началась или ролик уже опубликован.");
@@ -125,13 +153,18 @@ export function registerGta6YouTubeRoutes(app: FastifyInstance, db: Db, libraryF
       thumbnail,
       comment: caption.text,
       onSubmit(url) {
-        if (!scheduleEnabled()) throw new Error("Автопубликация выключена.");
+        checkSchedule();
         update("submitted", url); submitted = url;
       },
       onPublished(url) { update("published", url, null, "pending"); published = url; },
     }).then(commented => {
       if (published) update("published", published, null, commented ? "posted" : "unconfirmed");
     }).catch(error => {
+      if (error instanceof NightPause && !submitted) {
+        update("failed", null, error.message);
+        deferClip(ownerId, banner, id, error.resumeAt);
+        return;
+      }
       const diagnostic = error instanceof Error ? error.message.replace(/https?:[^\s]+/giu, "[url]").slice(0, 240) : "Unknown error";
       app.log.warn({ banner, stage: published ? "published" : submitted ? "submitted" : "before submit", diagnostic }, "GTA Shorts upload was interrupted");
       if (published) update("published", published, null, "unconfirmed");
@@ -158,7 +191,7 @@ export function registerGta6YouTubeRoutes(app: FastifyInstance, db: Db, libraryF
 
   async function runAutomation(job: Automation) {
     const { ownerId, banner, pendingClip, initialRemaining } = job;
-    const now = Date.now();
+    const timestamp = now();
     if (pendingClip) {
       const receipt = db.db.prepare(`SELECT state,comment_status AS commentStatus FROM gta6_youtube_publications
         WHERE owner_id=? AND banner=? AND clip_id=?`).get(ownerId, banner, pendingClip);
@@ -171,11 +204,16 @@ export function registerGta6YouTubeRoutes(app: FastifyInstance, db: Db, libraryF
       const posted = receipt?.state === "published";
       const remaining = posted ? Math.max(0, initialRemaining - 1) : initialRemaining;
       db.db.prepare(`UPDATE gta6_youtube_automation SET pending_clip=NULL,initial_remaining=?,next_at=?,error=?
-        WHERE owner_id=? AND banner=?`).run(remaining, posted && remaining > 0 ? now : now + HOUR_MS,
-          posted ? null : "Не удалось отправить ролик. Следующая попытка через час.", ownerId, banner);
+        WHERE owner_id=? AND banner=?`).run(remaining, nextAllowedTime(posted && remaining > 0 ? timestamp : timestamp + HOUR_MS),
+          posted ? null : "Не удалось отправить ролик. Очередь попробует снова по расписанию.", ownerId, banner);
       return;
     }
-    if (job.nextAt > now) return;
+    const nextAt = nextAllowedTime(Math.max(timestamp, job.nextAt));
+    if (nextAt > timestamp) {
+      if (nextAt !== job.nextAt) db.db.prepare("UPDATE gta6_youtube_automation SET next_at=? WHERE owner_id=? AND banner=?")
+        .run(nextAt, ownerId, banner);
+      return;
+    }
     const target = view(ownerId).targets.find(item => item.banner === banner);
     if (!target) return;
     const receipts = db.db.prepare("SELECT clip_id AS id,state FROM gta6_youtube_publications WHERE owner_id=? AND banner=?").all(ownerId, banner);
@@ -190,12 +228,17 @@ export function registerGta6YouTubeRoutes(app: FastifyInstance, db: Db, libraryF
       if (!reserve.changes) return;
       try { await publish(ownerId, clip.id, banner, target, true); return; }
       catch (error) {
+        if (error instanceof NightPause) {
+          deferClip(ownerId, banner, clip.id, error.resumeAt);
+          return;
+        }
         db.db.prepare("UPDATE gta6_youtube_automation SET pending_clip=NULL WHERE owner_id=? AND banner=? AND pending_clip=?")
           .run(ownerId, banner, clip.id);
         if (!(error instanceof PublicationError) || ![404, 422].includes(error.status)) return;
       }
     }
-    db.db.prepare("UPDATE gta6_youtube_automation SET next_at=? WHERE owner_id=? AND banner=?").run(now + 60_000, ownerId, banner);
+    db.db.prepare("UPDATE gta6_youtube_automation SET next_at=? WHERE owner_id=? AND banner=?")
+      .run(nextAllowedTime(timestamp + 60_000), ownerId, banner);
   }
 
   let running = false;
