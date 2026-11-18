@@ -6,7 +6,7 @@ import { circleAdvertiserSource, listCircleAdvertisers } from "./circle-advertis
 export const GTA6_BANNERS = ["shortrobot", "simka"] as const;
 export const GTA6_BANNER_AREA = { left: 130, top: 1270, width: 820, height: 244 };
 export type Gta6Banner = (typeof GTA6_BANNERS)[number];
-export type Gta6LibraryClip = { id: string; title: string; createdAt: string; published: boolean };
+export type Gta6LibraryClip = { id: string; title: string; createdAt: string; published: boolean; duration?: number };
 
 export const GTA6_CLIP_ID = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/iu;
 
@@ -29,13 +29,13 @@ export function gta6LibraryBanners(root: string) {
 export class Gta6Library {
   constructor(private readonly directory: string) {}
 
-  async add(title: string, render: (banner: Gta6Banner, file: string) => Promise<void>) {
+  async add(title: string, render: (banner: Gta6Banner, file: string) => Promise<void>, duration?: number) {
     const id = randomUUID();
     const temp = resolve(this.directory, `.pending-${id}`);
     await mkdir(temp, { recursive: true });
     try {
       for (const banner of GTA6_BANNERS) await render(banner, resolve(temp, `${banner}.mp4`));
-      await writeFile(resolve(temp, "clip.json"), JSON.stringify({ title, createdAt: new Date().toISOString() }));
+      await writeFile(resolve(temp, "clip.json"), JSON.stringify({ title, createdAt: new Date().toISOString(), duration }));
       await rename(temp, resolve(this.directory, id));
     } finally {
       await rm(temp, { recursive: true, force: true });
@@ -51,7 +51,7 @@ export class Gta6Library {
       .map(async ({ name: id }) => {
         const dir = resolve(this.directory, id);
         try {
-          const meta = JSON.parse(await readFile(resolve(dir, "clip.json"), "utf8")) as Pick<Gta6LibraryClip, "title" | "createdAt">;
+          const meta = JSON.parse(await readFile(resolve(dir, "clip.json"), "utf8")) as Pick<Gta6LibraryClip, "title" | "createdAt" | "duration">;
           const published = await access(resolve(dir, "published")).then(() => true, (error) => {
             if (isMissing(error)) return false;
             throw error;

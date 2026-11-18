@@ -35,7 +35,7 @@ function present(state: Awaited<ReturnType<Gta6LiveSessions["view"]>>) {
   };
 }
 
-function sameOrigin(req: FastifyRequest) {
+export function sameOrigin(req: FastifyRequest) {
   if (!req.headers.origin) return true;
   try { return new URL(req.headers.origin).host === req.headers.host; }
   catch { return false; }
@@ -61,7 +61,7 @@ async function sendMp4(req: FastifyRequest, reply: FastifyReply, path: string) {
     .send(createReadStream(path, { start, end }));
 }
 
-export function registerGta6LiveRoutes(app: FastifyInstance, root: string, sessions = new Gta6LiveSessions(root)) {
+export function registerGta6LiveRoutes(app: FastifyInstance, root: string, sessions = new Gta6LiveSessions(root), publishing?: (ownerId: number, clipId: string) => boolean) {
   app.addHook("onReady", async () => {
     const file = resolve(root, "hour.json");
     try {
@@ -153,6 +153,7 @@ export function registerGta6LiveRoutes(app: FastifyInstance, root: string, sessi
     if (!sameOrigin(req)) return reply.code(403).send({ error: "Запрос с другого сайта запрещён." });
     const clip = LibraryClip.safeParse(req.params);
     if (!clip.success) return reply.code(400).send({ error: "Клип не найден." });
+    if (publishing?.(userId, clip.data.id)) return reply.code(409).send({ error: "Ролик отправляется на YouTube." });
     if (!await sessions.library(userId).remove(clip.data.id)) {
       return reply.code(404).send({ error: "Клип не найден." });
     }

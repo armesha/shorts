@@ -63,6 +63,25 @@ async function channelInStudio(page: Page, authuser?: number): Promise<string> {
   return channelId;
 }
 
+async function confirmCommentAuthor(page: Page, expectedChannelId: string) {
+  await page.locator("ytd-masthead #avatar-btn").first().click();
+  const channel = page.locator('ytd-active-account-header-renderer a[href*="/channel/"], ytd-active-account-header-renderer a[href^="/@"]').first();
+  const href = await channel.getAttribute("href", { timeout: 12_000 });
+  const profile = new URL(href ?? "", "https://www.youtube.com");
+  if (profile.origin === "https://www.youtube.com") {
+    if (profile.pathname.replace(/\/$/u, "") === `/channel/${expectedChannelId}`) return;
+    if (/^\/@[^/]+\/?$/u.test(profile.pathname)) {
+      const response = await page.request.get(profile.href, { timeout: 12_000, maxRedirects: 0 });
+      if (response.ok()) {
+        const html = await response.text();
+        const canonical = /<link rel="canonical" href="https:\/\/www\.youtube\.com\/channel\/(UC[\w-]{22})"/u.exec(html)?.[1];
+        if (canonical === expectedChannelId) return;
+      }
+    }
+  }
+  throw new YouTubeCookieError("Не удалось подтвердить канал автора комментария.");
+}
+
 /** Uses Studio's browser workflow. A returned URL requires an independent public-page check. */
 export function createYouTubeCookieBrowser(chromePath: string, launch: typeof chromium.launch = chromium.launch.bind(chromium)) {
   async function run<T>(cookies: Cookie[], fn: (page: Page, browser: Awaited<ReturnType<typeof chromium.launch>>) => Promise<T>): Promise<T> {
@@ -77,7 +96,7 @@ export function createYouTubeCookieBrowser(chromePath: string, launch: typeof ch
   }
   return {
     verify: (cookies: Cookie[], authuser?: number) => run(cookies, async page => ({ channelId: await channelInStudio(page, authuser) })),
-    publish: (cookies: Cookie[], expectedChannelId: string, file: string, title: string, description: string, onSubmit: () => void, authuser?: number) =>
+    publish: (cookies: Cookie[], expectedChannelId: string, file: string, title: string, description: string, onSubmit: (url?: string) => void, authuser?: number) =>
       run(cookies, async (page, browser) => {
         if (await channelInStudio(page, authuser) !== expectedChannelId) throw new YouTubeCookieError("Открыт другой канал YouTube.");
         const upload = new URL("https://www.youtube.com/upload");
@@ -112,7 +131,8 @@ export function createYouTubeCookieBrowser(chromePath: string, launch: typeof ch
           const done = document.querySelector("#done-button");
           return !!done && done.getAttribute("aria-disabled") !== "true" && !done.hasAttribute("disabled");
         }, undefined, { timeout: 30 * 60_000 });
-        onSubmit();
+        const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
+        onSubmit(watchUrl);
         await page.locator("#done-button").click();
         await page.locator("ytcp-uploads-dialog").waitFor({ state: "hidden", timeout: 120_000 });
         const visitor = await browser.newContext({ locale: "en-US" });
@@ -129,7 +149,27 @@ export function createYouTubeCookieBrowser(chromePath: string, launch: typeof ch
           }
           if (!visible) throw new YouTubeCookieError("Публикация не подтверждена. Проверьте канал перед повтором.");
         } finally { await visitor.close(); }
-        return `https://www.youtube.com/watch?v=${videoId}`;
+        return watchUrl;
+      }),
+    comment: (cookies: Cookie[], expectedChannelId: string, videoId: string, text: string, authuser?: number) =>
+      run(cookies, async (page) => {
+        if (await channelInStudio(page, authuser) !== expectedChannelId) throw new YouTubeCookieError("Открыт другой канал YouTube.");
+        const url = new URL("https://www.youtube.com/watch");
+        url.searchParams.set("v", videoId);
+        if (authuser !== undefined) url.searchParams.set("authuser", String(authuser));
+        await page.goto(url.toString(), { waitUntil: "domcontentloaded", timeout: 60_000 });
+        if (youtubeVideoId(page.url()) !== videoId) throw new YouTubeCookieError("Открыто другое видео YouTube.");
+        await page.evaluate(() => document.querySelector("video")?.pause());
+        await confirmCommentAuthor(page, expectedChannelId);
+        await page.keyboard.press("Escape");
+        const comments = page.locator("ytd-comments").first();
+        await comments.scrollIntoViewIfNeeded();
+        const placeholder = comments.locator("#simplebox-placeholder");
+        await placeholder.click();
+        await comments.locator("#contenteditable-root").first().fill(text);
+        await comments.locator("#submit-button button").first().click();
+        await comments.locator("ytd-comment-thread-renderer #content-text").filter({ hasText: text }).first()
+          .waitFor({ state: "visible", timeout: 20_000 });
       }),
   };
 }

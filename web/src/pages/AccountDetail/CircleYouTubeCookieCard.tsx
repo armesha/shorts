@@ -24,8 +24,8 @@ export default function CircleYouTubeCookieCard({ accountId, onConnected, canMan
   if (!status || (!canManage && status.status === "disconnected")) return null;
   return <section className="card border border-base-300 bg-base-100 mt-4">
     <div className="card-body gap-3">
-      <h2 className="card-title text-base">YouTube для кружочков · cookies</h2>
-      <p className="text-sm text-base-content/70">Отдельный ролик из библиотеки кружочков в 16:00 по Праге. Подключение использует браузерную сессию YouTube Studio.</p>
+      <h2 className="card-title text-base">YouTube Studio · cookies</h2>
+      <p className="text-sm text-base-content/70">Подтвердите вход, чтобы выбрать этот канал в библиотеке GTA 6.</p>
       <p className="text-sm"><b>{labels[status.status] || status.status}</b>{status.enabled ? " · расписание включено" : " · расписание выключено"}</p>
       {status.channelId && <a className="link link-primary text-sm" href={`https://www.youtube.com/channel/${status.channelId}`} target="_blank" rel="noreferrer">Открыть подтверждённый канал</a>}
       {(error || status.error) && <p role="alert" className="text-sm text-error">{error || status.error}</p>}
@@ -44,7 +44,7 @@ export default function CircleYouTubeCookieCard({ accountId, onConnected, canMan
       </details>}
       {canManage && <div className="flex flex-wrap gap-2">
         <button type="button" className="btn btn-outline btn-sm" disabled={busy || status.status === "disconnected"} onClick={() => void action("verify")}>Проверить вход</button>
-        <button type="button" className="btn btn-outline btn-sm" disabled={busy || (!status.enabled && status.status !== "connected")} onClick={() => void action(status.enabled ? "disable" : "enable")}>{status.enabled ? "Выключить расписание" : "Включить расписание"}</button>
+        <button type="button" className="btn btn-outline btn-sm" disabled={busy || (!status.enabled && status.status !== "connected")} onClick={() => void action(status.enabled ? "disable" : "enable")}>{status.enabled ? "Выключить расписание кружочков" : "Включить расписание кружочков"}</button>
         <button type="button" className="btn btn-ghost btn-sm" disabled={busy || status.status === "disconnected"} onClick={() => void action("disconnect")}>Отключить</button>
       </div>}
     </div>

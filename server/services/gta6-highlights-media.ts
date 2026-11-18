@@ -434,7 +434,7 @@ async function renderLiveChunk(input: {
         sourceCredit: input.library?.title,
       };
       const area = input.library ? GTA6_BANNER_AREA : undefined;
-      await renderCuttingPart({ ...render, output: clip, banner: { item, file: bannerFile, area } });
+      const media = await renderCuttingPart({ ...render, output: clip, banner: { item, file: bannerFile, area } });
       if (input.library) {
         const banners = gta6LibraryBanners(input.library.root);
         await input.library.store.add(input.library.title, async (banner, output) => {
@@ -443,7 +443,7 @@ async function renderLiveChunk(input: {
           } else {
             await renderCuttingPart({ ...render, output, banner: { ...banners[banner], area: GTA6_BANNER_AREA } });
           }
-        });
+        }, media.duration);
       }
     }
     highlights.push({

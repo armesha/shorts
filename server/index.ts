@@ -50,6 +50,7 @@ import { registerVideoTemplateRoutes } from "./routes/video-templates.ts";
 import { registerVideoCuttingRoutes } from "./routes/video-cutting.ts";
 import { registerGta6LiveRoutes } from "./routes/gta6-live.ts";
 import { registerGta6StreamWatch } from "./routes/gta6-stream-watch.ts";
+import { isGta6YouTubeUploading, registerGta6YouTubeRoutes } from "./routes/gta6-youtube.ts";
 import { registerMapStudioRoutes } from "./routes/map-studio.ts";
 import { registerMapPipelineRoutes } from "./routes/map-pipeline.ts";
 import { MapPipelineService } from "./services/map-pipeline/service.ts";
@@ -397,8 +398,10 @@ const mapPublisher = new MapPublisher(db, mapPipelineService, socialService, { l
 const mapPipeline = registerMapPipelineRoutes(app, mapPipelineService, ownerId => isSuperAdminUser(db.getUserById(ownerId)), mapPublisher);
 registerVideoTemplateRoutes(app, db, resolve(process.cwd(), base.outputDir));
 registerVideoCuttingRoutes(app, db, resolve(process.cwd(), base.outputDir));
-registerGta6LiveRoutes(app, resolve(process.cwd(), "data/gta6-live"));
+const gta6Sessions = registerGta6LiveRoutes(app, resolve(process.cwd(), "data/gta6-live"), undefined,
+  (ownerId, clipId) => isGta6YouTubeUploading(db, ownerId, clipId));
 registerGta6StreamWatch(app);
+registerGta6YouTubeRoutes(app, db, gta6Sessions, circleYouTube);
 registerStatsRoutes(app, db, deps);
 registerSignalsRoutes(app, db, deps);
 registerNotificationsRoutes(app, db, deps);

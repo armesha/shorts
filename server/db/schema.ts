@@ -52,6 +52,15 @@ export function applySchema(db: DatabaseSync): void {
       state TEXT NOT NULL, submitted_at TEXT, url TEXT, error TEXT, created_at TEXT NOT NULL,
       UNIQUE(account_id,day_key,slot), UNIQUE(account_id,circle_job_id)
     );
+    CREATE TABLE IF NOT EXISTS gta6_youtube_targets (
+      owner_id INTEGER NOT NULL, banner TEXT NOT NULL, account_id INTEGER NOT NULL, channel_id TEXT NOT NULL,
+      PRIMARY KEY(owner_id,banner), UNIQUE(owner_id,channel_id)
+    );
+    CREATE TABLE IF NOT EXISTS gta6_youtube_publications (
+      owner_id INTEGER NOT NULL, clip_id TEXT NOT NULL, banner TEXT NOT NULL,
+      state TEXT NOT NULL, url TEXT, error TEXT, comment_status TEXT,
+      PRIMARY KEY(owner_id,clip_id,banner)
+    );
     CREATE TABLE IF NOT EXISTS map_publication_bindings (
       owner_id INTEGER PRIMARY KEY,
       account_id INTEGER NOT NULL UNIQUE,

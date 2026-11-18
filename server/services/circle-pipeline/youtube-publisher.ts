@@ -11,7 +11,8 @@ import { readCircleCaption } from "./caption.ts";
 
 type Browser = {
   verify(cookies: Cookie[], authuser?: number): Promise<{ channelId: string }>;
-  publish(cookies: Cookie[], channelId: string, file: string, title: string, description: string, onSubmit: () => void, authuser?: number): Promise<string>;
+  publish(cookies: Cookie[], channelId: string, file: string, title: string, description: string, onSubmit: (url?: string) => void, authuser?: number): Promise<string>;
+  comment?(cookies: Cookie[], channelId: string, videoId: string, text: string, authuser?: number): Promise<void>;
 };
 type Connection = { account_id: number; owner_id: number; status: string; channel_id: string | null; checked_at: string | null; error: string | null };
 const TARGET_KEY = "circle.youtube-publishing.target";
@@ -56,6 +57,40 @@ export class CircleYouTubePublisher {
     const account = this.db.listVisibleAccountsByUser(viewerId).find(item => item.id === accountId);
     if (!account || account.userId == null) throw new Error("Канал не найден.");
     return this.status(account.userId, accountId);
+  }
+  async publishManually(input: {
+    ownerId: number;
+    accountId: number;
+    channelId: string;
+    file: string;
+    title: string;
+    description: string;
+    comment: string;
+    onSubmit: (url: string) => void;
+    onPublished: (url: string) => void;
+  }) {
+    const { ownerId, accountId, channelId } = input;
+    this.account(ownerId, accountId);
+    const connection = this.connection(ownerId, accountId);
+    if (connection?.status !== "connected" || connection.channel_id !== channelId) throw new Error("Подтвердите вход в выбранный канал YouTube.");
+    if (this.stopped || this.locks.has(accountId)) throw new Error("Канал YouTube занят.");
+    this.locks.add(accountId);
+    try {
+      const cookies = normalizeYouTubeCookies(readFileSync(this.path(ownerId, accountId), "utf8"));
+      const authuser = this.authuser(accountId);
+      const url = await this.browser.publish(cookies, channelId, input.file, input.title, input.description, (pendingUrl) => {
+        if (this.stopped) throw new Error("Публикация остановлена.");
+        if (!pendingUrl) throw new Error("YouTube не вернул ссылку перед публикацией.");
+        input.onSubmit(pendingUrl);
+      }, authuser);
+      input.onPublished(url);
+      const videoId = new URL(url).searchParams.get("v");
+      if (!videoId || !this.browser.comment) return false;
+      try {
+        await this.browser.comment(cookies, channelId, videoId, input.comment, authuser);
+        return true;
+      } catch { return false; }
+    } finally { this.locks.delete(accountId); }
   }
   importCookies(ownerId: number, accountId: number, input: unknown) {
     this.account(ownerId, accountId);
