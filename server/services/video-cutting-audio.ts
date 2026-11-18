@@ -32,12 +32,13 @@ export function extendEndToSilence(
 export function cutsFromSilence(duration: number, silenceAt: number[], minCuts = 3, maxCuts = 5): CutSection[] {
   if (!(duration > 1) || minCuts < 1 || maxCuts < minCuts) throw new Error("Некорректная нарезка эфира.");
   const count = Math.min(maxCuts, Math.max(minCuts, Math.round(duration / 150)));
+  const idealLength = duration / count;
+  const tolerance = Math.min(20, idealLength / 3);
   const edges = [0];
   for (let index = 1; index < count; index += 1) {
-    const target = (duration * index) / count;
-    const previous = edges[index - 1] ?? 0;
+    const target = idealLength * index;
     const near = silenceAt
-      .filter((time) => time > previous + 20 && time < duration - 20)
+      .filter((time) => Math.abs(time - target) <= tolerance)
       .sort((a, b) => Math.abs(a - target) - Math.abs(b - target))[0];
     edges.push(near ?? target);
   }

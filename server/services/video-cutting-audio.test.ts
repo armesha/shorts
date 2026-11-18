@@ -2,6 +2,15 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { cutsFromSilence, extendEndToSilence, snapSectionEndsToAudio } from "./video-cutting-audio.ts";
 
+test("sparse pauses near the end cannot move earlier cuts out of order", () => {
+  assert.deepEqual(cutsFromSilence(300, [252.1, 277.9], 4, 4), [
+    { start: 0, end: 75 },
+    { start: 75, end: 150 },
+    { start: 150, end: 225 },
+    { start: 225, end: 300 },
+  ]);
+});
+
 test("a sound after the last word keeps the clip open until the audio goes quiet", async () => {
   assert.equal(extendEndToSilence(10, [0.05], 20), 10);
   assert.equal(extendEndToSilence(10, [1.5], 20), 11.7);
