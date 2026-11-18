@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Download, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ApiError, get, send } from "../lib/api/http";
@@ -26,10 +26,18 @@ type YouTubeState = {
   accounts: YouTubeAccount[];
   targets: { banner: Banner; accountId: number; channelId: string }[];
   publications: Publication[];
+  automation?: { banner: Banner; enabled: number; initialRemaining: number; nextAt: number; error: string | null }[];
 };
 
 function isUploading(publication?: Publication) {
   return publication?.state === "uploading" || publication?.state === "submitted";
+}
+
+function showDuration(duration: number) {
+  const seconds = Math.floor(duration);
+  const parts = [Math.floor(seconds / 60) % 60, seconds % 60];
+  if (seconds >= 3600) parts.unshift(Math.floor(seconds / 3600));
+  return parts.map((part, index) => index ? String(part).padStart(2, "0") : String(part)).join(":");
 }
 
 function Gta6ClipCard({ clip, busy, youtube, onUpdate, onPublish }: {
@@ -40,6 +48,9 @@ function Gta6ClipCard({ clip, busy, youtube, onUpdate, onPublish }: {
   onPublish: (clip: Clip, banner: Banner, target: YouTubeAccount) => void;
 }) {
   const [banner, setBanner] = useState<Banner>("shortrobot");
+  const [canLoadPreview, setCanLoadPreview] = useState(false);
+  const [videoDuration, setVideoDuration] = useState<number>();
+  const player = useRef<HTMLDivElement>(null);
   const src = `/api${API}/${clip.id}/${banner}`;
   const titleId = `gta6-clip-${clip.id}`;
   const targetId = youtube?.targets.find(item => item.banner === banner)?.accountId;
@@ -49,12 +60,34 @@ function Gta6ClipCard({ clip, busy, youtube, onUpdate, onPublish }: {
   const date = new Date(clip.createdAt).toLocaleString("ru-RU", {
     day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false,
   });
+  const duration = clip.duration ?? videoDuration;
+  useEffect(() => {
+    const element = player.current;
+    if (!element || canLoadPreview) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry?.isIntersecting) {
+        setCanLoadPreview(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: "240px" });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [canLoadPreview]);
 
   return (
     <article aria-labelledby={titleId} className="min-w-0 border border-base-300 bg-base-100">
-      <div className="bg-black">
+      <div ref={player} className="relative bg-black">
         <video src={src} controls playsInline preload="none" aria-label={`Ролик ${clip.title}`}
+          poster={canLoadPreview ? `/api/creator/gta6-previews/${clip.id}/${banner}` : undefined}
+          onLoadedMetadata={event => {
+            if (Number.isFinite(event.currentTarget.duration)) setVideoDuration(event.currentTarget.duration);
+          }}
           className="mx-auto block aspect-[9/16] max-h-[420px] w-full object-contain" />
+        {duration != null && duration > 0 && (
+          <span className="pointer-events-none absolute right-2 top-2 bg-black/80 px-2 py-1 text-xs tabular-nums text-white" aria-label={`Длительность ${showDuration(duration)}`}>
+            {showDuration(duration)}
+          </span>
+        )}
       </div>
       <div className="space-y-2 px-3 py-2">
         <div className="space-y-1">
@@ -88,7 +121,7 @@ function Gta6ClipCard({ clip, busy, youtube, onUpdate, onPublish }: {
           </a>
         ) : isUploading(publication) ? (
           <p className="text-sm" role="status">Отправляется на YouTube…</p>
-        ) : clip.duration === undefined || clip.duration <= 180 ? (
+        ) : duration === undefined || duration <= 180 ? (
           <button type="button" className="btn btn-outline btn-sm w-full min-h-11" disabled={busy || !target}
             title={target ? undefined : "Выберите канал YouTube для этого баннера"}
             onClick={() => { if (target) onPublish(clip, banner, target); }}>
@@ -175,6 +208,14 @@ export default function Gta6Library() {
     finally { setBusy(false); }
   }
 
+  async function setAutomation(banner: Banner, enabled: boolean) {
+    setBusy(true);
+    setActionError("");
+    try { setYoutube(await send<YouTubeState>(`${YOUTUBE_API}/automation`, "PUT", { banner, enabled })); }
+    catch (error) { setActionError(error instanceof Error ? error.message : "Не удалось сохранить расписание."); }
+    finally { setBusy(false); }
+  }
+
   async function publishClip(clip: Clip, banner: Banner, target: YouTubeAccount) {
     const label = BANNERS.find(item => item.id === banner)?.label;
     if (!await confirmDialog(`Опубликовать версию ${label} на канале «${target.name}»?`, {
@@ -201,17 +242,29 @@ export default function Gta6Library() {
       <details className="border border-base-300 bg-base-100 px-3 py-2 text-sm">
         <summary className="cursor-pointer font-medium">Каналы YouTube</summary>
         <div className="mt-3 flex flex-wrap items-end gap-3">
-          {BANNERS.map(({ id, label }) => (
-            <label key={id} className="grid min-w-0 max-w-full gap-1">
-              {label}
-              <select className="select select-bordered select-sm w-full min-h-11" disabled={busy || !youtube?.accounts.length}
-                value={youtube?.targets.find(target => target.banner === id)?.accountId ?? ""}
-                onChange={event => void setTarget(id, event.target.value ? Number(event.target.value) : null)}>
-                <option value="">Выбрать канал</option>
-                {youtube?.accounts.map(account => <option key={account.id} value={account.id}>{account.name}</option>)}
-              </select>
-            </label>
-          ))}
+          {BANNERS.map(({ id, label }) => {
+            const automation = youtube?.automation?.find(job => job.banner === id);
+            return (
+              <div key={id} className="grid min-w-0 max-w-full gap-1">
+                <label className="grid gap-1">
+                  {label}
+                  <select className="select select-bordered select-sm w-full min-h-11" disabled={busy || !youtube?.accounts.length}
+                    value={youtube?.targets.find(target => target.banner === id)?.accountId ?? ""}
+                    onChange={event => void setTarget(id, event.target.value ? Number(event.target.value) : null)}>
+                    <option value="">Выбрать канал</option>
+                    {youtube?.accounts.map(account => <option key={account.id} value={account.id}>{account.name}</option>)}
+                  </select>
+                </label>
+                <label className="flex min-h-11 items-center gap-2">
+                  <input type="checkbox" className="checkbox checkbox-sm" disabled={busy || !youtube?.automation}
+                    checked={automation?.enabled === 1} onChange={event => void setAutomation(id, event.target.checked)}
+                    aria-label={`Автопубликация ${label} раз в час`} />
+                  Раз в час
+                </label>
+                {automation?.error && <p className="text-xs text-error">{automation.error}</p>}
+              </div>
+            );
+          })}
           <Link className="link py-2" to="/accounts">Подключить канал</Link>
         </div>
       </details>

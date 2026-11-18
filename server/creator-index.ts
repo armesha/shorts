@@ -13,6 +13,7 @@ import * as metrics from "./infra/metrics.ts";
 import { gracefulShutdown } from "./infra/shutdown.ts";
 import { registerCreatorRoutes } from "./routes/creator.ts";
 import { registerGta6YouTubeRoutes } from "./routes/gta6-youtube.ts";
+import { registerGta6Previews } from "./routes/gta6-previews.ts";
 import { createYouTubeCookieBrowser } from "./services/circle-pipeline/youtube-cookie-browser.ts";
 import { CircleYouTubePublisher } from "./services/circle-pipeline/youtube-publisher.ts";
 import { gta6LibraryFor } from "./services/gta6-library.ts";
@@ -109,8 +110,10 @@ app.post("/api/creator/auth/impersonation/stop", async (req, reply) => {
 
 registerCreatorRoutes(app, db);
 const gta6Root = resolve("data/gta6-live");
+const gta6Library = (ownerId: number) => gta6LibraryFor(gta6Root, ownerId);
 const youtube = new CircleYouTubePublisher(db, undefined, createYouTubeCookieBrowser(base.chromePath), resolve("data/social-private/youtube-circles"));
-registerGta6YouTubeRoutes(app, db, ownerId => gta6LibraryFor(gta6Root, ownerId), youtube);
+registerGta6Previews(app, gta6Library);
+registerGta6YouTubeRoutes(app, db, gta6Library, youtube);
 
 app
   .listen({ port, host: "127.0.0.1" })

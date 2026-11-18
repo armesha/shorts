@@ -90,7 +90,7 @@ test("publishes each Shorts banner to its confirmed channel at most once", async
       ["shortrobot", "published", "posted"], ["simka", "published", "unconfirmed"],
     ]);
     assert.equal(result.publications[0].url, url);
-    assert.deepEqual((await app.inject({ url: api, headers: other })).json(), { accounts: [], targets: [], publications: [] });
+    assert.deepEqual((await app.inject({ url: api, headers: other })).json(), { accounts: [], targets: [], publications: [], automation: [] });
   } finally {
     await app.close();
     db.db.close();
@@ -115,6 +115,50 @@ test("a restart keeps submitted videos locked and preserves confirmed links", as
       ["review", "https://www.youtube.com/watch?v=abcdefghijk", null],
       ["published", "https://www.youtube.com/watch?v=zyxwvutsrqp", "unconfirmed"],
     ]);
+  } finally {
+    await app.close();
+    db.db.close();
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("automation sends two startup Shorts, then waits an hour per banner", async () => {
+  const root = await mkdtemp(join(tmpdir(), "gta6-youtube-automation-"));
+  const db = openDb(":memory:");
+  const app = Fastify();
+  try {
+    const owner = db.createUser({ username: "owner", passHash: "x" });
+    const channel = db.createAccount({ userId: owner.id, platform: "youtube" });
+    const channelId = `UC${"a".repeat(22)}`;
+    db.db.prepare("INSERT INTO circle_youtube_connections(account_id,owner_id,status,channel_id) VALUES(?,?,'connected',?)")
+      .run(channel.id, owner.id, channelId);
+    const sessions = registerGta6LiveRoutes(app, root);
+    const library = sessions.library(owner.id);
+    for (let index = 0; index < 4; index++) {
+      await library.add(`Clip ${index}`, async (_banner, file) => { await writeFile(file, "video"); }, 45);
+    }
+    const sent: string[] = [];
+    const { tick } = registerGta6YouTubeRoutes(app, db, id => sessions.library(id), {
+      async publishManually(input) {
+        sent.push(input.file);
+        input.onSubmit("https://www.youtube.com/watch?v=abcdefghijk");
+        input.onPublished("https://www.youtube.com/watch?v=abcdefghijk");
+        return true;
+      },
+    }, async () => ({ duration: 45, width: 1080, height: 1920, fps: "30/1", audio: true }));
+    db.db.prepare("INSERT INTO gta6_youtube_targets(owner_id,banner,account_id,channel_id) VALUES(?,'shortrobot',?,?)")
+      .run(owner.id, channel.id, channelId);
+    db.db.prepare("INSERT INTO gta6_youtube_automation(owner_id,banner,enabled) VALUES(?,'shortrobot',1)").run(owner.id);
+    const started = Date.now();
+    for (let pass = 0; pass < 5; pass++) await tick();
+    assert.equal(sent.length, 2);
+    const state = db.db.prepare("SELECT initial_remaining AS remaining,next_at AS nextAt FROM gta6_youtube_automation").get();
+    assert.equal(state?.remaining, 0);
+    assert.ok(Number(state?.nextAt) >= started + 60 * 60_000);
+    db.db.exec("UPDATE gta6_youtube_automation SET next_at=0");
+    for (let pass = 0; pass < 3; pass++) await tick();
+    assert.equal(sent.length, 3);
+    assert.equal(new Set(sent).size, 3);
   } finally {
     await app.close();
     db.db.close();

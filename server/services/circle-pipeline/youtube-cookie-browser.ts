@@ -96,7 +96,7 @@ export function createYouTubeCookieBrowser(chromePath: string, launch: typeof ch
   }
   return {
     verify: (cookies: Cookie[], authuser?: number) => run(cookies, async page => ({ channelId: await channelInStudio(page, authuser) })),
-    publish: (cookies: Cookie[], expectedChannelId: string, file: string, title: string, description: string, onSubmit: (url?: string) => void, authuser?: number) =>
+    publish: (cookies: Cookie[], expectedChannelId: string, file: string, title: string, description: string, onSubmit: (url?: string) => void, authuser?: number, thumbnail?: string) =>
       run(cookies, async (page, browser) => {
         if (await channelInStudio(page, authuser) !== expectedChannelId) throw new YouTubeCookieError("Открыт другой канал YouTube.");
         const upload = new URL("https://www.youtube.com/upload");
@@ -149,6 +149,24 @@ export function createYouTubeCookieBrowser(chromePath: string, launch: typeof ch
           }
           if (!visible) throw new YouTubeCookieError("Публикация не подтверждена. Проверьте канал перед повтором.");
         } finally { await visitor.close(); }
+        if (thumbnail) {
+          try {
+            const edit = new URL(`https://studio.youtube.com/video/${videoId}/edit`);
+            if (authuser !== undefined) edit.searchParams.set("authuser", String(authuser));
+            await page.goto(edit.toString(), { waitUntil: "domcontentloaded", timeout: 20_000 });
+            const editor = page.locator("ytcp-thumbnails-compact-editor,ytcp-video-thumbnail-editor,ytcp-thumbnail-editor").first();
+            const input = editor.locator('input[type="file"]').first();
+            await input.waitFor({ state: "attached", timeout: 6_000 }).catch(() => {});
+            if (await input.count()) await input.setInputFiles(thumbnail, { timeout: 10_000 });
+            else {
+              const upload = editor.getByRole("button", { name: /Upload (file|thumbnail)|Загрузить (файл|значок)|Prześlij/i }).first();
+              await upload.waitFor({ state: "visible", timeout: 6_000 });
+              const [chooser] = await Promise.all([page.waitForEvent("filechooser", { timeout: 6_000 }), upload.click()]);
+              await chooser.setFiles(thumbnail);
+            }
+            await page.locator("#save").click({ timeout: 15_000 });
+          } catch { /* Studio may restrict custom Shorts thumbnails on this channel. */ }
+        }
         return watchUrl;
       }),
     comment: (cookies: Cookie[], expectedChannelId: string, videoId: string, text: string, authuser?: number) =>

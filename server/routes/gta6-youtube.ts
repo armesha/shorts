@@ -1,3 +1,4 @@
+import { randomInt } from "node:crypto";
 import { stat } from "node:fs/promises";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
@@ -7,11 +8,20 @@ import type { CircleYouTubePublisher } from "../services/circle-pipeline/youtube
 import { GTA6_BANNERS, GTA6_CLIP_ID, type Gta6Banner, type Gta6Library } from "../services/gta6-library.ts";
 import { probeCuttingMedia } from "../services/video-cutting.ts";
 import { sameOrigin } from "./gta6-live.ts";
+import { prepareGta6Preview } from "./gta6-previews.ts";
 
 const API = "/api/creator/gta6-youtube";
 const params = z.object({ id: z.string().regex(GTA6_CLIP_ID), banner: z.enum(GTA6_BANNERS) });
 const targetInput = z.object({ banner: z.enum(GTA6_BANNERS), accountId: z.number().int().positive().nullable() }).strict();
 const confirmedTarget = z.object({ accountId: z.number().int().positive(), channelId: z.string().regex(/^UC[\w-]{22}$/u) }).strict();
+const automationInput = z.object({ banner: z.enum(GTA6_BANNERS), enabled: z.boolean() }).strict();
+const HOUR_MS = 60 * 60_000;
+type Target = { accountId: number; channelId: string };
+type Automation = { ownerId: number; banner: Gta6Banner; initialRemaining: number; nextAt: number; pendingClip: string | null };
+
+class PublicationError extends Error {
+  constructor(readonly status: number, message: string) { super(message); }
+}
 const captions = {
   shortrobot: { text: "@shortrobot — бот для скачивания видео в Telegram.", tag: "#Shortrobot" },
   simka: { text: "SIMKA VPN в Telegram — @simka_dbot.", tag: "#SimkaVPN" },
@@ -44,6 +54,8 @@ export function registerGta6YouTubeRoutes(app: FastifyInstance, db: Db, libraryF
       accounts: connected,
       targets: targets.filter(target => connected.some(account => account.id === target.accountId && account.channelId === target.channelId)),
       publications: db.db.prepare("SELECT clip_id AS clipId,banner,state,url,error,comment_status AS commentStatus FROM gta6_youtube_publications WHERE owner_id=?").all(ownerId),
+      automation: db.db.prepare(`SELECT banner,enabled,initial_remaining AS initialRemaining,next_at AS nextAt,error
+        FROM gta6_youtube_automation WHERE owner_id=?`).all(ownerId),
     };
   }
 
@@ -75,33 +87,29 @@ export function registerGta6YouTubeRoutes(app: FastifyInstance, db: Db, libraryF
     return view(ownerId);
   });
 
-  app.post(`${API}/:id/:banner`, async (req, reply) => {
-    const ownerId = uid(req);
-    if (!ownerId) return reply.code(401).send({ error: "Не авторизован" });
-    if (!sameOrigin(req)) return reply.code(403).send({ error: "Запрос с другого сайта запрещён." });
-    const input = params.safeParse(req.params);
-    if (!input.success) return reply.code(400).send({ error: "Проверьте ролик и баннер." });
-    const confirmed = confirmedTarget.safeParse(req.body);
-    if (!confirmed.success) return reply.code(400).send({ error: "Подтвердите канал публикации." });
-    const { id, banner } = input.data;
+  async function publish(ownerId: number, id: string, banner: Gta6Banner, confirmed: Target, scheduled = false) {
+    const scheduleEnabled = () => !scheduled || Boolean(db.db.prepare(`SELECT 1 FROM gta6_youtube_automation
+      WHERE owner_id=? AND banner=? AND pending_clip=? AND enabled=1`).get(ownerId, banner, id));
     const started = db.db.prepare("SELECT 1 FROM gta6_youtube_publications WHERE owner_id=? AND clip_id=? AND banner=? AND state<>'failed'")
       .get(ownerId, id, banner);
-    if (started) return reply.code(409).send({ error: "Отправка уже началась или ролик уже опубликован." });
+    if (started) throw new PublicationError(409, "Отправка уже началась или ролик уже опубликован.");
     const library = libraryFor(ownerId);
     const file = library.file(id, banner);
-    if (!(await stat(file).catch(() => null))?.isFile()) return reply.code(404).send({ error: "Ролик не найден." });
+    if (!(await stat(file).catch(() => null))?.isFile()) throw new PublicationError(404, "Ролик не найден.");
     const media = await probe(file).catch(() => null);
     if (!media || !Number.isFinite(media.width) || !Number.isFinite(media.height) || media.width <= 0 ||
       media.height < media.width || !Number.isFinite(media.duration) || media.duration <= 0 || media.duration > 180) {
-      return reply.code(422).send({ error: "Для Shorts нужен вертикальный или квадратный ролик длительностью до 3 минут." });
+      throw new PublicationError(422, "Для Shorts нужен вертикальный или квадратный ролик длительностью до 3 минут.");
     }
+    const thumbnail = await prepareGta6Preview(library, id, banner).catch(() => undefined);
     const target = view(ownerId).targets.find(item => item.banner === banner);
-    if (target?.accountId !== confirmed.data.accountId || target.channelId !== confirmed.data.channelId) {
-      return reply.code(409).send({ error: "Канал для этого баннера изменился. Обновите страницу." });
+    if (target?.accountId !== confirmed.accountId || target.channelId !== confirmed.channelId) {
+      throw new PublicationError(409, "Канал для этого баннера изменился. Обновите страницу.");
     }
+    if (!scheduleEnabled()) throw new PublicationError(409, "Автопубликация выключена.");
     const insert = db.db.prepare(`INSERT INTO gta6_youtube_publications(owner_id,clip_id,banner,state) VALUES(?,?,?,'uploading')
       ON CONFLICT(owner_id,clip_id,banner) DO UPDATE SET state='uploading',url=NULL,error=NULL,comment_status=NULL WHERE state='failed'`).run(ownerId, id, banner);
-    if (!insert.changes) return reply.code(409).send({ error: "Отправка уже началась или ролик уже опубликован." });
+    if (!insert.changes) throw new PublicationError(409, "Отправка уже началась или ролик уже опубликован.");
 
     const caption = captions[banner];
     const update = (state: string, url: string | null, error: string | null = null, commentStatus: string | null = null) => {
@@ -114,16 +122,109 @@ export function registerGta6YouTubeRoutes(app: FastifyInstance, db: Db, libraryF
       ownerId, accountId: target.accountId, channelId: target.channelId, file,
       title: "GTA 6 — момент со стрима #Shorts",
       description: `Момент из GTA 6. ${caption.text}\n\n#GTA6 #Shorts ${caption.tag}`,
+      thumbnail,
       comment: caption.text,
-      onSubmit(url) { update("submitted", url); submitted = url; },
+      onSubmit(url) {
+        if (!scheduleEnabled()) throw new Error("Автопубликация выключена.");
+        update("submitted", url); submitted = url;
+      },
       onPublished(url) { update("published", url, null, "pending"); published = url; },
     }).then(commented => {
       if (published) update("published", published, null, commented ? "posted" : "unconfirmed");
-    }).catch(() => {
+    }).catch(error => {
+      const diagnostic = error instanceof Error ? error.message.replace(/https?:[^\s]+/giu, "[url]").slice(0, 240) : "Unknown error";
+      app.log.warn({ banner, stage: published ? "published" : submitted ? "submitted" : "before submit", diagnostic }, "GTA Shorts upload was interrupted");
       if (published) update("published", published, null, "unconfirmed");
       else if (submitted) update("review", submitted, "Проверьте результат в YouTube. Повторная отправка заблокирована.");
       else update("failed", null, "Отправка не началась. Проверьте вход и попробуйте ещё раз.");
     }).catch(error => app.log.error({ err: error }, "Could not update GTA 6 publication status"));
+  }
+
+  app.post(`${API}/:id/:banner`, async (req, reply) => {
+    const ownerId = uid(req);
+    if (!ownerId) return reply.code(401).send({ error: "Не авторизован" });
+    if (!sameOrigin(req)) return reply.code(403).send({ error: "Запрос с другого сайта запрещён." });
+    const input = params.safeParse(req.params);
+    if (!input.success) return reply.code(400).send({ error: "Проверьте ролик и баннер." });
+    const confirmed = confirmedTarget.safeParse(req.body);
+    if (!confirmed.success) return reply.code(400).send({ error: "Подтвердите канал публикации." });
+    try { await publish(ownerId, input.data.id, input.data.banner, confirmed.data); }
+    catch (error) {
+      if (error instanceof PublicationError) return reply.code(error.status).send({ error: error.message });
+      throw error;
+    }
     return reply.code(202).send(view(ownerId));
   });
+
+  async function runAutomation(job: Automation) {
+    const { ownerId, banner, pendingClip, initialRemaining } = job;
+    const now = Date.now();
+    if (pendingClip) {
+      const receipt = db.db.prepare(`SELECT state,comment_status AS commentStatus FROM gta6_youtube_publications
+        WHERE owner_id=? AND banner=? AND clip_id=?`).get(ownerId, banner, pendingClip);
+      if (receipt?.state === "uploading" || receipt?.state === "submitted" || receipt?.commentStatus === "pending") return;
+      if (receipt?.state === "review") {
+        db.db.prepare("UPDATE gta6_youtube_automation SET enabled=0,error=? WHERE owner_id=? AND banner=?")
+          .run("Проверьте последнюю отправку в YouTube.", ownerId, banner);
+        return;
+      }
+      const posted = receipt?.state === "published";
+      const remaining = posted ? Math.max(0, initialRemaining - 1) : initialRemaining;
+      db.db.prepare(`UPDATE gta6_youtube_automation SET pending_clip=NULL,initial_remaining=?,next_at=?,error=?
+        WHERE owner_id=? AND banner=?`).run(remaining, posted && remaining > 0 ? now : now + HOUR_MS,
+          posted ? null : "Не удалось отправить ролик. Следующая попытка через час.", ownerId, banner);
+      return;
+    }
+    if (job.nextAt > now) return;
+    const target = view(ownerId).targets.find(item => item.banner === banner);
+    if (!target) return;
+    const receipts = db.db.prepare("SELECT clip_id AS id,state FROM gta6_youtube_publications WHERE owner_id=? AND banner=?").all(ownerId, banner);
+    if (receipts.some(item => item.state === "uploading" || item.state === "submitted")) return;
+    const used = new Set(receipts.filter(item => item.state !== "failed").map(item => item.id));
+    const clips = (await libraryFor(ownerId).list()).filter(clip => !clip.published && !used.has(clip.id) && (clip.duration ?? 0) <= 180);
+    while (clips.length) {
+      const [clip] = clips.splice(randomInt(clips.length), 1);
+      if (!clip) break;
+      const reserve = db.db.prepare(`UPDATE gta6_youtube_automation SET pending_clip=?,error=NULL
+        WHERE owner_id=? AND banner=? AND enabled=1 AND pending_clip IS NULL`).run(clip.id, ownerId, banner);
+      if (!reserve.changes) return;
+      try { await publish(ownerId, clip.id, banner, target, true); return; }
+      catch (error) {
+        db.db.prepare("UPDATE gta6_youtube_automation SET pending_clip=NULL WHERE owner_id=? AND banner=? AND pending_clip=?")
+          .run(ownerId, banner, clip.id);
+        if (!(error instanceof PublicationError) || ![404, 422].includes(error.status)) return;
+      }
+    }
+    db.db.prepare("UPDATE gta6_youtube_automation SET next_at=? WHERE owner_id=? AND banner=?").run(now + 60_000, ownerId, banner);
+  }
+
+  let running = false;
+  let timer: ReturnType<typeof setInterval> | undefined;
+  async function tick() {
+    if (running) return;
+    running = true;
+    try {
+      const jobs = db.db.prepare(`SELECT owner_id AS ownerId,banner,initial_remaining AS initialRemaining,next_at AS nextAt,
+        pending_clip AS pendingClip FROM gta6_youtube_automation WHERE enabled=1`).all() as Automation[];
+      for (const job of jobs) await runAutomation(job).catch(error => app.log.error({ err: error }, "Could not schedule GTA Shorts"));
+    } finally { running = false; }
+  }
+  app.addHook("onReady", async () => {
+    timer = setInterval(() => { void tick(); }, 15_000).unref();
+  });
+  app.addHook("onClose", async () => { clearInterval(timer); });
+
+  app.put(`${API}/automation`, async (req, reply) => {
+    const ownerId = uid(req);
+    if (!ownerId) return reply.code(401).send({ error: "Не авторизован" });
+    if (!sameOrigin(req)) return reply.code(403).send({ error: "Запрос с другого сайта запрещён." });
+    const data = automationInput.safeParse(req.body);
+    if (!data.success) return reply.code(400).send({ error: "Проверьте настройку автопубликации." });
+    const { banner, enabled } = data.data;
+    db.db.prepare(`INSERT INTO gta6_youtube_automation(owner_id,banner,enabled) VALUES(?,?,?)
+      ON CONFLICT(owner_id,banner) DO UPDATE SET enabled=excluded.enabled`).run(ownerId, banner, Number(enabled));
+    return view(ownerId);
+  });
+
+  return { tick };
 }

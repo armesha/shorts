@@ -11,7 +11,7 @@ import { readCircleCaption } from "./caption.ts";
 
 type Browser = {
   verify(cookies: Cookie[], authuser?: number): Promise<{ channelId: string }>;
-  publish(cookies: Cookie[], channelId: string, file: string, title: string, description: string, onSubmit: (url?: string) => void, authuser?: number): Promise<string>;
+  publish(cookies: Cookie[], channelId: string, file: string, title: string, description: string, onSubmit: (url?: string) => void, authuser?: number, thumbnail?: string): Promise<string>;
   comment?(cookies: Cookie[], channelId: string, videoId: string, text: string, authuser?: number): Promise<void>;
 };
 type Connection = { account_id: number; owner_id: number; status: string; channel_id: string | null; checked_at: string | null; error: string | null };
@@ -65,6 +65,7 @@ export class CircleYouTubePublisher {
     file: string;
     title: string;
     description: string;
+    thumbnail?: string;
     comment: string;
     onSubmit: (url: string) => void;
     onPublished: (url: string) => void;
@@ -85,7 +86,7 @@ export class CircleYouTubePublisher {
         if (current?.status !== "connected" || current.channel_id !== channelId) throw new Error("Подключение YouTube изменилось.");
         if (!pendingUrl) throw new Error("YouTube не вернул ссылку перед публикацией.");
         input.onSubmit(pendingUrl);
-      }, authuser);
+      }, authuser, input.thumbnail);
       input.onPublished(url);
       const videoId = new URL(url).searchParams.get("v");
       if (!videoId || !this.browser.comment) return false;
