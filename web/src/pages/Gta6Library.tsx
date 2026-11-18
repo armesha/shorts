@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, Download, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { get, send } from "../lib/api/http";
+import { ApiError, get, send } from "../lib/api/http";
 import { confirmDialog } from "../lib/confirm";
 
 const API = "/gta6-live/library";
@@ -105,7 +105,7 @@ function Gta6ClipCard({ clip, busy, youtube, onUpdate, onPublish }: {
 export default function Gta6Library() {
   const [clips, setClips] = useState<Clip[]>();
   const [youtube, setYoutube] = useState<YouTubeState>();
-  const [youtubeError, setYoutubeError] = useState(false);
+  const [youtubeError, setYoutubeError] = useState<"waiting" | "unavailable">();
   const [loadError, setLoadError] = useState("");
   const [actionError, setActionError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -128,9 +128,9 @@ export default function Gta6Library() {
     async function loadYouTube() {
       try {
         const state = await get<YouTubeState>(YOUTUBE_API);
-        if (active) { setYoutube(state); setYoutubeError(false); }
-      } catch {
-        if (active) setYoutubeError(true);
+        if (active) { setYoutube(state); setYoutubeError(undefined); }
+      } catch (error) {
+        if (active) setYoutubeError(error instanceof ApiError && error.status === 404 ? "waiting" : "unavailable");
       }
     }
     function refresh() { void load(); void loadYouTube(); }
@@ -215,7 +215,8 @@ export default function Gta6Library() {
           <Link className="link py-2" to="/accounts">Подключить канал</Link>
         </div>
       </details>
-      {youtubeError && <p role="status" className="text-sm text-error">Не удалось загрузить настройки YouTube.</p>}
+      {youtubeError === "waiting" && <p role="status" className="text-sm text-base-content/70">Кнопка YouTube станет доступна после обновления сервера.</p>}
+      {youtubeError === "unavailable" && <p role="status" className="text-sm text-error">Не удалось загрузить настройки YouTube.</p>}
       {loadError && (
         <div className="flex flex-wrap items-center gap-3 text-error" role="alert">
           <span>{loadError}</span>
