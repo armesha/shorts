@@ -6,7 +6,7 @@ import type { Db } from "../../db.ts";
 import { invalidateReadCache } from "../read-cache.ts";
 import { circleDay, circlePublicationSlot } from "./schedule.ts";
 import type { CirclePipelineService } from "./service.ts";
-import { normalizeYouTubeCookies } from "./youtube-cookie-browser.ts";
+import { normalizeYouTubeCookies, YouTubeSessionError } from "./youtube-cookie-browser.ts";
 import { readCircleCaption } from "./caption.ts";
 
 type Browser = {
@@ -94,6 +94,13 @@ export class CircleYouTubePublisher {
         await this.browser.comment(cookies, channelId, videoId, input.comment, authuser);
         return true;
       } catch { return false; }
+    } catch (error) {
+      if (error instanceof YouTubeSessionError) {
+        this.db.db.prepare(`UPDATE circle_youtube_connections SET status='needs_login',channel_id=NULL,checked_at=NULL,error=?
+          WHERE account_id=? AND owner_id=? AND channel_id=?`).run("YouTube запросил повторный вход.", accountId, ownerId, channelId);
+        invalidateReadCache();
+      }
+      throw error;
     } finally { this.locks.delete(accountId); }
   }
   importCookies(ownerId: number, accountId: number, input: unknown) {

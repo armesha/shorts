@@ -1,6 +1,7 @@
 import { chromium, type Cookie, type Page } from "playwright";
 
 export class YouTubeCookieError extends Error {}
+export class YouTubeSessionError extends YouTubeCookieError {}
 
 /** Accept only YouTube/Google session cookies; never pass arbitrary domains to a browser. */
 export function normalizeYouTubeCookies(input: unknown, now = Date.now() / 1000): Cookie[] {
@@ -59,7 +60,13 @@ async function channelInStudio(page: Page, authuser?: number): Promise<string> {
   await page.goto(url.toString(), { waitUntil: "domcontentloaded", timeout: 60_000 });
   await page.waitForURL(url => !!studioChannelId(url.toString()), { timeout: 20_000 }).catch(() => {});
   const channelId = studioChannelId(page.url());
-  if (!channelId) throw new YouTubeCookieError("Не удалось подтвердить канал YouTube Studio. Проверьте вход и наличие канала.");
+  if (!channelId) {
+    const host = new URL(page.url()).hostname;
+    if (host === "accounts.google.com" || host === "www.youtube.com") {
+      throw new YouTubeSessionError("YouTube запросил повторный вход.");
+    }
+    throw new YouTubeCookieError("Не удалось подтвердить канал YouTube Studio. Проверьте вход и наличие канала.");
+  }
   return channelId;
 }
 

@@ -222,7 +222,10 @@ export function registerGta6YouTubeRoutes(app: FastifyInstance, db: Db, libraryF
     if (!data.success) return reply.code(400).send({ error: "Проверьте настройку автопубликации." });
     const { banner, enabled } = data.data;
     db.db.prepare(`INSERT INTO gta6_youtube_automation(owner_id,banner,enabled) VALUES(?,?,?)
-      ON CONFLICT(owner_id,banner) DO UPDATE SET enabled=excluded.enabled`).run(ownerId, banner, Number(enabled));
+      ON CONFLICT(owner_id,banner) DO UPDATE SET enabled=excluded.enabled,
+        next_at=CASE WHEN excluded.enabled=1 AND initial_remaining>0 AND pending_clip IS NULL THEN 0 ELSE next_at END,
+        error=CASE WHEN excluded.enabled=1 AND initial_remaining>0 AND pending_clip IS NULL THEN NULL ELSE error END`)
+      .run(ownerId, banner, Number(enabled));
     return view(ownerId);
   });
 
