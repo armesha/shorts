@@ -241,10 +241,14 @@ function assTime(seconds: number) {
   n %= 6000;
   return `${h}:${String(m).padStart(2, "0")}:${String(Math.floor(n / 100)).padStart(2, "0")}.${String(n % 100).padStart(2, "0")}`;
 }
-export function cuttingAss(words: TimedWord[], part: CutPart): string {
+export function cuttingAss(words: TimedWord[], part: CutPart, sourceCredit?: string): string {
   const header = `[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n\n[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\nStyle: Default,DejaVu Sans,64,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,5,80,150,20,1\n\n[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n`;
+  const author = sourceCredit?.replace(/[{}\\\r\n]/gu, " ").trim().slice(0, 36);
+  const credit = author
+    ? `Dialogue: 1,0:00:00.00,${assTime(part.end - part.start)},Default,,0,0,0,,{\\an2\\pos(540,632)\\fs38}Автор · ${author}\n`
+    : "";
   return (
-    header +
+    header + credit +
     words
       .filter((w) => w.start >= part.start && w.start < part.end)
       .map((word) => {

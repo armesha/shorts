@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import test from "node:test";
 import { assertChunkMinutes, assertLivePage, cutLiveChunkByAudio, followGta6Live, liveChannelKey, recordLiveChunk, renderGta6Clip, runGta6Highlights, sourcePlansFromInputs } from "./gta6-highlights-media.ts";
+import { Gta6Library } from "./gta6-library.ts";
 import {
   GTA6_BANNER_ROBOT,
   GTA6_BANNER_SIM,
@@ -430,6 +431,29 @@ test("a failed cut keeps the raw chunk", async () => {
   }
 });
 
+test("GTA library recordings survive successful cuts and another session", async () => {
+  const root = await mkdtemp(resolve(tmpdir(), "gta6-recordings-"));
+  try {
+    const files: string[] = [];
+    const start = (data: string) => followGta6Live({
+      url: "https://www.twitch.tv/example", outDir: root,
+      library: { store: new Gta6Library(resolve(root, "library")), root, title: "Streamer" },
+      record: async ({ file }) => {
+        files.push(file);
+        await writeFile(file, data);
+        return { ended: true };
+      },
+      processChunk: async () => ({ published: false, sources: [] }),
+    });
+    await start("first");
+    await start("second");
+    assert.notEqual(files[0], files[1]);
+    assert.deepEqual(await Promise.all(files.map(file => readFile(file, "utf8"))), ["first", "second"]);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("live recorder copies a bounded stream and treats a short file as the end", async () => {
   const root = await mkdtemp(resolve(tmpdir(), "gta6-live-rec-"));
   const file = resolve(root, "chunk.mkv");
@@ -451,6 +475,7 @@ test("live recorder copies a bounded stream and treats a short file as the end",
     assert.ok(download.includes("b[height<=720]/b[height<=1080]/b/bv*[height<=720]+ba/b"));
     assert.ok(download.includes("m3u8:ffmpeg"));
     assert.ok(download.includes("--no-live-from-start"));
+    assert.ok(download.includes("--force-ipv4"));
     assert.match(download.find((arg) => arg.startsWith("ffmpeg:")) || "", /-t 600/);
     assert.match(download.find((arg) => arg.startsWith("ffmpeg:")) || "", /-c copy/);
     assert.ok(download.includes(liveChannelKey(url).url));

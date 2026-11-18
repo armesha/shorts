@@ -1,12 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { uid } from "../infra/auth-session.ts";
-
-const channels = [
-  { login: "jolygames", label: "Шевцов" },
-  { login: "mokrivskyi", label: "Мокривский" },
-].map((channel) => ({ ...channel, url: `https://www.twitch.tv/${channel.login}` }));
-const youtube = { login: "ijJXKz-1YnE", label: "Swich Games", url: "https://www.youtube.com/live/ijJXKz-1YnE" };
+import { GTA6_TWITCH_SOURCES as channels, GTA6_YOUTUBE_SOURCE as youtube } from "../services/gta6-stream-sources.ts";
 
 const metadata = z.object({
   data: z.object({ user: z.object({ login: z.string(), stream: z.object({ id: z.string() }).nullable() }) }),

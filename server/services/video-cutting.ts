@@ -326,13 +326,15 @@ export async function renderCuttingPart(input: {
   timeline?: CutTimeline[];
   segments?: SourceRange[];
   hook?: string;
+  sourceCredit?: string;
   light?: boolean;
 }) {
   const run = input.run || runCuttingProcess;
   const sections = input.segments || [{ start: input.part.start, end: input.part.end }];
   const duration = sections.reduce((sum, section) => sum + section.end - section.start, 0);
   const ass = `part-${input.part.number}.ass`;
-  if (input.subtitles || input.hook) {
+  const hasOverlay = input.subtitles || input.hook || input.sourceCredit;
+  if (hasOverlay) {
     let offset = 0;
     const mapped = sections.flatMap(section => {
       const shifted = input.words.filter(word => word.start >= section.start && word.end <= section.end && !/^\[(?:смех|аплодисменты|laughter|laughs?|applause)\]$/i.test(word.text))
@@ -340,7 +342,7 @@ export async function renderCuttingPart(input: {
       offset += section.end - section.start;
       return shifted;
     });
-    let overlay = cuttingAss(input.subtitles ? mapped : [], { ...input.part, start: 0, end: duration });
+    let overlay = cuttingAss(input.subtitles ? mapped : [], { ...input.part, start: 0, end: duration }, input.sourceCredit);
     if (input.hook) {
       const safe = input.hook.replace(/[{}\\\r\n]/g, " ").slice(0, 96).trim();
       const lines = safe.match(/.{1,28}(?:\s|$)|\S{1,28}/g)?.map(s => s.trim()).join("\\N") || "";
@@ -397,7 +399,7 @@ export async function renderCuttingPart(input: {
     graph += cuttingBannerFilter(ranges.length, input.banner.item, "framed", "branded", input.banner.area);
     label = "branded";
   }
-  graph += `[${label}]${input.subtitles || input.hook ? `ass=filename=${ass},` : ""}fps=30,setsar=1,format=yuv420p[out]`;
+  graph += `[${label}]${hasOverlay ? `ass=filename=${ass},` : ""}fps=30,setsar=1,format=yuv420p[out]`;
   const temporary = input.output.replace(/\.mp4$/, ".encoding.mp4");
   args.push(
     "-filter_complex",

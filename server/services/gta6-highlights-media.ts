@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
 import { link, mkdir, rm, stat, writeFile } from "node:fs/promises";
 import { basename, resolve } from "node:path";
@@ -339,7 +340,8 @@ export async function recordLiveChunk(input: {
   const run = input.run ?? runCaptured;
   const ytdlp = ytdlpBin();
   const nice = ["/usr/bin/nice", "/bin/nice"].find((file) => existsSync(file));
-  const common = ["--no-playlist", "--no-warnings", "--socket-timeout", "30", "--no-live-from-start"];
+  const common = ["--ignore-config", "--force-ipv4", "--js-runtimes", "node", "--no-playlist", "--no-warnings",
+    "--socket-timeout", "12", "--retries", "2", "--extractor-retries", "1", "--no-live-from-start"];
   await mkdir(resolve(input.file, ".."), { recursive: true });
   // One yt-dlp call both checks the live page and records it. A separate
   // --dump-single-json waits on the same slow player response and was killed
@@ -429,6 +431,7 @@ async function renderLiveChunk(input: {
         words: [],
         subtitles: false,
         light: true,
+        sourceCredit: input.library?.title,
       };
       const area = input.library ? GTA6_BANNER_AREA : undefined;
       await renderCuttingPart({ ...render, output: clip, banner: { item, file: bannerFile, area } });
@@ -498,10 +501,11 @@ export async function followGta6Live(options: {
     })));
   const remove = options.remove ?? ((file: string) => rm(file, { force: true }));
   const log = options.log ?? (() => {});
-  await mkdir(resolve(options.outDir, "incoming"), { recursive: true });
+  const recordings = options.library ? resolve(options.outDir, "recordings", randomUUID()) : resolve(options.outDir, "incoming");
+  await mkdir(recordings, { recursive: true });
   const report: Gta6Report = { published: false, sources: [] };
   const open = (index: number) => {
-    const file = resolve(options.outDir, "incoming", `chunk-${index}.mkv`);
+    const file = resolve(recordings, `chunk-${index}.mkv`);
     log(`Подключаюсь к эфиру, кусок ${index + 1}, ${minutes} мин.`);
     return record({ url: page.href, file, seconds, signal }).then((result) => ({ ...result, file, index }));
   };
@@ -513,16 +517,16 @@ export async function followGta6Live(options: {
       const continueLive = !current.ended && !signal.aborted && withinHour;
       if (continueLive) pending = open(current.index + 1);
       if (current.empty) {
-        await remove(current.file);
-        log(`Кусок ${current.index + 1} пустой и удалён.`);
+        if (!options.library) await remove(current.file);
+        log(`Кусок ${current.index + 1} не содержит видео для нарезки.`);
       } else {
         log(`Кусок ${current.index + 1} закрыт, нарезаю.`);
         const piece = await processChunk({ file: current.file, index: current.index, sourceId: `live-${current.index + 1}` });
         report.sources.push(...piece.sources);
         await writeFile(resolve(options.outDir, "report.json"), `${JSON.stringify(report, null, 2)}\n`);
-        await remove(current.file);
+        if (!options.library) await remove(current.file);
         const clips = piece.sources.reduce((count, source) => count + source.highlights.length, 0);
-        log(`Исходный кусок ${current.index + 1} удалён. Клипов: ${clips}.`);
+        log(`Исходный кусок ${current.index + 1} ${options.library ? "сохранён" : "удалён"}. Клипов: ${clips}.`);
       }
       if (!continueLive) break;
     }

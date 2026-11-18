@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { basename, resolve, sep } from "node:path";
 import { Gta6Library } from "./gta6-library.ts";
+import { GTA6_TWITCH_SOURCES, GTA6_YOUTUBE_SOURCE } from "./gta6-stream-sources.ts";
 import {
   assertChunkMinutes,
   followGta6Live,
@@ -159,6 +160,7 @@ export class Gta6LiveSessions {
       throw error;
     }
     const taskKey = `${userId}:${channel.folder}`;
+    const sourceName = [...GTA6_TWITCH_SOURCES, GTA6_YOUTUBE_SOURCE].find(source => liveChannelKey(source.url).key === channel.key)?.label ?? channel.label;
     const task = this.follow({
       url: channel.url,
       outDir: resolve(this.dir(userId), channel.folder),
@@ -166,7 +168,7 @@ export class Gta6LiveSessions {
       telegram,
       maxChunks: untilEnd ? undefined : chunks,
       audioCuts: { min: cuts, max: cuts },
-      library: row.gta6Library ? { store: this.library(userId), root: this.root, title: channel.label } : undefined,
+      library: row.gta6Library ? { store: this.library(userId), root: this.root, title: sourceName } : undefined,
       signal: stop.signal,
       log: (line) => { void this.note(userId, channel.folder, token, line); },
     }).then(async (report) => {
