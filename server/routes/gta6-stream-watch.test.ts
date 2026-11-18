@@ -17,7 +17,7 @@ test("the watcher checks only the configured Twitch channels and YouTube stream"
     })};</script>`);
     return Response.json([
       { data: { user: { login: "jolygames", stream: { id: "123" } } } },
-      { data: { user: { login: "mokrivskyi", stream: null } } },
+      { data: { user: { login: "steel", stream: null } } },
     ]);
   });
   const url = "/api/gta6-live/watch";
@@ -28,11 +28,11 @@ test("the watcher checks only the configured Twitch channels and YouTube stream"
     assert.equal(response.headers["cache-control"], "private, no-store");
     assert.deepEqual(response.json(), { channels: [
       { login: "jolygames", label: "Шевцов", url: "https://www.twitch.tv/jolygames", platform: "twitch", status: "live" },
-      { login: "mokrivskyi", label: "Мокривский", url: "https://www.twitch.tv/mokrivskyi", platform: "twitch", status: "offline" },
+      { login: "steel", label: "Стилл", url: "https://www.twitch.tv/steel", platform: "twitch", status: "offline" },
       { login: "ijJXKz-1YnE", label: "Swich Games", url: "https://www.youtube.com/live/ijJXKz-1YnE", platform: "youtube", status: "live" },
     ] });
     assert.deepEqual(requests, [{
-      url: "https://gql.twitch.tv/gql", method: "POST", logins: ["jolygames", "mokrivskyi"],
+      url: "https://gql.twitch.tv/gql", method: "POST", logins: ["jolygames", "steel"],
     }, { url: "https://www.youtube.com/watch?v=ijJXKz-1YnE", method: undefined, logins: [] }]);
   } finally {
     await app.close();
