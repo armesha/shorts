@@ -5,7 +5,7 @@ import { ApiError, get, send } from "../lib/api/http";
 import { confirmDialog } from "../lib/confirm";
 
 const API = "/gta6-live/library";
-const YOUTUBE_API = "/gta6-live/youtube";
+const YOUTUBE_API = "/creator/gta6-youtube";
 const BANNERS = [
   { id: "shortrobot", label: "Shortrobot" },
   { id: "simka", label: "SIMKA VPN" },

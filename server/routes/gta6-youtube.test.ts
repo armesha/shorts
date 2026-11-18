@@ -32,7 +32,7 @@ test("publishes each Shorts banner to its confirmed channel at most once", async
   const inputs: Parameters<CircleYouTubePublisher["publishManually"]>[0][] = [];
   const complete: ((value: boolean) => void)[] = [];
   let duration = 181;
-  registerGta6YouTubeRoutes(app, db, sessions, {
+  registerGta6YouTubeRoutes(app, db, ownerId => sessions.library(ownerId), {
     publishManually(input) {
       inputs.push(input);
       return new Promise(resolve => { complete.push(resolve); });
@@ -44,7 +44,7 @@ test("publishes each Shorts banner to its confirmed channel at most once", async
     await library.add("Игровой эфир", async (_banner, file) => { await writeFile(file, "video"); });
     const [clip] = await library.list();
     assert.ok(clip);
-    const api = "/api/gta6-live/youtube";
+    const api = "/api/creator/gta6-youtube";
     const headers = { "x-test-user": String(owner.id) };
     const other = { "x-test-user": String(viewer.id) };
     assert.equal((await app.inject({ url: api })).statusCode, 401);
@@ -108,7 +108,7 @@ test("a restart keeps submitted videos locked and preserves confirmed links", as
       (1,'first','shortrobot','uploading',NULL,NULL),
       (1,'second','shortrobot','submitted','https://www.youtube.com/watch?v=abcdefghijk',NULL),
       (1,'third','simka','published','https://www.youtube.com/watch?v=zyxwvutsrqp','pending')`);
-    registerGta6YouTubeRoutes(app, db, sessions, { publishManually: async () => { throw new Error("Unexpected upload"); } });
+    registerGta6YouTubeRoutes(app, db, ownerId => sessions.library(ownerId), { publishManually: async () => { throw new Error("Unexpected upload"); } });
     const rows = db.db.prepare("SELECT state,url,comment_status AS commentStatus FROM gta6_youtube_publications ORDER BY clip_id").all();
     assert.deepEqual(rows.map(row => [row.state, row.url, row.commentStatus]), [
       ["failed", null, null],

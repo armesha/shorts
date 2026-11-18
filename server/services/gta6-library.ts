@@ -10,6 +10,10 @@ export type Gta6LibraryClip = { id: string; title: string; createdAt: string; pu
 
 export const GTA6_CLIP_ID = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/iu;
 
+export function gta6LibraryFor(root: string, userId: number) {
+  return new Gta6Library(resolve(root, `u${userId}`, "library"));
+}
+
 function isMissing(error: unknown) {
   return (error as NodeJS.ErrnoException).code === "ENOENT";
 }

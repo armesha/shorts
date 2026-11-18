@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { basename, resolve, sep } from "node:path";
-import { Gta6Library } from "./gta6-library.ts";
+import { gta6LibraryFor } from "./gta6-library.ts";
 import { GTA6_TWITCH_SOURCES, GTA6_YOUTUBE_SOURCE } from "./gta6-stream-sources.ts";
 import {
   assertChunkMinutes,
@@ -62,7 +62,7 @@ export class Gta6LiveSessions {
 
   private dir(userId: number) { return resolve(this.root, `u${userId}`); }
 
-  library(userId: number) { return new Gta6Library(resolve(this.dir(userId), "library")); }
+  library(userId: number) { return gta6LibraryFor(this.root, userId); }
 
   private async read(userId: number): Promise<Stored> {
     try {

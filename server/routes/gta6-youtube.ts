@@ -4,12 +4,11 @@ import { z } from "zod";
 import type { Db } from "../db.ts";
 import { uid } from "../infra/auth-session.ts";
 import type { CircleYouTubePublisher } from "../services/circle-pipeline/youtube-publisher.ts";
-import { GTA6_BANNERS, GTA6_CLIP_ID, type Gta6Banner } from "../services/gta6-library.ts";
-import type { Gta6LiveSessions } from "../services/gta6-live-session.ts";
+import { GTA6_BANNERS, GTA6_CLIP_ID, type Gta6Banner, type Gta6Library } from "../services/gta6-library.ts";
 import { probeCuttingMedia } from "../services/video-cutting.ts";
 import { sameOrigin } from "./gta6-live.ts";
 
-const API = "/api/gta6-live/youtube";
+const API = "/api/creator/gta6-youtube";
 const params = z.object({ id: z.string().regex(GTA6_CLIP_ID), banner: z.enum(GTA6_BANNERS) });
 const targetInput = z.object({ banner: z.enum(GTA6_BANNERS), accountId: z.number().int().positive().nullable() }).strict();
 const confirmedTarget = z.object({ accountId: z.number().int().positive(), channelId: z.string().regex(/^UC[\w-]{22}$/u) }).strict();
@@ -22,7 +21,7 @@ export function isGta6YouTubeUploading(db: Db, ownerId: number, clipId: string) 
   return Boolean(db.db.prepare(`SELECT 1 FROM gta6_youtube_publications WHERE owner_id=? AND clip_id=? AND state IN ('uploading','submitted')`).get(ownerId, clipId));
 }
 
-export function registerGta6YouTubeRoutes(app: FastifyInstance, db: Db, sessions: Gta6LiveSessions,
+export function registerGta6YouTubeRoutes(app: FastifyInstance, db: Db, libraryFor: (ownerId: number) => Gta6Library,
   uploader: Pick<CircleYouTubePublisher, "publishManually">, probe = probeCuttingMedia) {
   db.db.prepare("UPDATE gta6_youtube_publications SET state='failed',error=? WHERE state='uploading'")
     .run("Отправка была прервана. Можно повторить.");
@@ -88,7 +87,7 @@ export function registerGta6YouTubeRoutes(app: FastifyInstance, db: Db, sessions
     const started = db.db.prepare("SELECT 1 FROM gta6_youtube_publications WHERE owner_id=? AND clip_id=? AND banner=? AND state<>'failed'")
       .get(ownerId, id, banner);
     if (started) return reply.code(409).send({ error: "Отправка уже началась или ролик уже опубликован." });
-    const library = sessions.library(ownerId);
+    const library = libraryFor(ownerId);
     const file = library.file(id, banner);
     if (!(await stat(file).catch(() => null))?.isFile()) return reply.code(404).send({ error: "Ролик не найден." });
     const media = await probe(file).catch(() => null);

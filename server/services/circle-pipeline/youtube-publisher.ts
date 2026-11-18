@@ -23,7 +23,7 @@ export class CircleYouTubePublisher {
   private locks = new Set<number>();
   private stopped = false;
   private root: string;
-  constructor(private db: Db, private pipeline: Pick<CirclePipelineService, "status" | "library">,
+  constructor(private db: Db, private pipeline: Pick<CirclePipelineService, "status" | "library"> | undefined,
     private browser: Browser, root: string, private options: { now?: () => number; log?: (message: string) => void } = {}) {
     this.root = resolve(root); mkdirSync(this.root, { recursive: true, mode: 0o700 }); chmodSync(this.root, 0o700);
   }
@@ -73,6 +73,7 @@ export class CircleYouTubePublisher {
     this.account(ownerId, accountId);
     const connection = this.connection(ownerId, accountId);
     if (connection?.status !== "connected" || connection.channel_id !== channelId) throw new Error("Подтвердите вход в выбранный канал YouTube.");
+    if (this.status(ownerId, accountId).enabled) throw new Error("Этот канал используется расписанием кружочков.");
     if (this.stopped || this.locks.has(accountId)) throw new Error("Канал YouTube занят.");
     this.locks.add(accountId);
     try {
@@ -80,6 +81,8 @@ export class CircleYouTubePublisher {
       const authuser = this.authuser(accountId);
       const url = await this.browser.publish(cookies, channelId, input.file, input.title, input.description, (pendingUrl) => {
         if (this.stopped) throw new Error("Публикация остановлена.");
+        const current = this.connection(ownerId, accountId);
+        if (current?.status !== "connected" || current.channel_id !== channelId) throw new Error("Подключение YouTube изменилось.");
         if (!pendingUrl) throw new Error("YouTube не вернул ссылку перед публикацией.");
         input.onSubmit(pendingUrl);
       }, authuser);
@@ -149,6 +152,7 @@ export class CircleYouTubePublisher {
     try { await this.active; } finally { this.active = undefined; }
   }
   private async work() {
+    if (!this.pipeline) return;
     const now = new Date((this.options.now || Date.now)()), day = circleDay(now.getTime()), slot = circlePublicationSlot(now.getTime());
     if (slot === null) return;
     let target: { ownerId: number; accountId: number };
